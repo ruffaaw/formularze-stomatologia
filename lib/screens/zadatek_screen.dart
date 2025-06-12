@@ -69,7 +69,6 @@ class _ZadatekScreenState extends State<ZadatekScreen> {
           isDense: true,
           contentPadding: inputPadding,
           border: const OutlineInputBorder(),
-          hintText: '0,00', // Przykładowa podpowiedź
         ),
       ),
     );
