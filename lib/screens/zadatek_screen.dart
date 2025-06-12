@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:formularze/components/header.dart';
+import 'package:syncfusion_flutter_signaturepad/signaturepad.dart';
 
 class ZadatekScreen extends StatefulWidget {
   const ZadatekScreen({super.key});
@@ -10,6 +11,8 @@ class ZadatekScreen extends StatefulWidget {
 }
 
 class _ZadatekScreenState extends State<ZadatekScreen> {
+  final GlobalKey<SfSignaturePadState> _signaturePadKey = GlobalKey();
+
   String? selectedService;
   String? selectedApplianceType;
 
@@ -208,6 +211,93 @@ class _ZadatekScreenState extends State<ZadatekScreen> {
                     style: baseTextStyle,
                     textAlign: TextAlign.justify,
                   ),
+                ],
+              ),
+            ),
+            SizedBox(height: sectionSpacing),
+            Container(
+              alignment: Alignment.center,
+              padding: basePadding,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    "miejsce na podpis",
+                    style: baseTextStyle.copyWith(fontStyle: FontStyle.italic),
+                  ),
+                  SizedBox(height: 4),
+                  Container(
+                    height: 200,
+                    width: 400,
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.black, width: 2),
+                    ),
+                    child: SfSignaturePad(
+                      key: _signaturePadKey,
+                      minimumStrokeWidth: 4,
+                      maximumStrokeWidth: 3,
+                      strokeColor: Colors.black,
+                    ),
+                  ),
+                  SizedBox(height: sectionSpacing),
+                  ElevatedButton(
+                    onPressed: () {
+                      _signaturePadKey.currentState?.clear();
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red[600],
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 12,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      elevation: 4,
+                      shadowColor: Colors.red[900],
+                      textStyle: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    child: Text(
+                      "Wyczyść",
+                      style: baseTextStyle.copyWith(color: Colors.white),
+                    ),
+                  ),
+                  SizedBox(height: sectionSpacing),
+                  Text(
+                    "Podpis pacjenta lub opiekuna prawnego",
+                    style: baseTextStyle,
+                  ),
+                  SizedBox(height: sectionSpacing),
+                  ElevatedButton(
+                    onPressed: () {
+                      _signaturePadKey.currentState?.clear();
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.green[700],
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 12,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      elevation: 4,
+                      shadowColor: Colors.green[900],
+                      textStyle: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+
+                    child: Text(
+                      "Zapisz",
+                      style: baseTextStyle.copyWith(color: Colors.white),
+                    ),
+                  ),
+                  SizedBox(height: sectionSpacing),
                 ],
               ),
             ),
