@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:formularze/components/header.dart';
 
 class ZadatekScreen extends StatefulWidget {
@@ -10,23 +11,89 @@ class ZadatekScreen extends StatefulWidget {
 
 class _ZadatekScreenState extends State<ZadatekScreen> {
   String? selectedService;
-  TextEditingController paymentController = TextEditingController(text: "500");
+  String? selectedApplianceType;
 
-  final List<Map<String, String>> services = [
+  final TextEditingController paymentController = TextEditingController(
+    text: "500",
+  );
+  final TextEditingController penaltyPriceController = TextEditingController(
+    text: "250",
+  );
+
+  static const double baseFontSize = 16;
+  static const double inputFieldWidth = 100;
+  static const double sectionSpacing = 16;
+  static const EdgeInsets basePadding = EdgeInsets.symmetric(horizontal: 40.0);
+  static const EdgeInsets inputPadding = EdgeInsets.symmetric(
+    horizontal: 8,
+    vertical: 5,
+  );
+
+  final TextStyle baseTextStyle = const TextStyle(
+    fontSize: baseFontSize,
+    color: Colors.black,
+  );
+
+  final List<Map<String, String>> serviceTypes = [
     {'value': 'zakladanie_aparatu', 'label': 'zakładanie aparatu'},
     {'value': 'odbior_aparatu', 'label': 'odbiór aparatu'},
     {'value': 'wybielanie_zebow', 'label': 'wybielanie zębów'},
     {'value': 'higienizacja', 'label': 'higienizację'},
   ];
 
-  final double baseFontSize = 16;
-  final EdgeInsets basePadding = EdgeInsets.symmetric(horizontal: 40.0);
-  final TextStyle baseTextStyle = TextStyle(fontSize: 16, color: Colors.black);
+  final List<Map<String, String>> applianceTypes = [
+    {"value": "aparat_stały", "label": "aparat stały"},
+    {"value": "aparat_ruchomy", "label": "aparat ruchomy"},
+    {"value": "wybielanie_zębów", "label": "wybielanie zębów"},
+    {"value": "higienizację", "label": "higienizację"},
+  ];
 
   @override
   void dispose() {
     paymentController.dispose();
+    penaltyPriceController.dispose();
     super.dispose();
+  }
+
+  Widget _buildAmountField(TextEditingController controller) {
+    return SizedBox(
+      width: inputFieldWidth,
+      child: TextField(
+        controller: controller,
+        keyboardType: TextInputType.number,
+        inputFormatters: [
+          FilteringTextInputFormatter.allow(RegExp(r'^\d*\,?\d{0,2}')),
+        ],
+        style: baseTextStyle.copyWith(fontWeight: FontWeight.bold),
+        decoration: InputDecoration(
+          isDense: true,
+          contentPadding: inputPadding,
+          border: const OutlineInputBorder(),
+          hintText: '0,00', // Przykładowa podpowiedź
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDropdown({
+    required String? value,
+    required List<Map<String, String>> items,
+    required ValueChanged<String?> onChanged,
+    String hintText = 'wybierz opcję',
+  }) {
+    return DropdownButton<String>(
+      value: value,
+      hint: Text(hintText, style: baseTextStyle.copyWith(color: Colors.grey)),
+      underline: const SizedBox(),
+      style: baseTextStyle.copyWith(fontWeight: FontWeight.bold),
+      items: items.map((item) {
+        return DropdownMenuItem(
+          value: item["value"],
+          child: Text(item["label"]!),
+        );
+      }).toList(),
+      onChanged: onChanged,
+    );
   }
 
   @override
@@ -35,7 +102,8 @@ class _ZadatekScreenState extends State<ZadatekScreen> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            Padding(padding: const EdgeInsets.all(40.0), child: const Header()),
+            const Padding(padding: EdgeInsets.all(40.0), child: Header()),
+
             Container(
               alignment: Alignment.centerLeft,
               padding: basePadding,
@@ -43,7 +111,7 @@ class _ZadatekScreenState extends State<ZadatekScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text("Szanowni Państwo,", style: baseTextStyle),
-                  const SizedBox(height: 8),
+                  SizedBox(height: sectionSpacing),
 
                   Wrap(
                     crossAxisAlignment: WrapCrossAlignment.center,
@@ -52,49 +120,94 @@ class _ZadatekScreenState extends State<ZadatekScreen> {
                         "W celu rezerwacji terminu na ",
                         style: baseTextStyle,
                       ),
-                      DropdownButton<String>(
+                      _buildDropdown(
                         value: selectedService,
-                        underline: const SizedBox(),
-                        style: baseTextStyle.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                        items: services.map((service) {
-                          return DropdownMenuItem(
-                            value: service["value"],
-                            child: Text(service["label"]!),
-                          );
-                        }).toList(),
-                        onChanged: (String? newValue) {
-                          setState(() {
-                            selectedService = newValue;
-                          });
-                        },
+                        items: serviceTypes,
+                        onChanged: (newValue) =>
+                            setState(() => selectedService = newValue),
                       ),
                       Text(
                         " potwierdzam wpłatę zadatku w wysokości ",
                         style: baseTextStyle,
                       ),
-                      SizedBox(
-                        width: 100,
-                        child: TextField(
-                          controller: paymentController,
-                          keyboardType: TextInputType.number,
-                          style: baseTextStyle,
-                          decoration: InputDecoration(
-                            isDense: true,
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 5,
-                            ),
-                            border: const OutlineInputBorder(),
-                          ),
-                        ),
-                      ),
+                      _buildAmountField(paymentController),
                       Text(" zł w recepcji ", style: baseTextStyle),
                       Text("Gabinetu Ortodontycznego ", style: baseTextStyle),
                       Text("Agnieszka ", style: baseTextStyle),
                       Text("Golarz-Nosek.", style: baseTextStyle),
                     ],
+                  ),
+                  SizedBox(height: sectionSpacing),
+
+                  Wrap(
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: [
+                      Text(
+                        "W przypadku rezygnacji z leczenia lub nie przybycia na wizytę zadatek na ",
+                        style: baseTextStyle,
+                      ),
+                      _buildDropdown(
+                        value: selectedApplianceType,
+                        items: applianceTypes,
+                        onChanged: (newValue) =>
+                            setState(() => selectedApplianceType = newValue),
+                      ),
+                      Text(" nie podlega zwrotowi.", style: baseTextStyle),
+                    ],
+                  ),
+                  SizedBox(height: sectionSpacing),
+
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Ważność skanu wewnątrzustego wynosi na:",
+                        style: baseTextStyle,
+                      ),
+                      SizedBox(height: 4),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "- aparat stały - 6 miesięcy",
+                              style: baseTextStyle,
+                            ),
+                            Text(
+                              "- aparat ruchomy - 2 miesiące",
+                              style: baseTextStyle,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: sectionSpacing),
+
+                  Wrap(
+                    children: [
+                      Text(
+                        "W przypadku zmiany terminu wizyty ze strony pacjenta prosimy o informację "
+                        "o odwołaniu wizyty telefonicznie na nr 601 949 752 lub e-mailem na "
+                        "gabinet@golarz.pl, najpóźniej 24 godziny przed planową wizytą. Brak "
+                        "powiadomienia skutkuje obciążeniem pacjenta kwotą za rezerwację wizyty "
+                        "w wysokości ",
+                        style: baseTextStyle,
+                        textAlign: TextAlign.justify,
+                      ),
+                      _buildAmountField(penaltyPriceController),
+                      Text(" zł.", style: baseTextStyle),
+                    ],
+                  ),
+                  SizedBox(height: sectionSpacing),
+
+                  Text(
+                    "W razie problemów z odbiorem aparatu w wyznaczonym terminie, należy "
+                    "odebrać go w terminie nie dłuższym niż 7 dni od początkowo ustalonej daty. "
+                    "Jest to uwarunkowane migracją zębów i wystąpieniem trudności w założeniu aparatu.",
+                    style: baseTextStyle,
+                    textAlign: TextAlign.justify,
                   ),
                 ],
               ),
