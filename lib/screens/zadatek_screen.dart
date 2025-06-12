@@ -14,7 +14,7 @@ class _ZadatekScreenState extends State<ZadatekScreen> {
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
-          children: [Padding(padding: EdgeInsets.all(16.00), child: Header())],
+          children: [Padding(padding: EdgeInsets.all(40.00), child: Header())],
         ),
       ),
     );
