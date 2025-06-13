@@ -16,12 +16,9 @@ class _ZadatekScreenState extends State<ZadatekScreen> {
   String? selectedService;
   String? selectedApplianceType;
 
-  final TextEditingController paymentController = TextEditingController(
-    text: "500",
-  );
-  final TextEditingController penaltyPriceController = TextEditingController(
-    text: "250",
-  );
+  final TextEditingController paymentController = TextEditingController();
+  final TextEditingController penaltyPriceController = TextEditingController();
+  TextEditingController patientNameController = TextEditingController();
 
   static const double baseFontSize = 16;
   static const double inputFieldWidth = 100;
@@ -55,10 +52,14 @@ class _ZadatekScreenState extends State<ZadatekScreen> {
   void dispose() {
     paymentController.dispose();
     penaltyPriceController.dispose();
+    patientNameController.dispose();
     super.dispose();
   }
 
-  Widget _buildAmountField(TextEditingController controller) {
+  Widget _buildAmountField({
+    TextEditingController? controller,
+    required String price,
+  }) {
     return SizedBox(
       width: inputFieldWidth,
       child: TextField(
@@ -69,10 +70,78 @@ class _ZadatekScreenState extends State<ZadatekScreen> {
         ],
         style: baseTextStyle.copyWith(fontWeight: FontWeight.bold),
         decoration: InputDecoration(
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.black),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.black, width: 1.5),
+          ),
+          errorBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.red, width: 1.5),
+          ),
+          border: const OutlineInputBorder(),
           isDense: true,
           contentPadding: inputPadding,
-          border: const OutlineInputBorder(),
+          hint: Text(
+            price,
+            style: baseTextStyle.copyWith(
+              color: Colors.grey.shade600,
+              height: 1.0,
+            ),
+          ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildPatientNameField() {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "Imię i nazwisko",
+            style: baseTextStyle.copyWith(fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 8),
+          TextFormField(
+            controller: patientNameController,
+            decoration: InputDecoration(
+              enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.black),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.black, width: 1.5),
+              ),
+              errorBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.red, width: 1.5),
+              ),
+              border: const OutlineInputBorder(),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 12,
+                vertical: 14,
+              ),
+              hint: Text(
+                "Wprowadź imię i nazwisko",
+                style: baseTextStyle.copyWith(
+                  color: Colors.grey.shade600,
+                  height: 1.0,
+                ),
+              ),
+              isDense: true,
+            ),
+            style: baseTextStyle,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'To pole jest wymagane';
+              }
+              return null;
+            },
+            autofocus: false,
+            textCapitalization: TextCapitalization.words,
+          ),
+        ],
       ),
     );
   }
@@ -83,18 +152,51 @@ class _ZadatekScreenState extends State<ZadatekScreen> {
     required ValueChanged<String?> onChanged,
     String hintText = 'wybierz opcję',
   }) {
-    return DropdownButton<String>(
-      value: value,
-      hint: Text(hintText, style: baseTextStyle.copyWith(color: Colors.grey)),
-      underline: const SizedBox(),
-      style: baseTextStyle.copyWith(fontWeight: FontWeight.bold),
-      items: items.map((item) {
-        return DropdownMenuItem(
-          value: item["value"],
-          child: Text(item["label"]!),
-        );
-      }).toList(),
-      onChanged: onChanged,
+    return Container(
+      height: 36,
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.black, width: 1.0),
+        borderRadius: BorderRadius.circular(4.0),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12.0),
+        child: DropdownButtonHideUnderline(
+          child: DropdownButton<String>(
+            value: value,
+            hint: Text(
+              hintText,
+              style: baseTextStyle.copyWith(
+                fontWeight: FontWeight.normal,
+                color: Colors.grey.shade600,
+                height: 1.0,
+              ),
+            ),
+            isDense: true,
+            style: baseTextStyle.copyWith(
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+              height: 1.0,
+            ),
+            borderRadius: BorderRadius.circular(4),
+            icon: const Icon(
+              Icons.arrow_drop_down,
+              color: Colors.black,
+              size: 20,
+            ),
+            dropdownColor: Colors.white,
+            items: items.map((item) {
+              return DropdownMenuItem(
+                value: item["value"],
+                child: Text(
+                  item["label"]!,
+                  style: baseTextStyle.copyWith(height: 1.0),
+                ),
+              );
+            }).toList(),
+            onChanged: onChanged,
+          ),
+        ),
+      ),
     );
   }
 
@@ -112,6 +214,7 @@ class _ZadatekScreenState extends State<ZadatekScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  _buildPatientNameField(),
                   Text("Szanowni Państwo,", style: baseTextStyle),
                   SizedBox(height: sectionSpacing),
 
@@ -132,7 +235,10 @@ class _ZadatekScreenState extends State<ZadatekScreen> {
                         " potwierdzam wpłatę zadatku w wysokości ",
                         style: baseTextStyle,
                       ),
-                      _buildAmountField(paymentController),
+                      _buildAmountField(
+                        controller: paymentController,
+                        price: "500",
+                      ),
                       Text(" zł w recepcji ", style: baseTextStyle),
                       Text("Gabinetu Ortodontycznego ", style: baseTextStyle),
                       Text("Agnieszka ", style: baseTextStyle),
@@ -198,7 +304,10 @@ class _ZadatekScreenState extends State<ZadatekScreen> {
                         style: baseTextStyle,
                         textAlign: TextAlign.justify,
                       ),
-                      _buildAmountField(penaltyPriceController),
+                      _buildAmountField(
+                        controller: penaltyPriceController,
+                        price: "250",
+                      ),
                       Text(" zł.", style: baseTextStyle),
                     ],
                   ),
