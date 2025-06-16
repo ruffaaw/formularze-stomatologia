@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:formularze/screens/zadatek_screen.dart';
+// import 'package:formularze/screens/zadatek_screen.dart';
+import 'package:formularze/screens/ankieta_screen.dart';
 
 void main() {
   runApp(const MainApp());
@@ -13,7 +14,7 @@ class MainApp extends StatelessWidget {
     return MaterialApp(
       title: "Zadatek",
       theme: ThemeData(primarySwatch: Colors.blue),
-      home: const ZadatekScreen(),
+      home: const PatientQuestionnaireScreen(),
     );
   }
 }

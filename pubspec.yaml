@@ -22,3 +22,6 @@ flutter:
     - family: Archivo
       fonts:
         - asset: assets/fonts/archivo.ttf
+  assets:
+    - assets/images/pl.png
+    - assets/images/en.png
