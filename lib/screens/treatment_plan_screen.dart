@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+// import 'package:flutter/services.dart';
 import 'package:syncfusion_flutter_signaturepad/signaturepad.dart';
 
 class TreatmentPlanScreen extends StatefulWidget {
@@ -9,7 +10,8 @@ class TreatmentPlanScreen extends StatefulWidget {
 }
 
 class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
-  final GlobalKey<SfSignaturePadState> _signaturePadKey = GlobalKey();
+  final GlobalKey<SfSignaturePadState> _signaturePadKeyDoctor = GlobalKey();
+  final GlobalKey<SfSignaturePadState> _signaturePadKeyPatient = GlobalKey();
   String _selectedLanguage = 'pl';
   final Map<String, TextEditingController> _controllers = {};
   final Map<String, String?> _treatmentOptions = {};
@@ -38,6 +40,8 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
       'treatment_plan_attention':
           'Uwaga! Plan leczenia może ulec zmianie w zależności od sytuacji klinicznej',
       'treatment_plan_accept': 'Akceptuje proponowany plan leczenia',
+      'signature_doctor': 'Pieczątka i podpis lekarza',
+      'signature_patient': 'Podpis pacjenta lub opiekuna prawnego',
       'concent_for_treatment_title':
           'INFORMACJE DLA PACJENTA I ŚWIADOMA ZGODA NA LECZENIE ORTODONTYCZNE',
       'complications_section_title':
@@ -63,6 +67,8 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
       'treatment_plan_attention':
           'Warning! Treatment plan may change depending on clinical situation',
       'treatment_plan_accept': 'I accept the proposed treatment plan',
+      'signature_doctor': 'Signature of the doctor',
+      'signature_patient': 'Signature of the patient / guardian',
       'concent_for_treatment_title':
           'PATIENT INFORMATION AND INFORMED CONSENT FOR ORTHODONTIC TREATMENT',
       'complications_section_title':
@@ -114,114 +120,171 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
     bool required = false,
     int maxLines = 1,
   }) {
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 8),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(0, 2)),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          TextFormField(
-            controller: _controllers[controllerKey],
-            decoration: InputDecoration(
-              hintText: _selectedLanguage == 'pl'
-                  ? 'Wprowadź $label...'
-                  : 'Enter $label...',
-              filled: true,
-              fillColor: Colors.grey[100],
-              contentPadding: const EdgeInsets.symmetric(
-                vertical: 12,
-                horizontal: 16,
-              ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide.none,
-              ),
-            ),
-            maxLines: maxLines,
-            validator: required
-                ? (value) => value?.trim().isEmpty ?? true
-                      ? _selectedLanguage == 'pl'
-                            ? 'Pole wymagane'
-                            : "Required field"
-                      : null
-                : null,
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: TextFormField(
+        controller: _controllers[controllerKey],
+        decoration: InputDecoration(
+          hintText: _selectedLanguage == 'pl'
+              ? 'Wprowadź $label...'
+              : 'Enter $label...',
+          floatingLabelBehavior: FloatingLabelBehavior.auto,
+          border: const OutlineInputBorder(),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: const BorderSide(color: Colors.grey),
           ),
-        ],
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(
+              color: Theme.of(context).colorScheme.primary,
+              width: 2,
+            ),
+          ),
+          filled: true,
+          fillColor: Theme.of(context).colorScheme.surfaceVariant,
+          contentPadding: const EdgeInsets.symmetric(
+            vertical: 14,
+            horizontal: 16,
+          ),
+        ),
+        style: const TextStyle(fontSize: 16),
+        maxLines: maxLines,
+        validator: required
+            ? (value) => value?.trim().isEmpty ?? true
+                  ? _selectedLanguage == 'pl'
+                        ? 'Pole wymagane'
+                        : "Required field"
+                  : null
+            : null,
       ),
     );
   }
 
   Widget _buildRadioOption(String option) {
-    return Container(
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Card(
       margin: const EdgeInsets.symmetric(vertical: 8),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(color: Colors.black12, blurRadius: 6, offset: Offset(0, 3)),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            _t(option),
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              Expanded(
-                child: RadioListTile<String>(
-                  value: '1',
-                  groupValue: _treatmentOptions[option],
-                  onChanged: (value) =>
-                      setState(() => _treatmentOptions[option] = value),
-                  title: Text(_t('yes')),
-                  contentPadding: EdgeInsets.zero,
-                  dense: true,
-                ),
-              ),
-              Expanded(
-                child: RadioListTile<String>(
-                  value: '0',
-                  groupValue: _treatmentOptions[option],
-                  onChanged: (value) =>
-                      setState(() => _treatmentOptions[option] = value),
-                  title: Text(_t('no')),
-                  contentPadding: EdgeInsets.zero,
-                  dense: true,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          TextFormField(
-            controller: _controllers['${option}_attention'],
-            decoration: InputDecoration(
-              hintText: _t('attention'),
-              filled: true,
-              fillColor: Colors.grey[100],
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: BorderSide.none,
-              ),
-              contentPadding: const EdgeInsets.symmetric(
-                vertical: 12,
-                horizontal: 16,
+      elevation: 1,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      color: colorScheme.surfaceVariant,
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              _t(option),
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+                color: colorScheme.onSurface,
               ),
             ),
-            maxLines: 2,
+            const SizedBox(height: 16),
+
+            /// POZIOMY układ YES / NO z obramowaniem
+            Row(
+              children: [
+                Expanded(
+                  child: _buildRadioBox(
+                    label: _t('yes'),
+                    value: '1',
+                    groupValue: _treatmentOptions[option],
+                    onChanged: (value) =>
+                        setState(() => _treatmentOptions[option] = value),
+                    colorScheme: colorScheme,
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: _buildRadioBox(
+                    label: _t('no'),
+                    value: '0',
+                    groupValue: _treatmentOptions[option],
+                    onChanged: (value) =>
+                        setState(() => _treatmentOptions[option] = value),
+                    colorScheme: colorScheme,
+                  ),
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 20),
+            TextFormField(
+              controller: _controllers['${option}_attention'],
+              decoration: InputDecoration(
+                hintText: _t('attention'),
+                filled: true,
+                fillColor: colorScheme.surface,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: colorScheme.primary, width: 2),
+                ),
+                contentPadding: const EdgeInsets.symmetric(
+                  vertical: 14,
+                  horizontal: 16,
+                ),
+              ),
+              maxLines: 2,
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRadioBox({
+    required String label,
+    required String value,
+    required String? groupValue,
+    required void Function(String?) onChanged,
+    required ColorScheme colorScheme,
+  }) {
+    final isSelected = value == groupValue;
+
+    return InkWell(
+      onTap: () => onChanged(value),
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? colorScheme.primary.withOpacity(0.1)
+              : Colors.transparent,
+          border: Border.all(
+            color: isSelected
+                ? colorScheme.primary
+                : colorScheme.outlineVariant,
+            width: 1.5,
           ),
-        ],
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Radio<String>(
+              value: value,
+              groupValue: groupValue,
+              onChanged: onChanged,
+              activeColor: colorScheme.primary,
+              visualDensity: VisualDensity.compact,
+            ),
+            const SizedBox(width: 4),
+            Text(
+              label,
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                color: isSelected ? colorScheme.primary : colorScheme.onSurface,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -256,24 +319,91 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
     );
   }
 
-  Widget _buildSignatureSection() {
-    return Column(
-      children: [
-        const SizedBox(height: 24),
-        const Divider(),
-        const SizedBox(height: 16),
-        Text(
-          _t('place_for_signature'),
-          style: const TextStyle(fontStyle: FontStyle.italic),
-        ),
-        const SizedBox(height: 80),
-        const Divider(),
-        const SizedBox(height: 16),
-        Text(_t('doctor_signature')),
-        const SizedBox(height: 40),
-        Text(_t('patient_signature')),
-        const SizedBox(height: 40),
-      ],
+  Widget _buildSignatureSection(
+    GlobalKey<SfSignaturePadState> doctorSignatureKey,
+    GlobalKey<SfSignaturePadState> patientSignatureKey,
+  ) {
+    return Container(
+      alignment: Alignment.center,
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildSingleSignatureColumn(
+            key: doctorSignatureKey,
+            label: _selectedLanguage == 'pl'
+                ? 'miejsce na podpis lekarza'
+                : 'place for doctor signature',
+            buttonLabel: _selectedLanguage == 'pl' ? 'Wyczyść' : 'Clear',
+            signatureText: _t('signature_doctor'),
+          ),
+          const SizedBox(width: 32), // Odstęp między podpisami
+          _buildSingleSignatureColumn(
+            key: patientSignatureKey,
+            label: _selectedLanguage == 'pl'
+                ? 'miejsce na podpis pacjenta lub opiekuna'
+                : 'place for patient or guardian signature',
+            buttonLabel: _selectedLanguage == 'pl' ? 'Wyczyść' : 'Clear',
+            signatureText: _t('signature_patient'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSingleSignatureColumn({
+    required GlobalKey<SfSignaturePadState> key,
+    required String label,
+    required String buttonLabel,
+    required String signatureText,
+  }) {
+    return Container(
+      width: 420,
+      padding: const EdgeInsets.all(12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text(label),
+          const SizedBox(height: 8),
+          Container(
+            height: 250,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              border: Border.all(color: Colors.black, width: 1),
+            ),
+            child: SfSignaturePad(
+              key: key,
+              minimumStrokeWidth: 2,
+              maximumStrokeWidth: 3,
+              strokeColor: Colors.black,
+            ),
+          ),
+          const SizedBox(height: 16),
+          Text(signatureText),
+          const SizedBox(height: 16),
+          ElevatedButton(
+            onPressed: () => key.currentState?.clear(),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red[600],
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              elevation: 4,
+              shadowColor: Colors.red[900],
+              textStyle: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            child: Text(
+              buttonLabel,
+              style: const TextStyle(color: Colors.white),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -374,22 +504,10 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
                 ),
               ),
 
-              //TODO
-              Container(
-                height: 200,
-                width: 400,
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.black, width: 2),
-                ),
-                child: SfSignaturePad(
-                  key: _signaturePadKey,
-                  minimumStrokeWidth: 4,
-                  maximumStrokeWidth: 3,
-                  strokeColor: Colors.black,
-                ),
+              _buildSignatureSection(
+                _signaturePadKeyDoctor,
+                _signaturePadKeyPatient,
               ),
-              _buildSignatureSection(),
-
               // Sekcja 3 - Powikłania
               Center(
                 child: Text(
@@ -419,7 +537,7 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
 
               for (int i = 1; i <= 8; i++) _buildComplicationSection(i),
 
-              _buildSignatureSection(),
+              // _buildSignatureSection(),
 
               // Sekcja 4 - Zgoda na leczenie
               Text(
@@ -445,7 +563,7 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
 
               for (int i = 1; i <= 8; i++) _buildAgreementSection(i),
 
-              _buildSignatureSection(),
+              // _buildSignatureSection(),
 
               // Sekcja 5 - Cennik
               Text(
