@@ -10,6 +10,7 @@ dependencies:
   flutter:
     sdk: flutter
   syncfusion_flutter_signaturepad: ^29.2.10
+  intl: ^0.18.0
 
 dev_dependencies:
   flutter_test:
