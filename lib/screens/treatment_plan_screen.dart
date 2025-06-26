@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-// import 'package:flutter/services.dart';
 import 'package:syncfusion_flutter_signaturepad/signaturepad.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
@@ -193,8 +192,8 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
       'selected_items': 'Wybrane pozycje',
       'designation': 'Nazwa',
       'price': 'Cena (zł)',
-
-      // ... wszystkie inne tłumaczenia po polsku
+      'select_items': 'Wybierz pozycje z listy',
+      'zl': "zł",
     },
     'en': {
       'title': 'Treatment plan',
@@ -310,8 +309,8 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
       'selected_items': 'Selected items',
       'designation': 'Name',
       'price': 'Price (PLN)',
-
-      // ... wszystkie inne tłumaczenia po angielsku
+      'select_items': 'Select items from the list',
+      'zl': "PLN",
     },
   };
 
@@ -427,7 +426,6 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
             ),
             const SizedBox(height: 16),
 
-            /// POZIOMY układ YES / NO z obramowaniem
             Row(
               children: [
                 Expanded(
@@ -582,7 +580,7 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
             buttonLabel: _selectedLanguage == 'pl' ? 'Wyczyść' : 'Clear',
             signatureText: _t('signature_doctor'),
           ),
-          const SizedBox(width: 32), // Odstęp między podpisami
+          const SizedBox(width: 32),
           _buildSingleSignatureColumn(
             key: patientSignatureKey,
             label: _selectedLanguage == 'pl'
@@ -678,7 +676,7 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
                     ),
                   ),
                   Text(
-                    "Wybierz pozycje z listy",
+                    _t('select_items'),
                     style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -699,12 +697,12 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
                           color: isSelected ? Colors.grey[200] : null,
                           child: ListTile(
                             title: Text(_t(option['name'])),
-                            subtitle: Text('${option['price']} zł'),
+                            subtitle: Text('${option['price']} ${_t('zl')}'),
                             onTap: () {
                               setState(() {
                                 if (!isSelected) {
                                   final newItem = {
-                                    'id': uuid.v4(), // unikalne ID
+                                    'id': uuid.v4(),
                                     'name': option['name'],
                                     'price': option['price'],
                                   };
@@ -932,7 +930,6 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
                 ),
                 const SizedBox(height: 12),
 
-                // Nagłówki tabeli
                 Container(
                   padding: const EdgeInsets.symmetric(
                     vertical: 12,
@@ -958,13 +955,12 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                       ),
-                      Expanded(flex: 1, child: SizedBox()), // Ikona usuń
+                      Expanded(flex: 1, child: SizedBox()),
                     ],
                   ),
                 ),
                 const SizedBox(height: 6),
 
-                // Lista elementów jako "wiersze"
                 ...selectedEstimates.map((item) {
                   final controller = _controllers[item['id']]!;
 
