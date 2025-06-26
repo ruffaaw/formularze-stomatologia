@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 // import 'package:flutter/services.dart';
 import 'package:syncfusion_flutter_signaturepad/signaturepad.dart';
+import 'package:intl/intl.dart';
 
 class TreatmentPlanScreen extends StatefulWidget {
   const TreatmentPlanScreen({super.key});
@@ -23,10 +24,55 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
   String _selectedLanguage = 'pl';
   final Map<String, TextEditingController> _controllers = {};
   final Map<String, String?> _treatmentOptions = {};
-  final Map<String, String?> _estimateItems = {};
-  double _totalPrice = 0.0;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  List<String> selectedEstimates = [];
+  final numberFormat = NumberFormat('#,###', 'pl_PL');
+
+  final List<Map<String, dynamic>> estimateOptions = [
+    {"name": "estimate_1", "price": 5800},
+    {"name": "estimate_2", "price": 6900},
+    {"name": "estimate_3", "price": 9000},
+    {"name": "estimate_4", "price": 32000},
+    {"name": "estimate_5", "price": 412},
+    {"name": "estimate_6", "price": 1950},
+    {"name": "estimate_7", "price": 950},
+    {"name": "estimate_8", "price": 850},
+    {"name": "estimate_9", "price": 1930},
+    {"name": "estimate_10", "price": 1930},
+    {"name": "estimate_11", "price": 4800},
+    {"name": "estimate_12", "price": 5400},
+    {"name": "estimate_13", "price": 6500},
+    {"name": "estimate_14", "price": 1200},
+    {"name": "estimate_15", "price": 1950},
+    {"name": "estimate_16", "price": 1050},
+    {"name": "estimate_17", "price": 250},
+    {"name": "estimate_18", "price": 200},
+    {"name": "estimate_19", "price": 480},
+    {"name": "estimate_20", "price": 1800},
+    {"name": "estimate_21", "price": 150},
+    {"name": "estimate_22", "price": 280},
+    {"name": "estimate_23", "price": 280},
+    {"name": "estimate_24", "price": 280},
+    {"name": "estimate_25", "price": 250},
+    {"name": "estimate_26", "price": 350},
+    {"name": "estimate_27", "price": 120},
+    {"name": "estimate_28", "price": 150},
+    {"name": "estimate_29", "price": 400},
+    {"name": "estimate_30", "price": 250},
+    {"name": "estimate_31", "price": 250},
+    {"name": "estimate_32", "price": 500},
+    {"name": "estimate_33", "price": 480},
+    {"name": "estimate_34", "price": 380},
+    {"name": "estimate_35", "price": 250},
+    {"name": "estimate_36", "price": 700},
+    {"name": "estimate_37", "price": 300},
+    {"name": "estimate_38", "price": 550},
+    {"name": "estimate_39", "price": 100},
+    {"name": "estimate_40", "price": 50},
+    {"name": "estimate_41", "price": 50},
+    {"name": "estimate_42", "price": 80},
+  ];
+
+  List<Map<String, dynamic>> selectedEstimates = [];
 
   // Translations
   final Map<String, Map<String, String>> _translations = {
@@ -223,6 +269,12 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
     'additional_denture_teeth',
     'surgery',
   ];
+  int get totalEstimatePrice {
+    return selectedEstimates.fold(
+      0,
+      (sum, item) => sum + (item['price'] as int),
+    );
+  }
 
   @override
   void initState() {
@@ -544,12 +596,7 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
     );
   }
 
-  void _showModernEstimateModal(BuildContext context) {
-    final List<String> estimateKeys = List.generate(
-      42,
-      (i) => 'estimate_${i + 1}',
-    );
-
+  void _showEstimateModal(BuildContext context) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -558,58 +605,62 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
       ),
       builder: (context) {
         return DraggableScrollableSheet(
-          expand: false,
-          initialChildSize: 0.7,
-          minChildSize: 0.4,
+          initialChildSize: 0.85,
           maxChildSize: 0.95,
-          builder: (context, scrollController) {
-            return Column(
-              children: [
-                const SizedBox(height: 12),
-                Container(
-                  width: 50,
-                  height: 5,
-                  decoration: BoxDecoration(
-                    color: Colors.grey[300],
-                    borderRadius: BorderRadius.circular(10),
+          expand: false,
+          builder: (_, scrollController) {
+            return Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                children: [
+                  Container(
+                    width: 40,
+                    height: 4,
+                    margin: const EdgeInsets.only(bottom: 16),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[300],
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                   ),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  _t('add_estimate'),
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
+                  Text(
+                    "Wybierz pozycje z listy",
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 12),
-                Expanded(
-                  child: ListView.separated(
-                    controller: scrollController,
-                    itemCount: estimateKeys.length,
-                    separatorBuilder: (_, __) => const Divider(height: 1),
-                    itemBuilder: (context, index) {
-                      final key = estimateKeys[index];
-                      return ListTile(
-                        title: Text(_t(key)),
-                        trailing: const Icon(Icons.add_circle_outline),
-                        onTap: () {
-                          setState(() {
-                            selectedEstimates.add(_t(key));
-                          });
-                          Navigator.of(context).pop();
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('${_t('added')}${_t(key)}'),
-                              duration: const Duration(seconds: 2),
-                            ),
-                          );
-                        },
-                      );
-                    },
+                  const SizedBox(height: 16),
+                  Expanded(
+                    child: ListView.builder(
+                      controller: scrollController,
+                      itemCount: estimateOptions.length,
+                      itemBuilder: (context, index) {
+                        final option = estimateOptions[index];
+                        final isSelected = selectedEstimates.any(
+                          (e) => e['name'] == option['name'],
+                        );
+
+                        return Card(
+                          color: isSelected ? Colors.grey[200] : null,
+                          child: ListTile(
+                            title: Text(_t(option['name'])),
+                            subtitle: Text('${option['price']} zł'),
+                            onTap: () {
+                              setState(() {
+                                if (!isSelected) {
+                                  selectedEstimates.add({
+                                    ...option,
+                                  }); // kopia, żeby można edytować cenę
+                                }
+                              });
+                            },
+                          ),
+                        );
+                      },
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             );
           },
         );
@@ -789,14 +840,13 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
               ),
               const SizedBox(height: 16),
 
-              // Tutaj dodać listę pozycji z cennika
-              // ...
-              const SizedBox(height: 16),
               ElevatedButton.icon(
-                onPressed: () => _showModernEstimateModal(context),
+                onPressed: () => _showEstimateModal(context),
                 icon: const Icon(Icons.add),
                 label: Text(_t('add_estimate')),
                 style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blueAccent,
+                  foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(
                     horizontal: 24,
                     vertical: 14,
@@ -805,25 +855,153 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                // style: ElevatedButton.styleFrom(
-                //   // backgroundColor: Colors.blueAccent,
-                //   // foregroundColor: Colors.white,
-                //   padding: const EdgeInsets.symmetric(
-                //     horizontal: 24,
-                //     vertical: 14,
-                //   ),
-                //   shape: RoundedRectangleBorder(
-                //     borderRadius: BorderRadius.circular(12),
-                //   ),
-                // ),
               ),
 
               const SizedBox(height: 16),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: selectedEstimates
-                    .map((item) => Text('• $item'))
-                    .toList(),
+
+              if (selectedEstimates.isNotEmpty) ...[
+                const SizedBox(height: 24),
+                const Text(
+                  "Wybrane pozycje",
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 12),
+
+                // Nagłówki tabeli
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 12,
+                    horizontal: 8,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[200],
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Row(
+                    children: const [
+                      Expanded(
+                        flex: 4,
+                        child: Text(
+                          "Nazwa",
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      Expanded(
+                        flex: 3,
+                        child: Text(
+                          "Cena (zł)",
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      Expanded(flex: 1, child: SizedBox()), // Ikona usuń
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 6),
+
+                // Lista elementów jako "wiersze"
+                ...selectedEstimates.map((item) {
+                  final controller = TextEditingController(
+                    text: item['price'].toString(),
+                  );
+
+                  return Container(
+                    margin: const EdgeInsets.symmetric(vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 8,
+                      horizontal: 8,
+                    ),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey.shade300),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(flex: 4, child: Text(_t(item['name']))),
+                        Expanded(
+                          flex: 3,
+                          child: TextField(
+                            controller: controller,
+                            keyboardType: TextInputType.number,
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              isDense: true,
+                              contentPadding: EdgeInsets.symmetric(
+                                vertical: 8,
+                                horizontal: 8,
+                              ),
+                            ),
+                            onChanged: (value) {
+                              setState(() {
+                                item['price'] =
+                                    int.tryParse(value) ?? item['price'];
+                              });
+                            },
+                          ),
+                        ),
+                        Expanded(
+                          flex: 1,
+                          child: IconButton(
+                            icon: const Icon(Icons.delete, color: Colors.red),
+                            onPressed: () {
+                              setState(() {
+                                selectedEstimates.removeWhere(
+                                  (e) => e['name'] == item['name'],
+                                );
+                              });
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }).toList(),
+              ],
+              const SizedBox(height: 16),
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.blue.shade50,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black12,
+                      blurRadius: 6,
+                      offset: Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: const [
+                        SizedBox(width: 8),
+                        Text(
+                          "Suma całkowita:",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                    AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 300),
+                      transitionBuilder: (child, animation) =>
+                          ScaleTransition(scale: animation, child: child),
+                      child: Text(
+                        "${numberFormat.format(totalEstimatePrice)} zł",
+                        key: ValueKey<int>(totalEstimatePrice),
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.blueAccent,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
               const SizedBox(height: 24),
 
