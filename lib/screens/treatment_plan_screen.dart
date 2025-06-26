@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 // import 'package:flutter/services.dart';
 import 'package:syncfusion_flutter_signaturepad/signaturepad.dart';
 import 'package:intl/intl.dart';
+import 'package:uuid/uuid.dart';
 
 class TreatmentPlanScreen extends StatefulWidget {
   const TreatmentPlanScreen({super.key});
@@ -26,6 +27,7 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
   final Map<String, String?> _treatmentOptions = {};
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final numberFormat = NumberFormat('#,###', 'pl_PL');
+  final uuid = Uuid();
 
   final List<Map<String, dynamic>> estimateOptions = [
     {"name": "estimate_1", "price": 5800},
@@ -648,9 +650,19 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
                             onTap: () {
                               setState(() {
                                 if (!isSelected) {
-                                  selectedEstimates.add({
-                                    ...option,
-                                  }); // kopia, żeby można edytować cenę
+                                  final newItem = {
+                                    'id': uuid.v4(), // unikalne ID
+                                    'name': option['name'],
+                                    'price': option['price'],
+                                  };
+
+                                  setState(() {
+                                    selectedEstimates.add(newItem);
+                                    _controllers[newItem['id']] =
+                                        TextEditingController(
+                                          text: newItem['price'].toString(),
+                                        );
+                                  });
                                 }
                               });
                             },
@@ -901,9 +913,7 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
 
                 // Lista elementów jako "wiersze"
                 ...selectedEstimates.map((item) {
-                  final controller = TextEditingController(
-                    text: item['price'].toString(),
-                  );
+                  final controller = _controllers[item['id']]!;
 
                   return Container(
                     margin: const EdgeInsets.symmetric(vertical: 4),
@@ -932,10 +942,12 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
                               ),
                             ),
                             onChanged: (value) {
-                              setState(() {
-                                item['price'] =
-                                    int.tryParse(value) ?? item['price'];
-                              });
+                              final newPrice = int.tryParse(value);
+                              if (newPrice != null) {
+                                setState(() {
+                                  item['price'] = newPrice;
+                                });
+                              }
                             },
                           ),
                         ),
@@ -946,8 +958,9 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
                             onPressed: () {
                               setState(() {
                                 selectedEstimates.removeWhere(
-                                  (e) => e['name'] == item['name'],
+                                  (e) => e['id'] == item['id'],
                                 );
+                                _controllers.remove(item['id']);
                               });
                             },
                           ),
@@ -1017,17 +1030,26 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
               Center(
                 child: ElevatedButton(
                   onPressed: () {
-                    if (_formKey.currentState?.validate() ?? false) {
-                      // Zapisz formularz
-                    }
+                    // _signaturePadKey.currentState?.clear();
                   },
                   style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.green[700],
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 40,
-                      vertical: 16,
+                      horizontal: 24,
+                      vertical: 12,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    elevation: 4,
+                    shadowColor: Colors.green[900],
+                    textStyle: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
-                  child: Text(_t('save')),
+
+                  child: Text("Zapisz", style: TextStyle(color: Colors.white)),
                 ),
               ),
               const SizedBox(height: 40),
