@@ -188,6 +188,12 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
       'estimate_41': 'Nawiercanie szwu podniebiennego',
       'estimate_42': 'Znieczulenie',
       'added': 'Dodano do cennika: ',
+      'sum': 'Cena całkowita',
+      'save': 'Zapisz',
+      'selected_items': 'Wybrane pozycje',
+      'designation': 'Nazwa',
+      'price': 'Cena (zł)',
+
       // ... wszystkie inne tłumaczenia po polsku
     },
     'en': {
@@ -257,6 +263,53 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
       'estimate': 'Estimate',
       'add_estimate': 'Add to estimate',
       'added': 'Added to estimate: ',
+      'estimate_1': 'Upper and lower metal appliances',
+      'estimate_2': 'Upper and lower self-ligating appliances',
+      'estimate_3': 'Upper and lower cosmetic appliance',
+      'estimate_4': 'Upper and lower Incognito™ appliance',
+      'estimate_5': 'Incognito™  delivery',
+      'estimate_6': 'GMD appliance',
+      'estimate_7': 'Lip-Bumper appliance',
+      'estimate_8': 'Palatal arch',
+      'estimate_9': 'Hyrax appliance',
+      'estimate_10': 'Hass appliance',
+      'estimate_11': 'Beneslider appliance',
+      'estimate_12': 'Hyrax hybrid appliance',
+      'estimate_13': 'Hybrid Hyrax + Beneslider appliance',
+      'estimate_14': 'Orthodontic implant',
+      'estimate_15': 'Relaxation splint',
+      'estimate_16': 'Hickham mask',
+      'estimate_17': 'Control visit with fixed braces',
+      'estimate_18': 'Control visit with relaxation splint',
+      'estimate_19': 'Removal of upper and lower fixed braces',
+      'estimate_20': 'Upper and lower retention splint',
+      'estimate_21': 'Control visit with retention braces',
+      'estimate_22': 'Intraoral scan',
+      'estimate_23': 'New scan for the next stage of treatment',
+      'estimate_24': 'Hygienization (scaling, polishing, fluoridation)',
+      'estimate_25': 'Varnishing',
+      'estimate_26': 'Attachment with gold chain for pulling retained teeth',
+      'estimate_27': 'Pantomographic X-ray',
+      'estimate_28': 'Cephelometric X-ray',
+      'estimate_29': 'CT of maxilla and mandible',
+      'estimate_30': 'CT of the maxilla',
+      'estimate_31': 'CT of the mandible',
+      'estimate_32': 'CT of face',
+      'estimate_33': 'Face scan',
+      'estimate_34': 'Diagnostic models for orthognathic surgery',
+      'estimate_35': 'Measurements for orthognathic surgery',
+      'estimate_36': 'Preparation of documentation for orthognathic surgery',
+      'estimate_37': 'Hooks for orthognathic surgery',
+      'estimate_38': 'Removal of palatal plate',
+      'estimate_39': 'Braces repair From',
+      'estimate_40': 'Bone drilling',
+      'estimate_41': 'Palatal suture drilling',
+      'estimate_42': 'Anesthesia',
+      'sum': 'Total sum:',
+      'save': 'Save',
+      'selected_items': 'Selected items',
+      'designation': 'Name',
+      'price': 'Price (PLN)',
 
       // ... wszystkie inne tłumaczenia po angielsku
     },
@@ -873,8 +926,8 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
 
               if (selectedEstimates.isNotEmpty) ...[
                 const SizedBox(height: 24),
-                const Text(
-                  "Wybrane pozycje",
+                Text(
+                  _t('selected_items'),
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 12),
@@ -890,18 +943,18 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Row(
-                    children: const [
+                    children: [
                       Expanded(
                         flex: 4,
                         child: Text(
-                          "Nazwa",
+                          _t('designation'),
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                       ),
                       Expanded(
                         flex: 3,
                         child: Text(
-                          "Cena (zł)",
+                          _t('price'),
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                       ),
@@ -988,10 +1041,10 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Row(
-                      children: const [
+                      children: [
                         SizedBox(width: 8),
                         Text(
-                          "Suma całkowita:",
+                          _t('sum'),
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
@@ -1049,7 +1102,10 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
                     ),
                   ),
 
-                  child: Text("Zapisz", style: TextStyle(color: Colors.white)),
+                  child: Text(
+                    _t('save'),
+                    style: TextStyle(color: Colors.white),
+                  ),
                 ),
               ),
               const SizedBox(height: 40),
