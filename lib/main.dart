@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-// import 'package:formularze/screens/zadatek_screen.dart';
-import 'package:formularze/screens/patient_questionnaire_screen.dart';
+import 'package:formularze/screens/zadatek_screen.dart';
+// import 'package:formularze/screens/patient_questionnaire_screen.dart';
 // import 'package:formularze/screens/treatment_plan_screen.dart';
 
 void main() {
@@ -19,7 +19,7 @@ class MainApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.grey.shade800),
       ),
 
-      home: const PatientQuestionnaireScreen(),
+      home: const ZadatekScreen(),
     );
   }
 }

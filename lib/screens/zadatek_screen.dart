@@ -1,7 +1,17 @@
+import 'dart:io';
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:formularze/components/header.dart';
+import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_signaturepad/signaturepad.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:flutter/material.dart';
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:printing/printing.dart';
 
 class ZadatekScreen extends StatefulWidget {
   const ZadatekScreen({super.key});
@@ -412,8 +422,8 @@ class _ZadatekScreenState extends State<ZadatekScreen> {
                   ),
                   SizedBox(height: sectionSpacing),
                   ElevatedButton(
-                    onPressed: () {
-                      _signaturePadKey.currentState?.clear();
+                    onPressed: () async {
+                      await generateAndSavePDF(context);
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.green[700],
@@ -424,16 +434,9 @@ class _ZadatekScreenState extends State<ZadatekScreen> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      elevation: 4,
-                      shadowColor: Colors.green[900],
-                      textStyle: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
                     ),
-
                     child: Text(
-                      "Zapisz",
+                      'Zapisz PDF',
                       style: baseTextStyle.copyWith(color: Colors.white),
                     ),
                   ),
@@ -445,5 +448,186 @@ class _ZadatekScreenState extends State<ZadatekScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> generateAndSavePDF(BuildContext context) async {
+    Future<bool> _isSignatureEmpty() async {
+      if (_signaturePadKey.currentState == null) return true;
+
+      // Nowa metoda sprawdzania czy podpis istnieje
+      final image = await _signaturePadKey.currentState!.toImage();
+      final byteData = await image.toByteData();
+      return byteData == null ||
+          byteData.buffer.asUint8List().every((byte) => byte == 0);
+    }
+
+    // Walidacja pól formularza
+    if (patientNameController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Proszę wprowadzić imię i nazwisko pacjenta'),
+        ),
+      );
+      return;
+    }
+
+    if (selectedService == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Proszę wybrać rodzaj usługi')),
+      );
+      return;
+    }
+
+    if (paymentController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Proszę podać kwotę zadatku')),
+      );
+      return;
+    }
+
+    if (selectedApplianceType == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Proszę wybrać typ aparatu')),
+      );
+      return;
+    }
+
+    if (await _isSignatureEmpty()) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Proszę złożyć podpis')));
+      return;
+    }
+
+    // Tworzenie PDF
+    final doc = pw.Document();
+    final pdfTheme = pw.ThemeData.withFont(
+      base: pw.Font.ttf(await rootBundle.load('assets/fonts/archivo.ttf')),
+      bold: pw.Font.ttf(await rootBundle.load('assets/fonts/archivo-bold.ttf')),
+    );
+    final signatureImage = await _signaturePadKey.currentState!.toImage();
+    final signatureBytes = await signatureImage.toByteData(
+      format: ImageByteFormat.png,
+    );
+
+    doc.addPage(
+      pw.Page(
+        theme: pdfTheme,
+        pageFormat: PdfPageFormat.a4,
+        build: (pw.Context context) {
+          return pw.Padding(
+            padding: const pw.EdgeInsets.all(20),
+            child: pw.Column(
+              crossAxisAlignment: pw.CrossAxisAlignment.start,
+              children: [
+                pw.Center(child: pw.Header(level: 0, text: 'UMOWA ZADATKOWA')),
+
+                pw.SizedBox(height: 20),
+
+                // Dane pacjenta
+                pw.Text(
+                  'Pacjent: ${patientNameController.text}',
+                  style: pw.TextStyle(
+                    fontSize: 14,
+                    fontWeight: pw.FontWeight.bold,
+                  ),
+                ),
+                pw.Divider(),
+                pw.SizedBox(height: 20),
+
+                // Treść umowy
+                pw.Paragraph(text: 'Szanowni Państwo,'),
+                pw.SizedBox(height: 10),
+
+                pw.Paragraph(
+                  text:
+                      'W celu rezerwacji terminu na ${serviceTypes.firstWhere((e) => e['value'] == selectedService)['label']} '
+                      'potwierdzam wpłatę zadatku w wysokości ${paymentController.text} zł '
+                      'w recepcji Gabinetu Ortodontycznego Agnieszka Golarz-Nosek.',
+                ),
+                pw.SizedBox(height: 10),
+
+                pw.Paragraph(
+                  text:
+                      'W przypadku rezygnacji z leczenia lub nie przybycia na wizytę zadatek na '
+                      '${applianceTypes.firstWhere((e) => e['value'] == selectedApplianceType)['label']} '
+                      'nie podlega zwrotowi.',
+                ),
+                pw.SizedBox(height: 20),
+
+                // Ważność skanów
+                pw.Text(
+                  'Ważność skanu wewnątrzustego:',
+                  style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+                ),
+                pw.Bullet(text: 'aparat stały - 6 miesięcy'),
+                pw.Bullet(text: 'aparat ruchomy - 2 miesiące'),
+                pw.SizedBox(height: 20),
+
+                // Kara za odwołanie
+                if (penaltyPriceController.text.isNotEmpty)
+                  pw.Paragraph(
+                    text:
+                        'Brak powiadomienia o odwołaniu wizyty skutkuje obciążeniem pacjenta '
+                        'kwotą ${penaltyPriceController.text} zł.',
+                  ),
+
+                pw.SizedBox(height: 40),
+
+                // Podpis
+                pw.Align(
+                  alignment: pw.Alignment.centerRight,
+                  child: pw.Column(
+                    children: [
+                      pw.Text('Podpis pacjenta lub opiekuna prawnego:'),
+                      pw.SizedBox(height: 10),
+                      pw.Image(
+                        pw.MemoryImage(signatureBytes!.buffer.asUint8List()),
+                        width: 200,
+                        height: 80,
+                      ),
+                      pw.SizedBox(height: 20),
+                      pw.Text(
+                        'Data: ${DateFormat('dd.MM.yyyy').format(DateTime.now())}',
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+
+    // Zapis na dysk
+    try {
+      // Sprawdź uprawnienia
+      if (await Permission.storage.request().isGranted) {
+        final directory = await getApplicationDocumentsDirectory();
+        final file = File(
+          '${directory.path}/Umowa_Zadatkowa_${patientNameController.text.replaceAll(' ', '_')}.pdf',
+        );
+
+        await file.writeAsBytes(await doc.save());
+
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('PDF zapisano w: ${file.path}')));
+
+        // Otwórz podgląd PDF
+        await Printing.layoutPdf(
+          onLayout: (PdfPageFormat format) async => doc.save(),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Brak uprawnień do zapisu pliku')),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Błąd podczas zapisywania PDF: $e')),
+      );
+    }
   }
 }

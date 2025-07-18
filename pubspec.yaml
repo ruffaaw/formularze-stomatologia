@@ -12,6 +12,10 @@ dependencies:
   syncfusion_flutter_signaturepad: ^29.2.10
   intl: ^0.18.0
   uuid: ^3.0.7
+  pdf: ^3.10.0
+  printing: ^5.11.0
+  path_provider: ^2.1.1
+  permission_handler: ^11.0.0
 
 dev_dependencies:
   flutter_test:
@@ -24,6 +28,7 @@ flutter:
     - family: Archivo
       fonts:
         - asset: assets/fonts/archivo.ttf
+        - asset: assets/fonts/archivo-bold.ttf
   assets:
     - assets/images/pl.png
     - assets/images/en.png
