@@ -520,32 +520,65 @@ class _PatientQuestionnaireScreenState
     String? Function(String?)? validator,
     String? hintText,
     int? maxLength,
-    int? maxLines = 1,
+    int maxLines = 1,
+    bool required = false,
   }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        if (label.isNotEmpty)
-          Padding(
-            padding: const EdgeInsets.only(bottom: 4.0),
-            child: Text(label, style: const TextStyle(fontSize: 16)),
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (label.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 4.0),
+              child: Text(label, style: const TextStyle(fontSize: 16)),
+            ),
+          TextFormField(
+            controller: _controllers[controllerKey],
+            decoration: InputDecoration(
+              hintText:
+                  hintText ??
+                  (_selectedLanguage == 'pl'
+                      ? 'Wprowadź $label...'
+                      : 'Enter $label...'),
+              floatingLabelBehavior: FloatingLabelBehavior.auto,
+              border: const OutlineInputBorder(),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: const BorderSide(color: Colors.grey),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(
+                  color: Theme.of(context).colorScheme.primary,
+                  width: 2,
+                ),
+              ),
+              filled: true,
+              fillColor: Theme.of(context).colorScheme.surfaceVariant,
+              contentPadding: const EdgeInsets.symmetric(
+                vertical: 14,
+                horizontal: 16,
+              ),
+              isDense: true,
+            ),
+            style: const TextStyle(fontSize: 16),
+            keyboardType: keyboardType,
+            inputFormatters: inputFormatters,
+            validator:
+                validator ??
+                (required
+                    ? (value) => value?.trim().isEmpty ?? true
+                          ? _selectedLanguage == 'pl'
+                                ? 'Pole wymagane'
+                                : "Required field"
+                          : null
+                    : null),
+            maxLength: maxLength,
+            maxLines: maxLines,
           ),
-        TextFormField(
-          controller: _controllers[controllerKey],
-          decoration: InputDecoration(
-            hintText: hintText,
-            border: const OutlineInputBorder(),
-            isDense: true,
-            contentPadding: const EdgeInsets.all(12),
-          ),
-          keyboardType: keyboardType,
-          inputFormatters: inputFormatters,
-          validator: validator,
-          maxLength: maxLength,
-          maxLines: maxLines,
-        ),
-        const SizedBox(height: 16),
-      ],
+        ],
+      ),
     );
   }
 
@@ -896,12 +929,14 @@ class _PatientQuestionnaireScreenState
               _buildTextFormField(
                 label: _t('guardianInfo'),
                 controllerKey: 'patientGuardian',
+                hintText: "",
                 maxLines: 1,
               ),
 
               _buildTextFormField(
                 label: _t('guardianAddress'),
                 controllerKey: 'patientGuardianStreet',
+                hintText: "",
                 maxLines: 2,
               ),
 
@@ -1422,11 +1457,12 @@ class _PatientQuestionnaireScreenState
                       height: 200,
                       width: 400,
                       decoration: BoxDecoration(
-                        border: Border.all(color: Colors.black, width: 2),
+                        color: Colors.white,
+                        border: Border.all(color: Colors.black, width: 1),
                       ),
                       child: SfSignaturePad(
                         key: _signaturePadKey,
-                        minimumStrokeWidth: 4,
+                        minimumStrokeWidth: 2,
                         maximumStrokeWidth: 3,
                         strokeColor: Colors.black,
                       ),

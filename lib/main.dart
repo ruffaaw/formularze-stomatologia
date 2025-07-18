@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 // import 'package:formularze/screens/zadatek_screen.dart';
-// import 'package:formularze/screens/ankieta_screen.dart';
-import 'package:formularze/screens/treatment_plan_screen.dart';
+import 'package:formularze/screens/patient_questionnaire_screen.dart';
+// import 'package:formularze/screens/treatment_plan_screen.dart';
 
 void main() {
   runApp(const MainApp());
@@ -13,13 +13,13 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: "Zadatek",
+      title: "TreatmentPlanScreen",
       theme: ThemeData(
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.grey.shade800),
       ),
 
-      home: const TreatmentPlanScreen(),
+      home: const PatientQuestionnaireScreen(),
     );
   }
 }

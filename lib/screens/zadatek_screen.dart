@@ -57,38 +57,55 @@ class _ZadatekScreenState extends State<ZadatekScreen> {
   }
 
   Widget _buildAmountField({
-    TextEditingController? controller,
+    required TextEditingController? controller,
     required String price,
+    bool required = false,
   }) {
-    return SizedBox(
-      width: inputFieldWidth,
-      child: TextField(
-        controller: controller,
-        keyboardType: TextInputType.number,
-        inputFormatters: [
-          FilteringTextInputFormatter.allow(RegExp(r'^\d*\,?\d{0,2}')),
-        ],
-        style: baseTextStyle.copyWith(fontWeight: FontWeight.bold),
-        decoration: InputDecoration(
-          enabledBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.black),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.black, width: 1.5),
-          ),
-          errorBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.red, width: 1.5),
-          ),
-          border: const OutlineInputBorder(),
-          isDense: true,
-          contentPadding: inputPadding,
-          hint: Text(
-            price,
-            style: baseTextStyle.copyWith(
-              color: Colors.grey.shade600,
-              height: 1.0,
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: SizedBox(
+        width: 120, // Możesz dostosować szerokość
+        child: TextFormField(
+          controller: controller,
+          keyboardType: TextInputType.number,
+          inputFormatters: [
+            FilteringTextInputFormatter.allow(RegExp(r'^\d*\,?\d{0,2}')),
+          ],
+          decoration: InputDecoration(
+            hintText: price,
+            floatingLabelBehavior: FloatingLabelBehavior.auto,
+            border: const OutlineInputBorder(),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: Colors.grey),
             ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(
+                color: Theme.of(context).colorScheme.primary,
+                width: 2,
+              ),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(
+                color: Theme.of(context).colorScheme.error,
+                width: 1.5,
+              ),
+            ),
+            filled: true,
+            fillColor: Theme.of(context).colorScheme.surfaceVariant,
+            contentPadding: const EdgeInsets.symmetric(
+              vertical: 14,
+              horizontal: 16,
+            ),
+            isDense: true,
           ),
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          validator: required
+              ? (value) =>
+                    value?.trim().isEmpty ?? true ? 'Pole wymagane' : null
+              : null,
         ),
       ),
     );
@@ -96,52 +113,48 @@ class _ZadatekScreenState extends State<ZadatekScreen> {
 
   Widget _buildPatientNameField() {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            "Imię i nazwisko",
-            style: baseTextStyle.copyWith(fontWeight: FontWeight.bold),
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: TextFormField(
+        controller: patientNameController,
+        decoration: InputDecoration(
+          labelText: "Imię i nazwisko",
+          hintText: "Wprowadź imię i nazwisko",
+          floatingLabelBehavior: FloatingLabelBehavior.auto,
+          border: const OutlineInputBorder(),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: const BorderSide(color: Colors.grey),
           ),
-          const SizedBox(height: 8),
-          TextFormField(
-            controller: patientNameController,
-            decoration: InputDecoration(
-              enabledBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.black),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.black, width: 1.5),
-              ),
-              errorBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.red, width: 1.5),
-              ),
-              border: const OutlineInputBorder(),
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 12,
-                vertical: 14,
-              ),
-              hint: Text(
-                "Wprowadź imię i nazwisko",
-                style: baseTextStyle.copyWith(
-                  color: Colors.grey.shade600,
-                  height: 1.0,
-                ),
-              ),
-              isDense: true,
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(
+              color: Theme.of(context).colorScheme.primary,
+              width: 2,
             ),
-            style: baseTextStyle,
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'To pole jest wymagane';
-              }
-              return null;
-            },
-            autofocus: false,
-            textCapitalization: TextCapitalization.words,
           ),
-        ],
+          errorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(
+              color: Theme.of(context).colorScheme.error,
+              width: 1.5,
+            ),
+          ),
+          filled: true,
+          fillColor: Theme.of(context).colorScheme.surfaceVariant,
+          contentPadding: const EdgeInsets.symmetric(
+            vertical: 14,
+            horizontal: 16,
+          ),
+        ),
+        style: const TextStyle(fontSize: 16),
+        validator: (value) {
+          if (value == null || value.trim().isEmpty) {
+            return 'To pole jest wymagane';
+          }
+          return null;
+        },
+        autofocus: false,
+        textCapitalization: TextCapitalization.words,
       ),
     );
   }
@@ -151,50 +164,67 @@ class _ZadatekScreenState extends State<ZadatekScreen> {
     required List<Map<String, String>> items,
     required ValueChanged<String?> onChanged,
     String hintText = 'wybierz opcję',
+    bool required = false,
   }) {
-    return Container(
-      height: 36,
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.black, width: 1.0),
-        borderRadius: BorderRadius.circular(4.0),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12.0),
-        child: DropdownButtonHideUnderline(
-          child: DropdownButton<String>(
-            value: value,
-            hint: Text(
-              hintText,
-              style: baseTextStyle.copyWith(
-                fontWeight: FontWeight.normal,
-                color: Colors.grey.shade600,
-                height: 1.0,
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: SizedBox(
+        width: 200,
+        child: DropdownButtonFormField<String>(
+          value: value,
+          decoration: InputDecoration(
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 12,
+              vertical: 10,
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(color: Colors.grey),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(color: Colors.grey),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(
+                color: Theme.of(context).colorScheme.primary,
+                width: 1.5,
               ),
             ),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(
+                color: Theme.of(context).colorScheme.error,
+                width: 1.5,
+              ),
+            ),
+            filled: true,
+            fillColor: Theme.of(context).colorScheme.surfaceVariant,
             isDense: true,
-            style: baseTextStyle.copyWith(
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
-              height: 1.0,
-            ),
-            borderRadius: BorderRadius.circular(4),
-            icon: const Icon(
-              Icons.arrow_drop_down,
-              color: Colors.black,
-              size: 20,
-            ),
-            dropdownColor: Colors.white,
-            items: items.map((item) {
-              return DropdownMenuItem(
-                value: item["value"],
-                child: Text(
-                  item["label"]!,
-                  style: baseTextStyle.copyWith(height: 1.0),
-                ),
-              );
-            }).toList(),
-            onChanged: onChanged,
           ),
+          hint: Text(
+            hintText,
+            style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
+          ),
+          style: const TextStyle(
+            fontSize: 14,
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+          ),
+          icon: const Icon(Icons.arrow_drop_down, size: 20),
+          dropdownColor: Theme.of(context).colorScheme.surfaceVariant,
+          borderRadius: BorderRadius.circular(8),
+          items: items.map((item) {
+            return DropdownMenuItem<String>(
+              value: item["value"],
+              child: Text(item["label"]!, style: const TextStyle(fontSize: 14)),
+            );
+          }).toList(),
+          onChanged: onChanged,
+          validator: required
+              ? (value) => value == null ? 'Wymagane' : null
+              : null,
         ),
       ),
     );
@@ -339,11 +369,12 @@ class _ZadatekScreenState extends State<ZadatekScreen> {
                     height: 200,
                     width: 400,
                     decoration: BoxDecoration(
-                      border: Border.all(color: Colors.black, width: 2),
+                      color: Colors.white,
+                      border: Border.all(color: Colors.black, width: 1),
                     ),
                     child: SfSignaturePad(
                       key: _signaturePadKey,
-                      minimumStrokeWidth: 4,
+                      minimumStrokeWidth: 2,
                       maximumStrokeWidth: 3,
                       strokeColor: Colors.black,
                     ),
