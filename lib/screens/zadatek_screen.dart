@@ -589,26 +589,34 @@ class _ZadatekScreenState extends State<ZadatekScreen> {
     // Zapis na dysk
     try {
       // Sprawdź uprawnienia
-      if (await Permission.storage.request().isGranted) {
-        final directory = await getApplicationDocumentsDirectory();
-        final file = File(
-          '${directory.path}/Umowa_Zadatkowa_${patientNameController.text.replaceAll(' ', '_')}.pdf',
-        );
+      final status = await Permission.storage.request();
+      if (!status.isGranted) {
+        throw Exception('Brak uprawnień do zapisu pliku');
+      }
+      final name = patientNameController.text.trim();
+      final fileName =
+          '${name}_${DateFormat('ddMMyyyy_HHmmss').format(DateTime.now())}.pdf'
+              .replaceAll(' ', '_')
+              .replaceAll(RegExp(r'[^a-zA-Z0-9_.]'), '');
+      final directory = Directory('/storage/emulated/0/Download');
+      if (!await directory.exists()) {
+        await directory.create(recursive: true);
+      }
 
-        await file.writeAsBytes(await doc.save());
+      final file = File('${directory.path}/$fileName');
 
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('PDF zapisano w: ${file.path}')));
+      try {
+        final pdfBytes = await doc.save();
+        await file.writeAsBytes(pdfBytes);
 
-        // Otwórz podgląd PDF
-        await Printing.layoutPdf(
-          onLayout: (PdfPageFormat format) async => doc.save(),
-        );
-      } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Brak uprawnień do zapisu pliku')),
+          SnackBar(
+            content: Text('Plik zapisano w: ${file.path}'),
+            duration: const Duration(seconds: 3),
+          ),
         );
+      } catch (e) {
+        throw Exception('Błąd podczas zapisywania pliku: $e');
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
