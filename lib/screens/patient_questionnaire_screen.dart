@@ -1,6 +1,17 @@
+import 'dart:io';
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:flutter/material.dart';
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:printing/printing.dart';
 import 'package:syncfusion_flutter_signaturepad/signaturepad.dart';
+import 'package:email_validator/email_validator.dart';
 
 class PatientQuestionnaireScreen extends StatefulWidget {
   const PatientQuestionnaireScreen({super.key});
@@ -144,6 +155,9 @@ class _PatientQuestionnaireScreenState
       'consentNote': '*Prosze zaznaczyc właściwe',
       'submit': 'Zapisz',
       'clear': 'Wyczyść',
+      'day': 'Dzień',
+      'month': 'Miesiąc',
+      'year': 'Rok',
     },
     'en': {
       'title': 'Patient Questionnaire',
@@ -254,6 +268,9 @@ class _PatientQuestionnaireScreenState
           'previously existing disease which has unfavourable influence on the chewing system (e. g. diabetics, epilepsy, osteoporosis, post- radiation and post cytostatic therapy condition)',
       'warrantyDeclaration':
           'I have read and understood the above terms and conditions of warranty given by Agnieszka Golarz-Nosek Orthodontics. The terms are clear and understandable for me. I am aware that not following these terms makes the warranty invalid.',
+      'day': 'Day',
+      'month': 'Month',
+      'year': 'Year',
     },
   };
 
@@ -752,6 +769,244 @@ class _PatientQuestionnaireScreenState
     });
   }
 
+  Widget _buildBirthDateField({
+    required String label,
+    required String controllerKey,
+    bool required = true,
+  }) {
+    final dayController = TextEditingController();
+    final monthController = TextEditingController();
+    final yearController = TextEditingController();
+
+    // Inicjalizacja z istniejącą datą
+    if (_controllers[controllerKey]!.text.isNotEmpty) {
+      final parts = _controllers[controllerKey]!.text.split('.');
+      if (parts.length == 3) {
+        dayController.text = parts[0];
+        monthController.text = parts[1];
+        yearController.text = parts[2];
+      }
+    }
+
+    void _updateDate() {
+      final day = dayController.text.padLeft(2, '0');
+      final month = monthController.text.padLeft(2, '0');
+      final year = yearController.text;
+      _controllers[controllerKey]!.text = '$day.$month.$year';
+    }
+
+    String? _validateDate() {
+      if (!required &&
+          dayController.text.isEmpty &&
+          monthController.text.isEmpty &&
+          yearController.text.isEmpty) {
+        return null;
+      }
+
+      // Podstawowa walidacja każdego pola
+      if (dayController.text.isEmpty ||
+          monthController.text.isEmpty ||
+          yearController.text.isEmpty) {
+        return _selectedLanguage == 'pl'
+            ? 'Wprowadź pełną datę'
+            : 'Enter full date';
+      }
+
+      final day = int.tryParse(dayController.text) ?? 0;
+      final month = int.tryParse(monthController.text) ?? 0;
+      final year = int.tryParse(yearController.text) ?? 0;
+
+      // Walidacja zakresów
+      if (month < 1 || month > 12) {
+        return _selectedLanguage == 'pl'
+            ? 'Nieprawidłowy miesiąc (1-12)'
+            : 'Invalid month (1-12)';
+      }
+
+      if (day < 1 || day > 31) {
+        return _selectedLanguage == 'pl'
+            ? 'Nieprawidłowy dzień (1-31)'
+            : 'Invalid day (1-31)';
+      }
+
+      int _getMaxDaysForMonth(int month, int year) {
+        if (month == 2) {
+          return DateTime(year, 3, 0).day; // Luty - uwzględnia lata przestępne
+        }
+        if ([4, 6, 9, 11].contains(month)) {
+          return 30;
+        }
+        return 31;
+      }
+
+      // Specyficzna walidacja dla każdego miesiąca
+      final maxDays = _getMaxDaysForMonth(month, year);
+      if (day > maxDays) {
+        return _selectedLanguage == 'pl'
+            ? 'Nieprawidłowa liczba dni dla wybranego miesiąca (max $maxDays)'
+            : 'Invalid days count for selected month (max $maxDays)';
+      }
+
+      // Sprawdzenie czy data jest z przyszłości
+      final selectedDate = DateTime(year, month, day);
+      if (selectedDate.isAfter(DateTime.now())) {
+        return _selectedLanguage == 'pl'
+            ? 'Data nie może być z przyszłości'
+            : 'Date cannot be in the future';
+      }
+
+      return null;
+    }
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (label.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 4.0),
+              child: Text(label, style: const TextStyle(fontSize: 16)),
+            ),
+          Row(
+            children: [
+              // Dzień
+              Flexible(
+                child: TextFormField(
+                  controller: dayController,
+                  decoration: InputDecoration(
+                    hintText: _t('day'),
+                    floatingLabelBehavior: FloatingLabelBehavior.auto,
+                    border: const OutlineInputBorder(),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: const BorderSide(color: Colors.grey),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(
+                        color: Theme.of(context).colorScheme.primary,
+                        width: 2,
+                      ),
+                    ),
+                    filled: true,
+                    fillColor: Theme.of(context).colorScheme.surfaceVariant,
+                    contentPadding: const EdgeInsets.symmetric(
+                      vertical: 14,
+                      horizontal: 16,
+                    ),
+                    isDense: true,
+                    counterText: "",
+                  ),
+                  keyboardType: TextInputType.number,
+                  maxLength: 2,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  onChanged: (_) {
+                    _updateDate();
+                    // Automatyczne przejście do następnego pola
+                    if (dayController.text.length == 2) {
+                      FocusScope.of(context).nextFocus();
+                    }
+                  },
+                ),
+              ),
+              const SizedBox(width: 8),
+              // Miesiąc
+              Flexible(
+                child: TextFormField(
+                  controller: monthController,
+                  decoration: InputDecoration(
+                    hintText: _t('month'),
+                    floatingLabelBehavior: FloatingLabelBehavior.auto,
+                    border: const OutlineInputBorder(),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: const BorderSide(color: Colors.grey),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(
+                        color: Theme.of(context).colorScheme.primary,
+                        width: 2,
+                      ),
+                    ),
+                    filled: true,
+                    fillColor: Theme.of(context).colorScheme.surfaceVariant,
+                    contentPadding: const EdgeInsets.symmetric(
+                      vertical: 14,
+                      horizontal: 16,
+                    ),
+                    isDense: true,
+                    counterText: "",
+                  ),
+                  keyboardType: TextInputType.number,
+                  maxLength: 2,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  onChanged: (_) {
+                    _updateDate();
+                    if (monthController.text.length == 2) {
+                      FocusScope.of(context).nextFocus();
+                    }
+                  },
+                ),
+              ),
+              const SizedBox(width: 8),
+              // Rok
+              Flexible(
+                child: TextFormField(
+                  controller: yearController,
+                  decoration: InputDecoration(
+                    hintText: _t('year'),
+                    floatingLabelBehavior: FloatingLabelBehavior.auto,
+                    border: const OutlineInputBorder(),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: const BorderSide(color: Colors.grey),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(
+                        color: Theme.of(context).colorScheme.primary,
+                        width: 2,
+                      ),
+                    ),
+                    filled: true,
+                    fillColor: Theme.of(context).colorScheme.surfaceVariant,
+                    contentPadding: const EdgeInsets.symmetric(
+                      vertical: 14,
+                      horizontal: 16,
+                    ),
+                    isDense: true,
+                    counterText: "",
+                  ),
+                  keyboardType: TextInputType.number,
+                  maxLength: 4,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  onChanged: (_) => _updateDate(),
+                ),
+              ),
+            ],
+          ),
+          if (_controllers[controllerKey]!.text.isNotEmpty)
+            Text(
+              _validateDate() ?? '',
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.error,
+                fontSize: 12,
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  void _saveForm(context) async {
+    if (await validateForm()) {
+      // Formularz jest poprawny, można kontynuować zapis
+      generateAndSavePDF(context);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -834,23 +1089,11 @@ class _PatientQuestionnaireScreenState
                 },
               ),
 
-              _buildTextFormField(
+              _buildBirthDateField(
                 label: _t('birthDate'),
                 controllerKey: 'patientBirthday',
-                hintText: _selectedLanguage == 'pl'
-                    ? 'dd.mm.rrrr'
-                    : 'dd.mm.yyyy',
-                validator: (value) {
-                  if (value?.isEmpty ?? true) return _t('requiredField');
-                  if (!RegExp(r'^\d{2}\.\d{2}\.\d{4}$').hasMatch(value!)) {
-                    return _selectedLanguage == 'pl'
-                        ? 'Wpisz datę w formacie dd.mm.rrrr'
-                        : 'Enter date in dd.mm.yyyy format';
-                  }
-                  return null;
-                },
+                required: true,
               ),
-
               // Gender
               _buildRadioGroup(
                 label: _t('gender'),
@@ -961,12 +1204,11 @@ class _PatientQuestionnaireScreenState
                 onChanged: (value) =>
                     setState(() => _selectedAuthorization = value),
               ),
+              Text(_t('authorizationOption1')),
+              Text(_t('authorizationOption2')),
+              const SizedBox(height: 16),
 
               if (_selectedAuthorization == 'yes') ...[
-                Text(_t('authorizationOption1')),
-                Text(_t('authorizationOption2')),
-                const SizedBox(height: 16),
-
                 _buildTextFormField(
                   label: _t('authorizationName'),
                   controllerKey: 'patientAuthorizationName',
@@ -1497,8 +1739,8 @@ class _PatientQuestionnaireScreenState
                     Text("Podpis pacjenta lub opiekuna prawnego"),
                     const SizedBox(height: 16),
                     ElevatedButton(
-                      onPressed: () {
-                        _signaturePadKey.currentState?.clear();
+                      onPressed: () async {
+                        _saveForm(context);
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.green[700],
@@ -1509,14 +1751,7 @@ class _PatientQuestionnaireScreenState
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        elevation: 4,
-                        shadowColor: Colors.green[900],
-                        textStyle: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
                       ),
-
                       child: Text(
                         "Zapisz",
                         style: TextStyle(color: Colors.white),
@@ -1531,5 +1766,999 @@ class _PatientQuestionnaireScreenState
         ),
       ),
     );
+  }
+
+  Future<void> generateAndSavePDF(BuildContext context) async {
+    try {
+      final doc = pw.Document();
+      final pdfTheme = pw.ThemeData.withFont(
+        base: pw.Font.ttf(await rootBundle.load('assets/fonts/archivo.ttf')),
+        bold: pw.Font.ttf(
+          await rootBundle.load('assets/fonts/archivo-bold.ttf'),
+        ),
+      );
+
+      final signatureBytes = await _getSignatureImageBytes();
+
+      doc.addPage(
+        pw.Page(
+          theme: pdfTheme,
+          pageFormat: PdfPageFormat.a4,
+          build: (pw.Context context) {
+            return pw.Column(
+              crossAxisAlignment: pw.CrossAxisAlignment.start,
+              children: [
+                pw.Center(
+                  child: pw.Header(level: 0, text: 'Ankieta Osobowa Pacjenta'),
+                ),
+                pw.SizedBox(height: 20),
+
+                // Dane osobowe
+                _buildPdfSectionTitle('DANE OSOBOWE PACJENTA'),
+                _buildPdfTextField('Imię:', _controllers['patientName']!.text),
+                _buildPdfTextField(
+                  'Nazwisko:',
+                  _controllers['patientSurname']!.text,
+                ),
+                _buildPdfTextField(
+                  'PESEL:',
+                  _controllers['patientPesel']!.text,
+                ),
+                _buildPdfTextField(
+                  'Data urodzenia:',
+                  _controllers['patientBirthday']!.text,
+                ),
+                _buildPdfTextField(
+                  'Płeć:',
+                  _selectedGender == 'male'
+                      ? 'Mężczyzna'
+                      : _selectedGender == 'female'
+                      ? 'Kobieta'
+                      : "brak",
+                ),
+                pw.Divider(),
+                pw.SizedBox(height: 20),
+
+                // Dane kontaktowe
+                _buildPdfSectionTitle('DANE KONTAKTOWE'),
+                _buildPdfTextField(
+                  'Ulica:',
+                  _controllers['patientStreet']!.text,
+                ),
+                _buildPdfTextField(
+                  'Miasto:',
+                  _controllers['patientCity']!.text,
+                ),
+                _buildPdfTextField(
+                  'Kod pocztowy:',
+                  _controllers['patientPostCode']!.text,
+                ),
+                _buildPdfTextField(
+                  'Telefon:',
+                  _controllers['patientPhone']!.text,
+                ),
+                _buildPdfTextField(
+                  'Email:',
+                  _controllers['patientEmail']!.text,
+                ),
+                pw.Divider(),
+                pw.SizedBox(height: 20),
+
+                // Opiekun (jeśli dotyczy)
+                if (_controllers['patientGuardian']!.text.isNotEmpty) ...[
+                  _buildPdfSectionTitle('DANE OPIEKUNA'),
+                  _buildPdfTextField(
+                    'Opiekun:',
+                    _controllers['patientGuardian']!.text,
+                  ),
+                  _buildPdfTextField(
+                    'Adres opiekuna:',
+                    _controllers['patientGuardianStreet']!.text,
+                  ),
+                  pw.Divider(),
+                  pw.SizedBox(height: 20),
+                ],
+
+                _buildPdfSectionTitle('OŚWIADCZENIE'),
+                if (_selectedAuthorization == 'yes') ...[
+                  pw.Padding(
+                    padding: const pw.EdgeInsets.only(bottom: 8),
+                    child: pw.RichText(
+                      text: pw.TextSpan(
+                        children: [
+                          pw.TextSpan(
+                            text: 'Upoważniam niżej wymienioną osobę',
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  _buildPdfTextField(
+                    'Imię:',
+                    _controllers['patientAuthorizationName']!.text,
+                  ),
+                  _buildPdfTextField(
+                    'Nazwisko:',
+                    _controllers['patientAuthorizationSurname']!.text,
+                  ),
+                  _buildPdfTextField(
+                    'Adres:',
+                    _controllers['patientAuthorizationAddress']!.text,
+                  ),
+                  _buildPdfTextField(
+                    'Telefon:',
+                    _controllers['patientAuthorizationPhone']!.text,
+                  ),
+                  _buildPdfTextField(
+                    'PESEL:',
+                    _controllers['patientAuthorizationPesel']!.text,
+                  ),
+                ],
+                if (_selectedAuthorization == 'no') ...[
+                  pw.Padding(
+                    padding: const pw.EdgeInsets.only(bottom: 8),
+                    child: pw.RichText(
+                      text: pw.TextSpan(
+                        children: [pw.TextSpan(text: 'Nie upoważniam nikogo')],
+                      ),
+                    ),
+                  ),
+                ], // Wywiad medyczny
+              ],
+            );
+          },
+        ),
+      );
+
+      doc.addPage(
+        pw.MultiPage(
+          theme: pdfTheme,
+          pageFormat: PdfPageFormat.a4,
+          build: (pw.Context context) {
+            return [
+              _buildPdfSectionTitle('HISTORIA CHOROBY'),
+              // W sekcji generowania PDF dodaj:
+              pw.Table(
+                border: pw.TableBorder.all(),
+                columnWidths: {
+                  0: const pw.FlexColumnWidth(4),
+                  1: const pw.FlexColumnWidth(1),
+                  2: const pw.FlexColumnWidth(1),
+                  3: const pw.FlexColumnWidth(1),
+                },
+                children: [
+                  // Nagłówek tabeli
+                  pw.TableRow(
+                    children: [
+                      pw.Padding(
+                        padding: const pw.EdgeInsets.all(8),
+                        child: pw.Text(
+                          _t('diseaseQuestion'),
+                          style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+                        ),
+                      ),
+                      pw.Padding(
+                        padding: const pw.EdgeInsets.all(8),
+                        child: pw.Center(
+                          child: pw.Text(
+                            _t('yes'),
+                            style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+                          ),
+                        ),
+                      ),
+                      pw.Padding(
+                        padding: const pw.EdgeInsets.all(8),
+                        child: pw.Center(
+                          child: pw.Text(
+                            _t('no'),
+                            style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+                          ),
+                        ),
+                      ),
+                      pw.Padding(
+                        padding: const pw.EdgeInsets.all(8),
+                        child: pw.Center(
+                          child: pw.Text(
+                            _t('dontKnow'),
+                            style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  // Wiersze z chorobami
+                  for (var disease in _diseases.take(21))
+                    pw.TableRow(
+                      children: [
+                        pw.Padding(
+                          padding: const pw.EdgeInsets.all(8),
+                          child: (disease['hasDescription'] == "false")
+                              ? pw.Text(_diseaseName(disease['id']!))
+                              : pw.Column(
+                                  crossAxisAlignment:
+                                      pw.CrossAxisAlignment.start,
+                                  children: [
+                                    pw.Text(_diseaseName(disease['id']!)),
+                                    if (_controllers[_getDescriptionControllerKey(
+                                              disease['id']!,
+                                            )]
+                                            ?.text
+                                            .isNotEmpty ??
+                                        false)
+                                      pw.Text(
+                                        _controllers[_getDescriptionControllerKey(
+                                              disease['id']!,
+                                            )]!
+                                            .text,
+                                        style: const pw.TextStyle(fontSize: 10),
+                                      ),
+                                  ],
+                                ),
+                        ),
+                        pw.Padding(
+                          padding: const pw.EdgeInsets.all(8),
+                          child: pw.Center(
+                            child: _buildPdfCheckbox(
+                              _diseaseResponses[disease['id']]!['yes'] == '1',
+                              isCentered: true,
+                            ),
+                          ),
+                        ),
+                        pw.Padding(
+                          padding: const pw.EdgeInsets.all(8),
+                          child: pw.Center(
+                            child: _buildPdfCheckbox(
+                              _diseaseResponses[disease['id']]!['no'] == '1',
+                              isCentered: true,
+                            ),
+                          ),
+                        ),
+                        pw.Padding(
+                          padding: const pw.EdgeInsets.all(8),
+                          child: pw.Center(
+                            child: _buildPdfCheckbox(
+                              _diseaseResponses[disease['id']]!['dontKnow'] ==
+                                  '1',
+                              isCentered: true,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  // Sekcja przeciwwskazań
+                  pw.TableRow(
+                    children: [
+                      pw.Padding(
+                        padding: const pw.EdgeInsets.all(8),
+                        child: pw.Text(
+                          _t('contraindications'),
+                          style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+                        ),
+                      ),
+                      pw.Padding(
+                        padding: const pw.EdgeInsets.all(8),
+                        child: pw.Center(
+                          child: pw.Text(
+                            _t('yes'),
+                            style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+                          ),
+                        ),
+                      ),
+                      pw.Padding(
+                        padding: const pw.EdgeInsets.all(8),
+                        child: pw.Center(
+                          child: pw.Text(
+                            _t('no'),
+                            style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+                          ),
+                        ),
+                      ),
+                      pw.Padding(
+                        padding: const pw.EdgeInsets.all(8),
+                        child: pw.Center(
+                          child: pw.Text(
+                            _t('dontKnow'),
+                            style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  // Wiersze z przeciwwskazaniami
+                  for (var disease in _diseases.sublist(21, 24))
+                    pw.TableRow(
+                      children: [
+                        pw.Padding(
+                          padding: const pw.EdgeInsets.all(8),
+                          child: (disease['hasDescription'] == "false")
+                              ? pw.Text(_diseaseName(disease['id']!))
+                              : pw.Column(
+                                  crossAxisAlignment:
+                                      pw.CrossAxisAlignment.start,
+                                  children: [
+                                    pw.Text(_diseaseName(disease['id']!)),
+                                    if (_controllers[_getDescriptionControllerKey(
+                                              disease['id']!,
+                                            )]
+                                            ?.text
+                                            .isNotEmpty ??
+                                        false)
+                                      pw.Text(
+                                        _controllers[_getDescriptionControllerKey(
+                                              disease['id']!,
+                                            )]!
+                                            .text,
+                                        style: const pw.TextStyle(fontSize: 10),
+                                      ),
+                                  ],
+                                ),
+                        ),
+                        pw.Padding(
+                          padding: const pw.EdgeInsets.all(8),
+                          child: pw.Center(
+                            child: _buildPdfCheckbox(
+                              _diseaseResponses[disease['id']]!['yes'] == '1',
+                              isCentered: true,
+                            ),
+                          ),
+                        ),
+                        pw.Padding(
+                          padding: const pw.EdgeInsets.all(8),
+                          child: pw.Center(
+                            child: _buildPdfCheckbox(
+                              _diseaseResponses[disease['id']]!['no'] == '1',
+                              isCentered: true,
+                            ),
+                          ),
+                        ),
+                        pw.Padding(
+                          padding: const pw.EdgeInsets.all(8),
+                          child: pw.Center(
+                            child: _buildPdfCheckbox(
+                              _diseaseResponses[disease['id']]!['dontKnow'] ==
+                                  '1',
+                              isCentered: true,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  // Sekcja inne
+                  pw.TableRow(
+                    children: [
+                      pw.Padding(
+                        padding: const pw.EdgeInsets.all(8),
+                        child: pw.Text(
+                          _t('other'),
+                          style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+                        ),
+                      ),
+                      pw.Padding(
+                        padding: const pw.EdgeInsets.all(8),
+                        child: pw.Center(
+                          child: pw.Text(
+                            _t('yes'),
+                            style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+                          ),
+                        ),
+                      ),
+                      pw.Padding(
+                        padding: const pw.EdgeInsets.all(8),
+                        child: pw.Center(
+                          child: pw.Text(
+                            _t('no'),
+                            style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+                          ),
+                        ),
+                      ),
+                      pw.Padding(
+                        padding: const pw.EdgeInsets.all(8),
+                        child: pw.Center(
+                          child: pw.Text(
+                            _t('dontKnow'),
+                            style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  // Wiersze z innymi chorobami
+                  for (var disease in _diseases.sublist(24, 34))
+                    pw.TableRow(
+                      children: [
+                        pw.Padding(
+                          padding: const pw.EdgeInsets.all(8),
+                          child: (disease['hasDescription'] == "false")
+                              ? pw.Text(_diseaseName(disease['id']!))
+                              : pw.Column(
+                                  crossAxisAlignment:
+                                      pw.CrossAxisAlignment.start,
+                                  children: [
+                                    pw.Text(_diseaseName(disease['id']!)),
+                                    if (_controllers[_getDescriptionControllerKey(
+                                              disease['id']!,
+                                            )]
+                                            ?.text
+                                            .isNotEmpty ??
+                                        false)
+                                      pw.Text(
+                                        _controllers[_getDescriptionControllerKey(
+                                              disease['id']!,
+                                            )]!
+                                            .text,
+                                        style: const pw.TextStyle(fontSize: 10),
+                                      ),
+                                  ],
+                                ),
+                        ),
+                        pw.Padding(
+                          padding: const pw.EdgeInsets.all(8),
+                          child: pw.Center(
+                            child: _buildPdfCheckbox(
+                              _diseaseResponses[disease['id']]!['yes'] == '1',
+                              isCentered: true,
+                            ),
+                          ),
+                        ),
+                        pw.Padding(
+                          padding: const pw.EdgeInsets.all(8),
+                          child: pw.Center(
+                            child: _buildPdfCheckbox(
+                              _diseaseResponses[disease['id']]!['no'] == '1',
+                              isCentered: true,
+                            ),
+                          ),
+                        ),
+                        pw.Padding(
+                          padding: const pw.EdgeInsets.all(8),
+                          child: pw.Center(
+                            child: _buildPdfCheckbox(
+                              _diseaseResponses[disease['id']]!['dontKnow'] ==
+                                  '1',
+                              isCentered: true,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                ],
+              ),
+              pw.SizedBox(height: 10),
+              _buildPdfTextField2(
+                'Z jakiego powodu zdecydował się Pan/Pani na leczenie ortodontyczne:',
+                _controllers['patientQuestion_new']!.text,
+              ),
+              _buildPdfTextField2(
+                'Dodatkowe uwagi na temat mojego stanu zdrowia:',
+                _controllers['comments']!.text,
+                maxLines: 3,
+              ),
+            ];
+          },
+        ),
+      );
+
+      doc.addPage(
+        pw.MultiPage(
+          theme: pdfTheme,
+          pageFormat: PdfPageFormat.a4,
+          build: (pw.Context context) {
+            return [
+              pw.Padding(
+                padding: const pw.EdgeInsets.only(bottom: 16),
+                child: pw.Text(
+                  'Oświadczam, że informacje podane powyżej są zgodne ze stanem faktycznym. Wszystkie zmiany mojej sytuacji zdrowotnej, szczególnie mogącej mieć wpływ na przebieg leczenia stomatologicznego w tym ortodontycznego, zobowiązuję się zgłaszać niezwłocznie lekarzowi prowadzącemu.',
+                  // style: const pw.TextStyle(fontSize: 14),
+                  textAlign: pw.TextAlign.justify,
+                ),
+              ),
+              pw.SizedBox(height: 16),
+              _buildPdfSectionTitle(
+                'INFORMACJA DLA PACJENTA DOTYCZĄCA OCHRONY DANYCH OSOBOWYCH',
+              ),
+              pw.SizedBox(height: 8),
+              pw.Center(
+                child: pw.Text(
+                  'Przyjmuję do wiadomości, że:',
+                  style: const pw.TextStyle(fontSize: 14),
+                  textAlign: pw.TextAlign.center,
+                ),
+              ),
+              pw.SizedBox(height: 16),
+
+              for (int i = 1; i <= 11; i++)
+                pw.Padding(
+                  padding: const pw.EdgeInsets.only(bottom: 8),
+                  child: pw.RichText(
+                    text: pw.TextSpan(
+                      children: [
+                        pw.TextSpan(
+                          text: '$i. ',
+                          style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+                        ),
+                        pw.TextSpan(
+                          text: _translations['pl']!['dataProtection$i'],
+                        ),
+                      ],
+                    ),
+                    textAlign: pw.TextAlign.justify,
+                  ),
+                ),
+            ];
+          },
+        ),
+      );
+
+      doc.addPage(
+        pw.Page(
+          theme: pdfTheme,
+          pageFormat: PdfPageFormat.a4,
+          build: (pw.Context context) {
+            return pw.Column(
+              crossAxisAlignment: pw.CrossAxisAlignment.start,
+              children: [
+                _buildPdfSectionTitle('ZGODY'),
+                pw.Padding(
+                  padding: const pw.EdgeInsets.only(bottom: 16),
+                  child: pw.Text(
+                    'Zgodnie z art. 6 i 7 Rozporządzenia Parlamentu Europejskiego i Rady (UE) 2016/679 z dnia 27 kwietnia 2016 r. o ochronie danych osobowych (RODO) wyrażam zgodę na przetwarzanie moich danych osobowych w zakresie:',
+                    textAlign: pw.TextAlign.justify,
+                  ),
+                ),
+                _buildConsentPdfRow(
+                  'Kontakt za pośrednictwem telefonii stacjonarnej/komórkowej/SMS w celu realizacji wizyty (w sprawie jej potwierdzenia, przesunięcia odwołania), weryfikacji wyników badań lub innej informacji udzielanej w zakresie ochrony zdrowia',
+                  _consents['zgoda1'] ?? false,
+                ),
+                _buildConsentPdfRow(
+                  'Kontakt mailowy w celu realizacji wizyty (w sprawie jej potwierdzenia, przesunięcia odwołania), weryfikacji wyników badań lub innej informacji udzielanej w zakresie ochrony zdrowia',
+                  _consents['zgoda2'] ?? false,
+                ),
+                _buildConsentPdfRow(
+                  'Otrzymywanie informacji marketingowej na temat promocji i zabiegów wykonywanych w Gabinecie Ortodontycznym Agnieszka Golarz – Nosek, 31-542 Kraków',
+                  _consents['zgoda3'] ?? false,
+                ),
+                pw.SizedBox(height: 20),
+
+                // Podpis
+                pw.Align(
+                  alignment: pw.Alignment.centerRight,
+                  child: pw.Column(
+                    children: [
+                      pw.Text('Podpis pacjenta lub opiekuna prawnego:'),
+                      pw.SizedBox(height: 10),
+                      pw.Image(
+                        pw.MemoryImage(signatureBytes!.buffer.asUint8List()),
+                        width: 200,
+                        height: 80,
+                      ),
+                      pw.SizedBox(height: 20),
+                      pw.Text(
+                        'Data: ${DateFormat('dd.MM.yyyy').format(DateTime.now())}',
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            );
+          },
+        ),
+      );
+
+      // Zapis PDF
+      await _saveAndSharePdf(doc);
+    } catch (e) {
+      showValidationError('Błąd podczas generowania PDF: ${e.toString()}');
+    }
+  }
+
+  // Pomocnicze funkcje:
+
+  String? _getDescriptionControllerKey(String diseaseId) {
+    switch (diseaseId) {
+      case 'heartDisease':
+        return 'heartDiseaseDescription';
+      case 'allergyToAnesthetics':
+        return 'allergyToAnestheticsDescription';
+      case 'allergyToMetals':
+        return 'allergyToMetalsDescription';
+      case 'actualCure':
+        return 'actualCureDescription';
+      case 'otherDiseases':
+        return 'otherDiseasesDescription';
+      case 'psychiatricTreatment':
+        return 'psychiatricTreatmentDescription';
+      case 'mentalDisable':
+        return 'mentalDisableDescription';
+      default:
+        return null;
+    }
+  }
+
+  pw.Widget _buildDiseasePdfRow(
+    String diseaseId,
+    Map<String, String> response,
+    String? description,
+  ) {
+    final responseText = response['yes'] == '1'
+        ? 'Tak${description != null && description.isNotEmpty ? " ($description)" : ""}'
+        : response['no'] == '1'
+        ? 'Nie'
+        : 'Nie wiem';
+
+    return pw.Padding(
+      padding: const pw.EdgeInsets.only(bottom: 4),
+      child: pw.RichText(
+        text: pw.TextSpan(
+          children: [
+            pw.TextSpan(
+              text: '${_diseaseName(diseaseId)}: ',
+              style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+            ),
+            pw.TextSpan(text: responseText),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<ByteData?> _getSignatureImageBytes() async {
+    try {
+      final signatureState = _signaturePadKey.currentState;
+      if (signatureState == null) return null;
+
+      final image = await signatureState.toImage();
+      return await image.toByteData(format: ImageByteFormat.png);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  pw.Widget _buildPdfSectionTitle(String title) {
+    return pw.Padding(
+      padding: const pw.EdgeInsets.only(bottom: 10),
+      child: pw.Text(
+        title,
+        style: pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold),
+      ),
+    );
+  }
+
+  pw.Widget _buildPdfTextField(String label, String value, {int maxLines = 1}) {
+    return pw.Padding(
+      padding: const pw.EdgeInsets.only(bottom: 8),
+      child: pw.RichText(
+        text: pw.TextSpan(
+          children: [
+            pw.TextSpan(
+              text: '$label ',
+              style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+            ),
+            pw.TextSpan(text: value.isNotEmpty ? value : 'brak'),
+          ],
+        ),
+      ),
+    );
+  }
+
+  pw.Widget _buildPdfTextField2(
+    String label,
+    String value, {
+    int maxLines = 1,
+    bool isRequired = false,
+    double labelSize = 12,
+    double valueSize = 11,
+  }) {
+    return pw.Column(
+      crossAxisAlignment: pw.CrossAxisAlignment.start,
+      children: [
+        pw.RichText(
+          text: pw.TextSpan(
+            children: [
+              pw.TextSpan(
+                text: label,
+                style: pw.TextStyle(
+                  fontWeight: pw.FontWeight.bold,
+                  fontSize: labelSize,
+                ),
+              ),
+              if (isRequired)
+                pw.TextSpan(
+                  text: ' *',
+                  style: pw.TextStyle(
+                    color: PdfColors.red,
+                    fontWeight: pw.FontWeight.bold,
+                    fontSize: labelSize,
+                  ),
+                ),
+            ],
+          ),
+        ),
+        pw.Padding(
+          padding: const pw.EdgeInsets.only(top: 2),
+          child: pw.Text(
+            value.isNotEmpty ? value : '-',
+            style: pw.TextStyle(
+              fontSize: valueSize,
+              color: value.isNotEmpty ? PdfColors.black : PdfColors.grey,
+            ),
+          ),
+        ),
+        pw.SizedBox(height: 12),
+      ],
+    );
+  }
+
+  pw.Widget _buildConsentPdfRow(String label, bool isChecked) {
+    return pw.Padding(
+      padding: const pw.EdgeInsets.only(bottom: 8),
+      child: pw.Row(
+        children: [
+          pw.Text('${isChecked ? '[X]' : '[ ]'} '),
+          pw.SizedBox(width: 10),
+          pw.Expanded(child: pw.Text(label)),
+        ],
+      ),
+    );
+  }
+
+  pw.Widget _buildPdfCheckbox(bool isChecked, {bool isCentered = false}) {
+    final checkbox = pw.Container(
+      width: 12,
+      height: 12,
+      decoration: pw.BoxDecoration(border: pw.Border.all()),
+      child: isChecked
+          ? pw.Center(
+              child: pw.Text('X', style: const pw.TextStyle(fontSize: 10)),
+            )
+          : null,
+    );
+
+    return isCentered ? pw.Center(child: checkbox) : checkbox;
+  }
+
+  // Future<void> _saveAndSharePdf(pw.Document doc) async {
+  //   final status = await Permission.storage.request();
+  //   if (!status.isGranted) {
+  //     throw Exception('Brak uprawnień do zapisu pliku');
+  //   }
+
+  //   final directory = await getApplicationDocumentsDirectory();
+  //   final fileName =
+  //       'Ankieta_Osobowa_${_controllers['patientName']}_${_controllers['patientSurname']}_${DateFormat('yyyyMMdd').format(DateTime.now())}.pdf';
+  //   final file = File('${directory.path}/$fileName');
+
+  //   final pdfBytes = await doc.save();
+  //   await file.writeAsBytes(pdfBytes);
+
+  //   await Printing.layoutPdf(onLayout: (_) async => pdfBytes);
+  // }
+
+  Future<void> _saveAndSharePdf(pw.Document doc) async {
+    // 1. Sprawdź i poproś o wymagane uprawnienia
+    final status = await Permission.storage.request();
+    if (!status.isGranted) {
+      throw Exception('Brak uprawnień do zapisu pliku');
+    }
+    final name = _controllers['patientName']!.text.trim();
+    final surname = _controllers['patientSurname']!.text.trim();
+    final fileName =
+        '${surname}_${name}_${DateFormat('ddMMyyyy_HHmmss').format(DateTime.now())}.pdf'
+            .replaceAll(' ', '_')
+            .replaceAll(RegExp(r'[^a-zA-Z0-9_.]'), '');
+    final directory = Directory('/storage/emulated/0/Download');
+    if (!await directory.exists()) {
+      await directory.create(recursive: true);
+    }
+
+    final file = File('${directory.path}/$fileName');
+
+    try {
+      final pdfBytes = await doc.save();
+      await file.writeAsBytes(pdfBytes);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Plik zapisano w: ${file.path}'),
+          duration: const Duration(seconds: 3),
+        ),
+      );
+    } catch (e) {
+      throw Exception('Błąd podczas zapisywania pliku: $e');
+    }
+  }
+
+  void showValidationError(String message) {
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  // Walidacja wymaganych pól
+  Future<bool> validateForm() async {
+    // Dane osobowe - wymagane
+    if (_controllers['patientName']!.text.isEmpty) {
+      showValidationError('Proszę wprowadzić imię pacjenta');
+      return false;
+    }
+
+    if (_controllers['patientSurname']!.text.isEmpty) {
+      showValidationError('Proszę wprowadzić nazwisko pacjenta');
+      return false;
+    }
+
+    if (_controllers['patientPesel']!.text.isEmpty ||
+        _controllers['patientPesel']!.text.length != 11 ||
+        !_controllers['patientPesel']!.text.isNumeric()) {
+      showValidationError('Proszę wprowadzić poprawny PESEL (11 cyfr)');
+      return false;
+    }
+
+    if (_controllers['patientBirthday']!.text.isEmpty) {
+      showValidationError('Proszę wprowadzić datę urodzenia');
+      return false;
+    }
+
+    // Dane kontaktowe - wymagane
+    if (_controllers['patientStreet']!.text.isEmpty) {
+      showValidationError('Proszę wprowadzić ulicę');
+      return false;
+    }
+
+    if (_controllers['patientCity']!.text.isEmpty) {
+      showValidationError('Proszę wprowadzić miasto');
+      return false;
+    }
+
+    if (_controllers['patientPostCode']!.text.isEmpty ||
+        !RegExp(
+          r'^\d{2}-\d{3}$',
+        ).hasMatch(_controllers['patientPostCode']!.text)) {
+      showValidationError(
+        'Proszę wprowadzić poprawny kod pocztowy (format: 00-000)',
+      );
+      return false;
+    }
+
+    if (_controllers['patientPhone']!.text.isEmpty ||
+        !_controllers['patientPhone']!.text.isNumeric() ||
+        _controllers['patientPhone']!.text.length < 9) {
+      showValidationError(
+        'Proszę wprowadzić poprawny numer telefonu (minimum 9 cyfr)',
+      );
+      return false;
+    }
+
+    if (_controllers['patientEmail']!.text.isNotEmpty &&
+        !EmailValidator.validate(_controllers['patientEmail']!.text)) {
+      showValidationError('Proszę wprowadzić poprawny adres email');
+      return false;
+    }
+
+    if (_selectedAuthorization!.isEmpty) {
+      showValidationError('Proszę podać oświadczenie');
+      return false;
+    }
+
+    // Walidacja opiekuna (jeśli jest uzupełniony)
+    if (_controllers['patientGuardian']!.text.isNotEmpty) {
+      if (_controllers['patientGuardianStreet']!.text.isEmpty) {
+        showValidationError('Proszę wprowadzić adres opiekuna');
+        return false;
+      }
+    }
+
+    // Walidacja upoważnienia (jeśli wybrano "tak")
+    if (_selectedAuthorization == 'yes') {
+      if (_controllers['patientAuthorizationName']!.text.isEmpty) {
+        showValidationError('Proszę wprowadzić imię upoważnionej osoby');
+        return false;
+      }
+
+      if (_controllers['patientAuthorizationSurname']!.text.isEmpty) {
+        showValidationError('Proszę wprowadzić nazwisko upoważnionej osoby');
+        return false;
+      }
+
+      if (_controllers['patientAuthorizationAddress']!.text.isEmpty) {
+        showValidationError('Proszę wprowadzić adres upoważnionej osoby');
+        return false;
+      }
+
+      if (_controllers['patientAuthorizationPhone']!.text.isEmpty ||
+          !_controllers['patientAuthorizationPhone']!.text.isNumeric() ||
+          _controllers['patientAuthorizationPhone']!.text.length < 9) {
+        showValidationError(
+          'Proszę wprowadzić poprawny numer telefonu upoważnionej osoby',
+        );
+        return false;
+      }
+
+      if (_controllers['patientAuthorizationPesel']!.text.isEmpty ||
+          _controllers['patientAuthorizationPesel']!.text.length != 11 ||
+          !_controllers['patientAuthorizationPesel']!.text.isNumeric()) {
+        showValidationError(
+          'Proszę wprowadzić poprawny PESEL upoważnionej osoby (11 cyfr)',
+        );
+        return false;
+      }
+    }
+
+    // Walidacja opisów chorób (jeśli wybrano "tak" dla chorób z opisem)
+    if (_diseaseResponses['heartDisease']?['yes'] == '1' &&
+        _controllers['heartDiseaseDescription']!.text.isEmpty) {
+      showValidationError('Proszę podać opis choroby serca');
+      return false;
+    }
+
+    if (_diseaseResponses['allergyToAnesthetics']?['yes'] == '1' &&
+        _controllers['allergyToAnestheticsDescription']!.text.isEmpty) {
+      showValidationError('Proszę podać opis alergii na anestetyki');
+      return false;
+    }
+
+    if (_diseaseResponses['allergyToMetals']?['yes'] == '1' &&
+        _controllers['allergyToMetalsDescription']!.text.isEmpty) {
+      showValidationError('Proszę podać opis alergii na metale');
+      return false;
+    }
+
+    if (_diseaseResponses['actualCure']?['yes'] == '1' &&
+        _controllers['actualCureDescription']!.text.isEmpty) {
+      showValidationError('Proszę podać opis aktualnego leczenia');
+      return false;
+    }
+
+    if (_diseaseResponses['otherDiseases']?['yes'] == '1' &&
+        _controllers['otherDiseasesDescription']!.text.isEmpty) {
+      showValidationError('Proszę podać opis innych chorób');
+      return false;
+    }
+
+    if (_diseaseResponses['psychiatricTreatment']?['yes'] == '1' &&
+        _controllers['psychiatricTreatmentDescription']!.text.isEmpty) {
+      showValidationError('Proszę podać opis leczenia psychiatrycznego');
+      return false;
+    }
+
+    if (_diseaseResponses['mentalDisable']?['yes'] == '1' &&
+        _controllers['mentalDisableDescription']!.text.isEmpty) {
+      showValidationError('Proszę podać opis niepełnosprawności umysłowej');
+      return false;
+    }
+
+    // Walidacja zgód - wymagane są przynajmniej zgoda1 i zgoda2
+    if (!(_consents['zgoda1'] ?? false) && !(_consents['zgoda2'] ?? false)) {
+      showValidationError('Wymagana jest zgoda na wybrany kontakt');
+      return false;
+    }
+
+    Future<bool> _isSignatureValid() async {
+      try {
+        final signatureState = _signaturePadKey.currentState;
+        if (signatureState == null) return false;
+
+        final image = await signatureState.toImage();
+        final byteData = await image.toByteData();
+        if (byteData == null) return false;
+
+        final bytes = byteData.buffer.asUint8List();
+        return !bytes.every((byte) => byte == 0);
+      } catch (e) {
+        return false;
+      }
+    }
+
+    if (!await _isSignatureValid()) {
+      showValidationError('Proszę złożyć podpis');
+      return false;
+    }
+
+    return true;
+  }
+}
+
+extension Numeric on String {
+  bool isNumeric() {
+    return RegExp(r'^[0-9]+$').hasMatch(this);
   }
 }
