@@ -243,6 +243,7 @@ class _ZadatekScreenState extends State<ZadatekScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(title: Text('Zadatek')),
       body: SingleChildScrollView(
         child: Column(
           children: [
