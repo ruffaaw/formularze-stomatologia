@@ -436,7 +436,7 @@ class _ZadatekScreenState extends State<ZadatekScreen> {
                       ),
                     ),
                     child: Text(
-                      'Zapisz PDF',
+                      'Zapisz',
                       style: baseTextStyle.copyWith(color: Colors.white),
                     ),
                   ),
@@ -521,10 +521,7 @@ class _ZadatekScreenState extends State<ZadatekScreen> {
               crossAxisAlignment: pw.CrossAxisAlignment.start,
               children: [
                 pw.Center(child: pw.Header(level: 0, text: 'UMOWA ZADATKOWA')),
-
                 pw.SizedBox(height: 20),
-
-                // Dane pacjenta
                 pw.Text(
                   'Pacjent: ${patientNameController.text}',
                   style: pw.TextStyle(
@@ -534,11 +531,8 @@ class _ZadatekScreenState extends State<ZadatekScreen> {
                 ),
                 pw.Divider(),
                 pw.SizedBox(height: 20),
-
-                // Treść umowy
                 pw.Paragraph(text: 'Szanowni Państwo,'),
                 pw.SizedBox(height: 10),
-
                 pw.Paragraph(
                   text:
                       'W celu rezerwacji terminu na ${serviceTypes.firstWhere((e) => e['value'] == selectedService)['label']} '
@@ -546,7 +540,6 @@ class _ZadatekScreenState extends State<ZadatekScreen> {
                       'w recepcji Gabinetu Ortodontycznego Agnieszka Golarz-Nosek.',
                 ),
                 pw.SizedBox(height: 10),
-
                 pw.Paragraph(
                   text:
                       'W przypadku rezygnacji z leczenia lub nie przybycia na wizytę zadatek na '
@@ -554,8 +547,6 @@ class _ZadatekScreenState extends State<ZadatekScreen> {
                       'nie podlega zwrotowi.',
                 ),
                 pw.SizedBox(height: 20),
-
-                // Ważność skanów
                 pw.Text(
                   'Ważność skanu wewnątrzustego:',
                   style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
@@ -563,18 +554,13 @@ class _ZadatekScreenState extends State<ZadatekScreen> {
                 pw.Bullet(text: 'aparat stały - 6 miesięcy'),
                 pw.Bullet(text: 'aparat ruchomy - 2 miesiące'),
                 pw.SizedBox(height: 20),
-
-                // Kara za odwołanie
                 if (penaltyPriceController.text.isNotEmpty)
                   pw.Paragraph(
                     text:
                         'Brak powiadomienia o odwołaniu wizyty skutkuje obciążeniem pacjenta '
                         'kwotą ${penaltyPriceController.text} zł.',
                   ),
-
                 pw.SizedBox(height: 40),
-
-                // Podpis
                 pw.Align(
                   alignment: pw.Alignment.centerRight,
                   child: pw.Column(
