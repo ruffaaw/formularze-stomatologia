@@ -71,6 +71,8 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
     {"name": "estimate_40", "price": 50},
     {"name": "estimate_41", "price": 50},
     {"name": "estimate_42", "price": 80},
+    {"name": "estimate_43", "price": 7500},
+    {"name": "estimate_44", "price": 250},
   ];
 
   List<Map<String, dynamic>> selectedEstimates = [];
@@ -94,7 +96,7 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
       'additional_denture_teeth': 'Aparaty dodatkowe',
       'surgery': 'Zabiegi chirurgiczne',
       'treatment_plan_attention':
-          'Uwaga! Plan leczenia może ulec zmianie w zależności od sytuacji klinicznej',
+          'Uwaga! Plan leczenia może ulec zmianie w zależności od sytuacji klinicznej.',
       'treatment_plan_accept': 'Akceptuje proponowany plan leczenia',
       'signature_doctor': 'Pieczątka i podpis lekarza',
       'signature_patient': 'Podpis pacjenta lub opiekuna prawnego',
@@ -186,6 +188,8 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
       'estimate_40': 'Nawiercanie kości',
       'estimate_41': 'Nawiercanie szwu podniebiennego',
       'estimate_42': 'Znieczulenie',
+      'estimate_43': 'Pułapka na myszy (miejsce po Hyrax Hybrydowy)',
+      'estimate_44': 'Usunięcie miniimplanta',
       'added': 'Dodano do cennika: ',
       'sum': 'Cena całkowita',
       'save': 'Zapisz',
@@ -194,6 +198,10 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
       'price': 'Cena (zł)',
       'select_items': 'Wybierz pozycje z listy',
       'zl': "zł",
+      'price_information':
+          "Pozostałe ceny usług wycenione indywidualnie. Ceny usług mogą ulec zmianie.",
+      'other_information':
+          "W przypadku trudności w osiągnięciu celów leczenia, a także przyspieszenia ruchu grup zębowych oraz eliminacji niepotrzebnych przesunięć, wzięte pod uwagę zostanie wspomaganie leczenia ortodontycznego za pomocą  implantów ortodontycznych. Koszty miniimplantow według aktualnego cennika.",
     },
     'en': {
       'title': 'Treatment plan',
@@ -212,7 +220,7 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
       'additional_denture_teeth': 'Additional appliances',
       'surgery': 'Surgical procedures',
       'treatment_plan_attention':
-          'Warning! Treatment plan may change depending on clinical situation',
+          'Warning! Treatment plan may change depending on clinical situation.',
       'treatment_plan_accept': 'I accept the proposed treatment plan',
       'signature_doctor': 'Signature of the doctor',
       'signature_patient': 'Signature of the patient / guardian',
@@ -304,6 +312,8 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
       'estimate_40': 'Bone drilling',
       'estimate_41': 'Palatal suture drilling',
       'estimate_42': 'Anesthesia',
+      'estimate_43': 'Mousetrap (place of the Hybrid Hyrax)',
+      'estimate_44': 'Mini-implant removal',
       'sum': 'Total sum:',
       'save': 'Save',
       'selected_items': 'Selected items',
@@ -311,6 +321,10 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
       'price': 'Price (PLN)',
       'select_items': 'Select items from the list',
       'zl': "PLN",
+      'price_information':
+          "Other services are priced individually. Prices are subject to change.",
+      'other_information':
+          "W przypadku trudności w osiągnięciu celów leczenia, a także przyspieszenia ruchu grup zębowych oraz eliminacji niepotrzebnych przesunięć, wzięte pod uwagę zostanie wspomaganie leczenia ortodontycznego za pomocą  implantów ortodontycznych. Koszty miniimplantow według aktualnego cennika.",
     },
   };
 
@@ -697,7 +711,7 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
                           color: isSelected ? Colors.grey[200] : null,
                           child: ListTile(
                             title: Text(_t(option['name'])),
-                            subtitle: Text('${option['price']} ${_t('zl')}'),
+                            subtitle: Text('od ${option['price']} ${_t('zl')}'),
                             onTap: () {
                               setState(() {
                                 if (!isSelected) {
@@ -816,6 +830,18 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
                 color: Colors.red[100],
                 child: Text(
                   _t('treatment_plan_attention'),
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ),
+              const SizedBox(height: 24),
+
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(16),
+                color: Colors.red[100],
+                child: Text(
+                  _t('other_information'),
                   textAlign: TextAlign.center,
                   style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
@@ -1053,7 +1079,7 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
                       transitionBuilder: (child, animation) =>
                           ScaleTransition(scale: animation, child: child),
                       child: Text(
-                        "${numberFormat.format(totalEstimatePrice)} zł",
+                        "${numberFormat.format(totalEstimatePrice)} ${_t('zl')}",
                         key: ValueKey<int>(totalEstimatePrice),
                         style: const TextStyle(
                           fontSize: 18,
@@ -1063,6 +1089,17 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
                       ),
                     ),
                   ],
+                ),
+              ),
+              const SizedBox(height: 24),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(16),
+                color: Colors.red[100],
+                child: Text(
+                  _t('price_information'),
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
               ),
               const SizedBox(height: 24),
