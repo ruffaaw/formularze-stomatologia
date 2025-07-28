@@ -1,7 +1,20 @@
+import 'dart:io';
+import 'dart:typed_data';
+import 'dart:ui';
+import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:syncfusion_flutter_signaturepad/signaturepad.dart';
-import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
+import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:flutter/material.dart';
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:printing/printing.dart';
+import 'package:email_validator/email_validator.dart';
 
 class TreatmentPlanScreen extends StatefulWidget {
   const TreatmentPlanScreen({super.key});
@@ -1115,8 +1128,8 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
               // Przycisk zapisz
               Center(
                 child: ElevatedButton(
-                  onPressed: () {
-                    // _signaturePadKey.currentState?.clear();
+                  onPressed: () async {
+                    _saveForm(context);
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.green[700],
@@ -1147,5 +1160,547 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> generateAndSavePDF(BuildContext context) async {
+    try {
+      final doc = pw.Document();
+      final pdfTheme = pw.ThemeData.withFont(
+        base: pw.Font.ttf(await rootBundle.load('assets/fonts/archivo.ttf')),
+        bold: pw.Font.ttf(
+          await rootBundle.load('assets/fonts/archivo-bold.ttf'),
+        ),
+      );
+
+      final signatureBytes = await _getSignatureImageBytes();
+
+      final doctorImage = await _signaturePadKeyDoctor.currentState!.toImage();
+      final doctorByteData = await doctorImage.toByteData(
+        format: ui.ImageByteFormat.png,
+      );
+      final Uint8List doctorSignatureBytes = doctorByteData!.buffer
+          .asUint8List();
+
+      final patientImage = await _signaturePadKeyPatient.currentState!
+          .toImage();
+      final patientByteData = await patientImage.toByteData(
+        format: ui.ImageByteFormat.png,
+      );
+      final Uint8List patientSignatureBytes = patientByteData!.buffer
+          .asUint8List();
+
+      final doctorComplicationsImage = await _signaturePadKeyDoctorComplications
+          .currentState!
+          .toImage();
+      final doctorComplicationsByteData = await doctorComplicationsImage
+          .toByteData(format: ui.ImageByteFormat.png);
+      final Uint8List doctorComplicationsSignatureBytes =
+          doctorComplicationsByteData!.buffer.asUint8List();
+
+      final patientComplicationsImage =
+          await _signaturePadKeyPatientComplications.currentState!.toImage();
+      final patientComplicationsByteData = await patientComplicationsImage
+          .toByteData(format: ui.ImageByteFormat.png);
+      final Uint8List patientComplicationsSignatureBytes =
+          patientComplicationsByteData!.buffer.asUint8List();
+
+      doc.addPage(
+        pw.Page(
+          theme: pdfTheme,
+          pageFormat: PdfPageFormat.a4,
+          build: (pw.Context context) {
+            return pw.Column(
+              crossAxisAlignment: pw.CrossAxisAlignment.start,
+              children: [
+                pw.Center(child: pw.Header(level: 0, text: 'PLAN LECZENIA')),
+                pw.SizedBox(height: 20),
+
+                // Dane osobowe
+                _buildPdfSectionTitle('DANE KLIENTA'),
+                _buildPdfTextField(
+                  'Imię i nazwisko:',
+                  _controllers['patient_name']!.text,
+                ),
+                _buildPdfTextField(
+                  'Rozpoznanie:',
+                  _controllers['recognition']!.text,
+                ),
+                _buildPdfSectionTitle('PLAN LECZENIA'),
+                buildTreatmentPlanSection(
+                  _treatmentPlanOptions,
+                  _treatmentOptions,
+                  _controllers,
+                ),
+                pw.SizedBox(height: 20),
+                pw.Container(
+                  width: double.infinity,
+                  padding: const pw.EdgeInsets.all(12),
+                  color: PdfColors.red100,
+                  child: pw.Text(
+                    _translations[_selectedLanguage]!['treatment_plan_attention']!,
+                    textAlign: pw.TextAlign.center,
+                    style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+                  ),
+                ),
+                pw.SizedBox(height: 20),
+                pw.Container(
+                  width: double.infinity,
+                  padding: const pw.EdgeInsets.all(16),
+                  color: PdfColors.red100,
+                  child: pw.Text(
+                    _translations[_selectedLanguage]!['other_information']!,
+                    textAlign: pw.TextAlign.center,
+                    style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+                  ),
+                ),
+                pw.SizedBox(height: 20),
+                pw.Center(
+                  child: pw.Text(
+                    'Akceptuje proponowany plan leczenia',
+                    style: pw.TextStyle(
+                      fontSize: 14,
+                      fontWeight: pw.FontWeight.bold,
+                    ),
+                    textAlign: pw.TextAlign.center,
+                  ),
+                ),
+                pw.SizedBox(height: 16),
+                pw.Row(
+                  mainAxisAlignment: pw.MainAxisAlignment.spaceEvenly,
+                  crossAxisAlignment: pw.CrossAxisAlignment.start,
+                  children: [
+                    _buildSignatureColumnPdf(
+                      label: 'Podpis lekarza:',
+                      signatureImage: doctorSignatureBytes,
+                    ),
+                    _buildSignatureColumnPdf(
+                      label: 'Podpis pacjenta lub opiekuna prawnego:',
+                      signatureImage: patientSignatureBytes,
+                    ),
+                  ],
+                ),
+              ],
+            );
+          },
+        ),
+      );
+
+      doc.addPage(
+        pw.Page(
+          theme: pdfTheme,
+          pageFormat: PdfPageFormat.a4,
+          build: (pw.Context context) {
+            return pw.Column(
+              crossAxisAlignment: pw.CrossAxisAlignment.start,
+              children: [
+                pw.Center(
+                  child: pw.Text(
+                    'INFORMACJE DLA PACJENTA I ŚWIADOMA ZGODA NA LECZENIE ORTODONTYCZNE wg zaleceń Polskiego Towarzystwa Ortodontycznego',
+                    style: pw.TextStyle(
+                      fontSize: 14,
+                      fontWeight: pw.FontWeight.bold,
+                    ),
+                    textAlign: pw.TextAlign.center,
+                  ),
+                ),
+                pw.Text(
+                  _translations[_selectedLanguage]!['complications_section_title']!,
+                  style: pw.TextStyle(
+                    fontSize: 14,
+                    fontWeight: pw.FontWeight.bold,
+                  ),
+                ),
+                pw.SizedBox(height: 8),
+                pw.Text(
+                  _translations[_selectedLanguage]!['complications_section_content']!,
+                  style: pw.TextStyle(fontSize: 12),
+                  textAlign: pw.TextAlign.justify,
+                ),
+                pw.SizedBox(height: 10),
+                for (int i = 1; i <= 4; i++) _buildComplicationSectionPdf(i),
+              ],
+            );
+          },
+        ),
+      );
+
+      doc.addPage(
+        pw.Page(
+          theme: pdfTheme,
+          pageFormat: PdfPageFormat.a4,
+          build: (pw.Context context) {
+            return pw.Column(
+              crossAxisAlignment: pw.CrossAxisAlignment.start,
+              children: [
+                pw.SizedBox(height: 10),
+                for (int i = 5; i <= 8; i++) _buildComplicationSectionPdf(i),
+                pw.SizedBox(height: 16),
+                pw.Row(
+                  mainAxisAlignment: pw.MainAxisAlignment.spaceEvenly,
+                  crossAxisAlignment: pw.CrossAxisAlignment.start,
+                  children: [
+                    _buildSignatureColumnPdf(
+                      label: 'Podpis lekarza:',
+                      signatureImage: doctorComplicationsSignatureBytes,
+                    ),
+                    _buildSignatureColumnPdf(
+                      label: 'Podpis pacjenta lub opiekuna prawnego:',
+                      signatureImage: patientComplicationsSignatureBytes,
+                    ),
+                  ],
+                ),
+                // _buildPdfTextField(
+                //   'PESEL:',
+                //   _controllers['patientPesel']!.text,
+                // ),
+                // _buildPdfTextField(
+                //   'Data urodzenia:',
+                //   _controllers['patientBirthday']!.text,
+                // ),
+
+                // pw.Divider(),
+                // pw.SizedBox(height: 20),
+
+                // // Dane kontaktowe
+                // _buildPdfSectionTitle('DANE KONTAKTOWE'),
+                // _buildPdfTextField(
+                //   'Ulica:',
+                //   _controllers['patientStreet']!.text,
+                // ),
+                // _buildPdfTextField(
+                //   'Miasto:',
+                //   _controllers['patientCity']!.text,
+                // ),
+                // _buildPdfTextField(
+                //   'Kod pocztowy:',
+                //   _controllers['patientPostCode']!.text,
+                // ),
+                // _buildPdfTextField(
+                //   'Telefon:',
+                //   _controllers['patientPhone']!.text,
+                // ),
+                // _buildPdfTextField(
+                //   'Email:',
+                //   _controllers['patientEmail']!.text,
+                // ),
+                // pw.Divider(),
+                // pw.SizedBox(height: 20),
+
+                // // Opiekun (jeśli dotyczy)
+                // if (_controllers['patientGuardian']!.text.isNotEmpty) ...[
+                //   _buildPdfSectionTitle('DANE OPIEKUNA'),
+                //   _buildPdfTextField(
+                //     'Opiekun:',
+                //     _controllers['patientGuardian']!.text,
+                //   ),
+                //   _buildPdfTextField(
+                //     'Adres opiekuna:',
+                //     _controllers['patientGuardianStreet']!.text,
+                //   ),
+                //   pw.Divider(),
+                //   pw.SizedBox(height: 20),
+                // ],
+              ],
+            );
+          },
+        ),
+      );
+
+      // Zapis PDF
+      await _saveAndSharePdf(doc);
+    } catch (e) {
+      showValidationError('Błąd podczas generowania PDF: ${e.toString()}');
+    }
+  }
+
+  Future<void> _saveAndSharePdf(pw.Document doc) async {
+    final status = await Permission.storage.request();
+    if (!status.isGranted) {
+      throw Exception('Brak uprawnień do zapisu pliku');
+    }
+
+    final directory = await getApplicationDocumentsDirectory();
+    final fileName =
+        'Ankieta_Osobowa_${_controllers['patientName']}_${_controllers['patientSurname']}_${DateFormat('yyyyMMdd').format(DateTime.now())}.pdf';
+    final file = File('${directory.path}/$fileName');
+
+    final pdfBytes = await doc.save();
+    await file.writeAsBytes(pdfBytes);
+
+    await Printing.layoutPdf(onLayout: (_) async => pdfBytes);
+  }
+
+  // pw.Widget _buildDiseasePdfRow(
+  //   String diseaseId,
+  //   Map<String, String> response,
+  //   String? description,
+  // ) {
+  //   final responseText = response['yes'] == '1'
+  //       ? 'Tak${description != null && description.isNotEmpty ? " ($description)" : ""}'
+  //       : response['no'] == '1'
+  //       ? 'Nie'
+  //       : 'Nie wiem';
+
+  //   return pw.Padding(
+  //     padding: const pw.EdgeInsets.only(bottom: 4),
+  //     child: pw.RichText(
+  //       text: pw.TextSpan(
+  //         children: [
+  //           pw.TextSpan(
+  //             text: '${_diseaseName(diseaseId)}: ',
+  //             style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+  //           ),
+  //           pw.TextSpan(text: responseText),
+  //         ],
+  //       ),
+  //     ),
+  //   );
+  // }
+
+  void _saveForm(context) async {
+    // if (await validateForm()) {
+    //   // Formularz jest poprawny, można kontynuować zapis
+    generateAndSavePDF(context);
+    // }
+  }
+
+  void showValidationError(String message) {
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  Future<ByteData?> _getSignatureImageBytes() async {
+    try {
+      final signatureState = _signaturePadKeyDoctor.currentState;
+      if (signatureState == null) return null;
+
+      final image = await signatureState.toImage();
+      return await image.toByteData(format: ImageByteFormat.png);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  pw.Widget _buildSignatureColumnPdf({
+    required String label,
+    required Uint8List? signatureImage,
+  }) {
+    return pw.Column(
+      children: [
+        pw.Text(label),
+        pw.SizedBox(height: 10),
+        signatureImage != null
+            ? pw.Image(pw.MemoryImage(signatureImage), width: 200, height: 80)
+            : pw.Container(
+                width: 200,
+                height: 80,
+                decoration: pw.BoxDecoration(
+                  border: pw.Border.all(color: PdfColors.grey),
+                ),
+                alignment: pw.Alignment.center,
+                child: pw.Text('---'),
+              ),
+        pw.SizedBox(height: 10),
+        pw.Text('Data: ${DateFormat('dd.MM.yyyy').format(DateTime.now())}'),
+      ],
+    );
+  }
+
+  pw.Widget _buildComplicationSectionPdf(int index) {
+    return pw.Column(
+      crossAxisAlignment: pw.CrossAxisAlignment.start,
+      children: [
+        pw.Text(
+          _t('complications_section_${index}_title'),
+          style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold),
+        ),
+        pw.SizedBox(height: 8),
+        pw.Text(
+          _t('complications_section_${index}_content'),
+          style: const pw.TextStyle(fontSize: 11),
+          textAlign: pw.TextAlign.justify,
+        ),
+        pw.SizedBox(height: 8),
+      ],
+    );
+  }
+
+  pw.Widget _buildPdfSectionTitle(String title) {
+    return pw.Padding(
+      padding: const pw.EdgeInsets.only(bottom: 10),
+      child: pw.Text(
+        title,
+        style: pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold),
+      ),
+    );
+  }
+
+  pw.Widget _buildPdfTextField(String label, String value, {int maxLines = 1}) {
+    return pw.Padding(
+      padding: const pw.EdgeInsets.only(bottom: 8),
+      child: pw.RichText(
+        text: pw.TextSpan(
+          children: [
+            pw.TextSpan(
+              text: '$label ',
+              style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+            ),
+            pw.TextSpan(text: value.isNotEmpty ? value : 'brak'),
+          ],
+        ),
+      ),
+    );
+  }
+
+  pw.Widget _buildPdfTextField2(
+    String label,
+    String value, {
+    int maxLines = 1,
+    bool isRequired = false,
+    double labelSize = 12,
+    double valueSize = 11,
+  }) {
+    return pw.Column(
+      crossAxisAlignment: pw.CrossAxisAlignment.start,
+      children: [
+        pw.RichText(
+          text: pw.TextSpan(
+            children: [
+              pw.TextSpan(
+                text: label,
+                style: pw.TextStyle(
+                  fontWeight: pw.FontWeight.bold,
+                  fontSize: labelSize,
+                ),
+              ),
+              if (isRequired)
+                pw.TextSpan(
+                  text: ' *',
+                  style: pw.TextStyle(
+                    color: PdfColors.red,
+                    fontWeight: pw.FontWeight.bold,
+                    fontSize: labelSize,
+                  ),
+                ),
+            ],
+          ),
+        ),
+        pw.Padding(
+          padding: const pw.EdgeInsets.only(top: 2),
+          child: pw.Text(
+            value.isNotEmpty ? value : '-',
+            style: pw.TextStyle(
+              fontSize: valueSize,
+              color: value.isNotEmpty ? PdfColors.black : PdfColors.grey,
+            ),
+          ),
+        ),
+        pw.SizedBox(height: 12),
+      ],
+    );
+  }
+
+  pw.Widget buildTreatmentPlanSection(
+    List<String> options,
+    Map<String, String?> answers,
+    Map<String, TextEditingController> controllers,
+  ) {
+    return pw.Column(
+      crossAxisAlignment: pw.CrossAxisAlignment.start,
+      children: [
+        pw.Table(
+          border: pw.TableBorder.all(),
+          columnWidths: {
+            0: const pw.FlexColumnWidth(2),
+            1: const pw.FlexColumnWidth(0.8),
+            2: const pw.FlexColumnWidth(2),
+          },
+          children: [
+            // Nagłówek tabeli
+            pw.TableRow(
+              decoration: const pw.BoxDecoration(color: PdfColors.grey300),
+              children: [
+                pw.Padding(
+                  padding: const pw.EdgeInsets.all(6),
+                  child: pw.Text(
+                    'Plan leczenia',
+                    style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+                  ),
+                ),
+                pw.Padding(
+                  padding: const pw.EdgeInsets.all(6),
+                  child: pw.Text(
+                    'Odpowiedź',
+                    style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+                  ),
+                ),
+                pw.Padding(
+                  padding: const pw.EdgeInsets.all(6),
+                  child: pw.Text(
+                    'Dodatkowe informacje',
+                    style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+                  ),
+                ),
+              ],
+            ),
+            // Dane z opcji
+            for (final option in options)
+              pw.TableRow(
+                children: [
+                  pw.Padding(
+                    padding: const pw.EdgeInsets.all(6),
+                    child: pw.Text(_translations['pl']![option]!),
+                  ),
+                  pw.Padding(
+                    padding: const pw.EdgeInsets.all(6),
+                    child: pw.Text(
+                      answers[option] == '1'
+                          ? 'tak'
+                          : answers[option] == '0'
+                          ? 'nie'
+                          : '-',
+                    ),
+                  ),
+                  pw.Padding(
+                    padding: const pw.EdgeInsets.all(6),
+                    child: pw.Text(
+                      controllers['${option}_attention']?.text ?? '',
+                    ),
+                  ),
+                ],
+              ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  pw.Widget _buildConsentPdfRow(String label, bool isChecked) {
+    return pw.Padding(
+      padding: const pw.EdgeInsets.only(bottom: 8),
+      child: pw.Row(
+        children: [
+          pw.Text('${isChecked ? '[X]' : '[ ]'} '),
+          pw.SizedBox(width: 10),
+          pw.Expanded(child: pw.Text(label)),
+        ],
+      ),
+    );
+  }
+
+  pw.Widget _buildPdfCheckbox(bool isChecked, {bool isCentered = false}) {
+    final checkbox = pw.Container(
+      width: 12,
+      height: 12,
+      decoration: pw.BoxDecoration(border: pw.Border.all()),
+      child: isChecked
+          ? pw.Center(
+              child: pw.Text('X', style: const pw.TextStyle(fontSize: 10)),
+            )
+          : null,
+    );
+
+    return isCentered ? pw.Center(child: checkbox) : checkbox;
   }
 }
