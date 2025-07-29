@@ -38,7 +38,8 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
   final Map<String, TextEditingController> _controllers = {};
   final Map<String, String?> _treatmentOptions = {};
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final numberFormat = NumberFormat('#,###', 'pl_PL');
+  final numberFormat = NumberFormat('#,##0.00', 'pl_PL');
+
   final uuid = Uuid();
 
   final List<Map<String, dynamic>> estimateOptions = [
@@ -350,11 +351,9 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
     'additional_denture_teeth',
     'surgery',
   ];
-  int get totalEstimatePrice {
-    return selectedEstimates.fold(
-      0,
-      (sum, item) => sum + (item['price'] as int),
-    );
+
+  double get totalEstimatePrice {
+    return selectedEstimates.fold(0.0, (sum, item) => sum + (item['price']));
   }
 
   @override
@@ -1030,7 +1029,9 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
                               ),
                             ),
                             onChanged: (value) {
-                              final newPrice = int.tryParse(value);
+                              final newPrice = double.tryParse(
+                                value.replaceAll(',', '.'),
+                              );
                               if (newPrice != null) {
                                 setState(() {
                                   item['price'] = newPrice;
@@ -1093,7 +1094,7 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
                           ScaleTransition(scale: animation, child: child),
                       child: Text(
                         "${numberFormat.format(totalEstimatePrice)} ${_t('zl')}",
-                        key: ValueKey<int>(totalEstimatePrice),
+                        key: ValueKey(totalEstimatePrice.toString()),
                         style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -1204,6 +1205,20 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
       final Uint8List patientComplicationsSignatureBytes =
           patientComplicationsByteData!.buffer.asUint8List();
 
+      final doctorTreatmentAgreeImage =
+          await _signaturePadKeyDoctorTreatmentAgree.currentState!.toImage();
+      final doctorTreatmentAgreeByteData = await doctorTreatmentAgreeImage
+          .toByteData(format: ui.ImageByteFormat.png);
+      final Uint8List doctorTreatmentAgreeSignatureBytes =
+          doctorTreatmentAgreeByteData!.buffer.asUint8List();
+
+      final patientTreatmentAgreeImage =
+          await _signaturePadKeyPatientTreatmentAgree.currentState!.toImage();
+      final patientTreatmentAgreeByteData = await patientTreatmentAgreeImage
+          .toByteData(format: ui.ImageByteFormat.png);
+      final Uint8List patientTreatmentAgreeSignatureBytes =
+          patientTreatmentAgreeByteData!.buffer.asUint8List();
+
       doc.addPage(
         pw.Page(
           theme: pdfTheme,
@@ -1237,7 +1252,7 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
                   padding: const pw.EdgeInsets.all(12),
                   color: PdfColors.red100,
                   child: pw.Text(
-                    _translations[_selectedLanguage]!['treatment_plan_attention']!,
+                    _translations['pl']!['treatment_plan_attention']!,
                     textAlign: pw.TextAlign.center,
                     style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
                   ),
@@ -1297,14 +1312,14 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
                   child: pw.Text(
                     'INFORMACJE DLA PACJENTA I ŚWIADOMA ZGODA NA LECZENIE ORTODONTYCZNE wg zaleceń Polskiego Towarzystwa Ortodontycznego',
                     style: pw.TextStyle(
-                      fontSize: 14,
+                      fontSize: 16,
                       fontWeight: pw.FontWeight.bold,
                     ),
                     textAlign: pw.TextAlign.center,
                   ),
                 ),
                 pw.Text(
-                  _translations[_selectedLanguage]!['complications_section_title']!,
+                  _translations['pl']!['complications_section_title']!,
                   style: pw.TextStyle(
                     fontSize: 14,
                     fontWeight: pw.FontWeight.bold,
@@ -1312,7 +1327,7 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
                 ),
                 pw.SizedBox(height: 8),
                 pw.Text(
-                  _translations[_selectedLanguage]!['complications_section_content']!,
+                  _translations['pl']!['complications_section_content']!,
                   style: pw.TextStyle(fontSize: 12),
                   textAlign: pw.TextAlign.justify,
                 ),
@@ -1349,63 +1364,83 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
                     ),
                   ],
                 ),
-                // _buildPdfTextField(
-                //   'PESEL:',
-                //   _controllers['patientPesel']!.text,
-                // ),
-                // _buildPdfTextField(
-                //   'Data urodzenia:',
-                //   _controllers['patientBirthday']!.text,
-                // ),
-
-                // pw.Divider(),
-                // pw.SizedBox(height: 20),
-
-                // // Dane kontaktowe
-                // _buildPdfSectionTitle('DANE KONTAKTOWE'),
-                // _buildPdfTextField(
-                //   'Ulica:',
-                //   _controllers['patientStreet']!.text,
-                // ),
-                // _buildPdfTextField(
-                //   'Miasto:',
-                //   _controllers['patientCity']!.text,
-                // ),
-                // _buildPdfTextField(
-                //   'Kod pocztowy:',
-                //   _controllers['patientPostCode']!.text,
-                // ),
-                // _buildPdfTextField(
-                //   'Telefon:',
-                //   _controllers['patientPhone']!.text,
-                // ),
-                // _buildPdfTextField(
-                //   'Email:',
-                //   _controllers['patientEmail']!.text,
-                // ),
-                // pw.Divider(),
-                // pw.SizedBox(height: 20),
-
-                // // Opiekun (jeśli dotyczy)
-                // if (_controllers['patientGuardian']!.text.isNotEmpty) ...[
-                //   _buildPdfSectionTitle('DANE OPIEKUNA'),
-                //   _buildPdfTextField(
-                //     'Opiekun:',
-                //     _controllers['patientGuardian']!.text,
-                //   ),
-                //   _buildPdfTextField(
-                //     'Adres opiekuna:',
-                //     _controllers['patientGuardianStreet']!.text,
-                //   ),
-                //   pw.Divider(),
-                //   pw.SizedBox(height: 20),
-                // ],
               ],
             );
           },
         ),
       );
 
+      doc.addPage(
+        pw.Page(
+          theme: pdfTheme,
+          pageFormat: PdfPageFormat.a4,
+          build: (pw.Context context) {
+            return pw.Column(
+              crossAxisAlignment: pw.CrossAxisAlignment.start,
+
+              children: [
+                _buildPdfSectionTitle('ZGODA NA LECZENIE ORTODONTYCZNE'),
+                _buildPdfTextField(
+                  'Imię i nazwisko:',
+                  _controllers['patient_name']!.text,
+                ),
+                _buildPdfTextField(
+                  'PESEL:',
+                  _controllers['patient_pesel']!.text,
+                ),
+                for (int i = 1; i <= 5; i++) _buildAgreementSectionPdf(i),
+                pw.Row(
+                  mainAxisAlignment: pw.MainAxisAlignment.spaceEvenly,
+                  crossAxisAlignment: pw.CrossAxisAlignment.start,
+                  children: [
+                    _buildSignatureColumnPdf(
+                      label: 'Podpis lekarza:',
+                      signatureImage: doctorTreatmentAgreeSignatureBytes,
+                    ),
+                    _buildSignatureColumnPdf(
+                      label: 'Podpis pacjenta lub opiekuna prawnego:',
+                      signatureImage: patientTreatmentAgreeSignatureBytes,
+                    ),
+                  ],
+                ),
+              ],
+            );
+          },
+        ),
+      );
+
+      doc.addPage(
+        pw.Page(
+          theme: pdfTheme,
+          pageFormat: PdfPageFormat.a4,
+          build: (pw.Context context) {
+            return pw.Column(
+              crossAxisAlignment: pw.CrossAxisAlignment.start,
+
+              children: [
+                _buildPdfSectionTitle('CENNIK'),
+                buildEstimateSectionPdf(selectedEstimates, totalEstimatePrice),
+                pw.SizedBox(height: 16),
+                pw.Container(
+                  width: double.infinity,
+                  padding: const pw.EdgeInsets.all(12),
+                  color: PdfColors.red100,
+                  child: pw.Text(
+                    _translations['pl']!['price_information']!,
+                    textAlign: pw.TextAlign.center,
+                    style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+                  ),
+                ),
+                pw.SizedBox(height: 16),
+                _buildPdfTextField2(
+                  'Dodatkowe informacje:',
+                  _controllers['estimate_attention']!.text,
+                ),
+              ],
+            );
+          },
+        ),
+      );
       // Zapis PDF
       await _saveAndSharePdf(doc);
     } catch (e) {
@@ -1430,38 +1465,11 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
     await Printing.layoutPdf(onLayout: (_) async => pdfBytes);
   }
 
-  // pw.Widget _buildDiseasePdfRow(
-  //   String diseaseId,
-  //   Map<String, String> response,
-  //   String? description,
-  // ) {
-  //   final responseText = response['yes'] == '1'
-  //       ? 'Tak${description != null && description.isNotEmpty ? " ($description)" : ""}'
-  //       : response['no'] == '1'
-  //       ? 'Nie'
-  //       : 'Nie wiem';
-
-  //   return pw.Padding(
-  //     padding: const pw.EdgeInsets.only(bottom: 4),
-  //     child: pw.RichText(
-  //       text: pw.TextSpan(
-  //         children: [
-  //           pw.TextSpan(
-  //             text: '${_diseaseName(diseaseId)}: ',
-  //             style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
-  //           ),
-  //           pw.TextSpan(text: responseText),
-  //         ],
-  //       ),
-  //     ),
-  //   );
-  // }
-
   void _saveForm(context) async {
-    // if (await validateForm()) {
-    //   // Formularz jest poprawny, można kontynuować zapis
-    generateAndSavePDF(context);
-    // }
+    if (await validateForm()) {
+      // Formularz jest poprawny, można kontynuować zapis
+      generateAndSavePDF(context);
+    }
   }
 
   void showValidationError(String message) {
@@ -1507,17 +1515,134 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
     );
   }
 
+  pw.Widget _buildAgreementSectionPdf(int index) {
+    return pw.Padding(
+      padding: const pw.EdgeInsets.only(bottom: 16.0),
+      child: pw.Text(
+        _translations['pl']!['treatment_agree_section_${index}_content']!,
+        style: const pw.TextStyle(fontSize: 11),
+        textAlign: pw.TextAlign.justify,
+      ),
+    );
+  }
+
+  pw.Widget buildEstimateSectionPdf(
+    List<Map<String, dynamic>> selectedEstimates,
+    double totalEstimatePrice,
+  ) {
+    final numberFormat = NumberFormat('#,##0.00', 'pl_PL');
+
+    return pw.Column(
+      crossAxisAlignment: pw.CrossAxisAlignment.start,
+      children: [
+        // Lista pozycji
+        if (selectedEstimates.isNotEmpty) ...[
+          pw.SizedBox(height: 8),
+          pw.Text(
+            _t('selected_items'),
+            style: pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold),
+          ),
+          pw.SizedBox(height: 8),
+
+          // Nagłówki tabeli
+          pw.Container(
+            padding: const pw.EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+            color: PdfColors.grey200,
+            child: pw.Row(
+              children: [
+                pw.Expanded(
+                  flex: 4,
+                  child: pw.Text(
+                    _t('designation'),
+                    style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+                  ),
+                ),
+                pw.Expanded(
+                  flex: 2,
+                  child: pw.Text(
+                    _t('price'),
+                    style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          pw.SizedBox(height: 4),
+
+          // Lista pozycji
+          ...selectedEstimates.map((item) {
+            return pw.Container(
+              padding: const pw.EdgeInsets.symmetric(
+                vertical: 6,
+                horizontal: 4,
+              ),
+              decoration: pw.BoxDecoration(
+                border: pw.Border.all(color: PdfColors.grey300, width: 0.5),
+                borderRadius: pw.BorderRadius.circular(4),
+              ),
+              margin: const pw.EdgeInsets.only(bottom: 4),
+              child: pw.Row(
+                children: [
+                  pw.Expanded(flex: 4, child: pw.Text(_t(item['name']))),
+                  pw.Expanded(
+                    flex: 2,
+                    child: pw.Text(
+                      // "${numberFormat.format(totalEstimatePrice)} ${_t('zl')}",
+                      "${numberFormat.format(item['price'])} ${_t('zl')}",
+                      textAlign: pw.TextAlign.right,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }).toList(),
+
+          pw.SizedBox(height: 12),
+
+          // Suma
+          pw.Container(
+            padding: const pw.EdgeInsets.all(12),
+            decoration: pw.BoxDecoration(
+              color: PdfColors.blue50,
+              borderRadius: pw.BorderRadius.circular(8),
+            ),
+            child: pw.Row(
+              mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+              children: [
+                pw.Text(
+                  _t('sum'),
+                  style: pw.TextStyle(
+                    fontSize: 16,
+                    fontWeight: pw.FontWeight.bold,
+                  ),
+                ),
+                pw.Text(
+                  "${numberFormat.format(totalEstimatePrice)} ${_t('zl')}",
+                  style: pw.TextStyle(
+                    fontSize: 16,
+                    fontWeight: pw.FontWeight.bold,
+                    color: PdfColors.blue800,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+
   pw.Widget _buildComplicationSectionPdf(int index) {
     return pw.Column(
       crossAxisAlignment: pw.CrossAxisAlignment.start,
       children: [
         pw.Text(
-          _t('complications_section_${index}_title'),
+          _translations['pl']!['complications_section_${index}_title']!,
           style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold),
         ),
         pw.SizedBox(height: 8),
         pw.Text(
-          _t('complications_section_${index}_content'),
+          _translations['pl']!['complications_section_${index}_content']!,
           style: const pw.TextStyle(fontSize: 11),
           textAlign: pw.TextAlign.justify,
         ),
@@ -1702,5 +1827,84 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
     );
 
     return isCentered ? pw.Center(child: checkbox) : checkbox;
+  }
+
+  // Walidacja wymaganych pól
+  Future<bool> validateForm() async {
+    // Dane osobowe - wymagane
+    if (_controllers['patient_name']!.text.isEmpty) {
+      showValidationError('Proszę wprowadzić imię pacjenta');
+      return false;
+    }
+
+    if (_controllers['recognition']!.text.isEmpty) {
+      showValidationError('Proszę wprowadzić rozpoznanie');
+      return false;
+    }
+
+    if (_controllers['patient_pesel']!.text.isEmpty ||
+        _controllers['patient_pesel']!.text.length != 11 ||
+        !_controllers['patient_pesel']!.text.isNumeric()) {
+      showValidationError('Proszę wprowadzić poprawny PESEL (11 cyfr)');
+      return false;
+    }
+
+    Future<bool> isSignatureNotEmpty(GlobalKey<SfSignaturePadState> key) async {
+      try {
+        final signatureState = key.currentState;
+        if (signatureState == null) return false;
+
+        final image = await signatureState.toImage();
+        final byteData = await image.toByteData(
+          format: ui.ImageByteFormat.rawRgba,
+        );
+        if (byteData == null) return false;
+
+        final bytes = byteData.buffer.asUint8List();
+
+        // Sprawdzenie czy każdy bajt to 0 (czyli obraz pusty)
+        return !bytes.every((byte) => byte == 0);
+      } catch (e) {
+        return false;
+      }
+    }
+
+    if (!await isSignatureNotEmpty(_signaturePadKeyDoctor)) {
+      showValidationError('Proszę złożyć podpis lekarza');
+      return false;
+    }
+
+    if (!await isSignatureNotEmpty(_signaturePadKeyPatient)) {
+      showValidationError('Proszę złożyć podpis pacjenta');
+      return false;
+    }
+
+    if (!await isSignatureNotEmpty(_signaturePadKeyDoctorComplications)) {
+      showValidationError('Proszę złożyć podpis lekarza');
+      return false;
+    }
+
+    if (!await isSignatureNotEmpty(_signaturePadKeyPatientComplications)) {
+      showValidationError('Proszę złożyć podpis pacjenta');
+      return false;
+    }
+
+    if (!await isSignatureNotEmpty(_signaturePadKeyDoctorTreatmentAgree)) {
+      showValidationError('Proszę złożyć podpis lekarza');
+      return false;
+    }
+
+    if (!await isSignatureNotEmpty(_signaturePadKeyPatientTreatmentAgree)) {
+      showValidationError('Proszę złożyć podpis pacjenta');
+      return false;
+    }
+
+    return true;
+  }
+}
+
+extension Numeric on String {
+  bool isNumeric() {
+    return RegExp(r'^[0-9]+$').hasMatch(this);
   }
 }
