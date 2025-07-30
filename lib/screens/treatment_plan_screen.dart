@@ -1249,7 +1249,7 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
           build: (pw.Context context) {
             return [
               pw.Center(child: pw.Header(level: 0, text: 'PLAN LECZENIA')),
-              pw.SizedBox(height: 20),
+              pw.SizedBox(height: 10),
 
               // Dane osobowe
               _buildPdfSectionTitle('DANE KLIENTA'),
@@ -1267,7 +1267,7 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
                 _treatmentOptions,
                 _controllers,
               ),
-              pw.SizedBox(height: 20),
+              pw.SizedBox(height: 10),
               pw.Container(
                 width: double.infinity,
                 padding: const pw.EdgeInsets.all(12),
@@ -1278,7 +1278,7 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
                   style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
                 ),
               ),
-              pw.SizedBox(height: 20),
+              pw.SizedBox(height: 10),
               pw.Container(
                 width: double.infinity,
                 padding: const pw.EdgeInsets.all(16),
@@ -1289,7 +1289,7 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
                   style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
                 ),
               ),
-              pw.SizedBox(height: 20),
+              pw.SizedBox(height: 10),
               pw.Center(
                 child: pw.Text(
                   'Akceptuje proponowany plan leczenia',
@@ -1300,7 +1300,7 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
                   textAlign: pw.TextAlign.center,
                 ),
               ),
-              pw.SizedBox(height: 16),
+              pw.SizedBox(height: 10),
               pw.Row(
                 mainAxisAlignment: pw.MainAxisAlignment.spaceEvenly,
                 crossAxisAlignment: pw.CrossAxisAlignment.start,
@@ -1338,7 +1338,7 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
                     textAlign: pw.TextAlign.center,
                   ),
                 ),
-                pw.SizedBox(height: 12),
+                pw.SizedBox(height: 10),
                 pw.Text(
                   _translations['pl']!['complications_section_title']!,
                   style: pw.TextStyle(
@@ -1346,7 +1346,7 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
                     fontWeight: pw.FontWeight.bold,
                   ),
                 ),
-                pw.SizedBox(height: 8),
+                pw.SizedBox(height: 10),
                 pw.Text(
                   _translations['pl']!['complications_section_content']!,
                   style: pw.TextStyle(fontSize: 12),
@@ -1388,7 +1388,7 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
               children: [
                 pw.SizedBox(height: 10),
                 for (int i = 5; i <= 8; i++) _buildComplicationSectionPdf(i),
-                pw.SizedBox(height: 16),
+                pw.SizedBox(height: 10),
                 pw.Row(
                   mainAxisAlignment: pw.MainAxisAlignment.spaceEvenly,
                   crossAxisAlignment: pw.CrossAxisAlignment.start,
@@ -1495,7 +1495,7 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
               children: [
                 _buildPdfSectionTitle('CENNIK'),
                 buildEstimateSectionPdf(selectedEstimates, totalEstimatePrice),
-                pw.SizedBox(height: 16),
+                pw.SizedBox(height: 10),
                 pw.Container(
                   width: double.infinity,
                   padding: const pw.EdgeInsets.all(12),
@@ -1506,7 +1506,7 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
                     style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
                   ),
                 ),
-                pw.SizedBox(height: 16),
+                pw.SizedBox(height: 10),
                 _buildPdfTextField2(
                   'Dodatkowe informacje:',
                   _controllers['estimate_attention']!.text,
@@ -1542,20 +1542,36 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
   }
 
   Future<void> _saveAndSharePdf(pw.Document doc) async {
+    // 1. Sprawdź i poproś o wymagane uprawnienia
     final status = await Permission.storage.request();
     if (!status.isGranted) {
       throw Exception('Brak uprawnień do zapisu pliku');
     }
-
-    final directory = await getApplicationDocumentsDirectory();
+    final name = _controllers['patient_name']!.text.trim();
     final fileName =
-        'Ankieta_Osobowa_${_controllers['patientName']}_${_controllers['patientSurname']}_${DateFormat('yyyyMMdd').format(DateTime.now())}.pdf';
+        '${name}_${DateFormat('ddMMyyyy_HHmmss').format(DateTime.now())}.pdf'
+            .replaceAll(' ', '_')
+            .replaceAll(RegExp(r'[^a-zA-Z0-9_.]'), '');
+    final directory = Directory('/storage/emulated/0/Download');
+    if (!await directory.exists()) {
+      await directory.create(recursive: true);
+    }
+
     final file = File('${directory.path}/$fileName');
 
-    final pdfBytes = await doc.save();
-    await file.writeAsBytes(pdfBytes);
+    try {
+      final pdfBytes = await doc.save();
+      await file.writeAsBytes(pdfBytes);
 
-    await Printing.layoutPdf(onLayout: (_) async => pdfBytes);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Plik zapisano w: ${file.path}'),
+          duration: const Duration(seconds: 3),
+        ),
+      );
+    } catch (e) {
+      throw Exception('Błąd podczas zapisywania pliku: $e');
+    }
   }
 
   void _saveForm(context) async {
