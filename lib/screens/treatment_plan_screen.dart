@@ -1220,82 +1220,79 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
           patientTreatmentAgreeByteData!.buffer.asUint8List();
 
       doc.addPage(
-        pw.Page(
+        pw.MultiPage(
           theme: pdfTheme,
           pageFormat: PdfPageFormat.a4,
           build: (pw.Context context) {
-            return pw.Column(
-              crossAxisAlignment: pw.CrossAxisAlignment.start,
-              children: [
-                pw.Center(child: pw.Header(level: 0, text: 'PLAN LECZENIA')),
-                pw.SizedBox(height: 20),
+            return [
+              pw.Center(child: pw.Header(level: 0, text: 'PLAN LECZENIA')),
+              pw.SizedBox(height: 20),
 
-                // Dane osobowe
-                _buildPdfSectionTitle('DANE KLIENTA'),
-                _buildPdfTextField(
-                  'Imię i nazwisko:',
-                  _controllers['patient_name']!.text,
+              // Dane osobowe
+              _buildPdfSectionTitle('DANE KLIENTA'),
+              _buildPdfTextField(
+                'Imię i nazwisko:',
+                _controllers['patient_name']!.text,
+              ),
+              _buildPdfTextField(
+                'Rozpoznanie:',
+                _controllers['recognition']!.text,
+              ),
+              _buildPdfSectionTitle('PLAN LECZENIA'),
+              buildTreatmentPlanSection(
+                _treatmentPlanOptions,
+                _treatmentOptions,
+                _controllers,
+              ),
+              pw.SizedBox(height: 20),
+              pw.Container(
+                width: double.infinity,
+                padding: const pw.EdgeInsets.all(12),
+                color: PdfColors.red100,
+                child: pw.Text(
+                  _translations['pl']!['treatment_plan_attention']!,
+                  textAlign: pw.TextAlign.center,
+                  style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
                 ),
-                _buildPdfTextField(
-                  'Rozpoznanie:',
-                  _controllers['recognition']!.text,
+              ),
+              pw.SizedBox(height: 20),
+              pw.Container(
+                width: double.infinity,
+                padding: const pw.EdgeInsets.all(16),
+                color: PdfColors.red100,
+                child: pw.Text(
+                  _translations[_selectedLanguage]!['other_information']!,
+                  textAlign: pw.TextAlign.center,
+                  style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
                 ),
-                _buildPdfSectionTitle('PLAN LECZENIA'),
-                buildTreatmentPlanSection(
-                  _treatmentPlanOptions,
-                  _treatmentOptions,
-                  _controllers,
-                ),
-                pw.SizedBox(height: 20),
-                pw.Container(
-                  width: double.infinity,
-                  padding: const pw.EdgeInsets.all(12),
-                  color: PdfColors.red100,
-                  child: pw.Text(
-                    _translations['pl']!['treatment_plan_attention']!,
-                    textAlign: pw.TextAlign.center,
-                    style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+              ),
+              pw.SizedBox(height: 20),
+              pw.Center(
+                child: pw.Text(
+                  'Akceptuje proponowany plan leczenia',
+                  style: pw.TextStyle(
+                    fontSize: 14,
+                    fontWeight: pw.FontWeight.bold,
                   ),
+                  textAlign: pw.TextAlign.center,
                 ),
-                pw.SizedBox(height: 20),
-                pw.Container(
-                  width: double.infinity,
-                  padding: const pw.EdgeInsets.all(16),
-                  color: PdfColors.red100,
-                  child: pw.Text(
-                    _translations[_selectedLanguage]!['other_information']!,
-                    textAlign: pw.TextAlign.center,
-                    style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+              ),
+              pw.SizedBox(height: 16),
+              pw.Row(
+                mainAxisAlignment: pw.MainAxisAlignment.spaceEvenly,
+                crossAxisAlignment: pw.CrossAxisAlignment.start,
+                children: [
+                  _buildSignatureColumnPdf(
+                    label: 'Podpis lekarza:',
+                    signatureImage: doctorSignatureBytes,
                   ),
-                ),
-                pw.SizedBox(height: 20),
-                pw.Center(
-                  child: pw.Text(
-                    'Akceptuje proponowany plan leczenia',
-                    style: pw.TextStyle(
-                      fontSize: 14,
-                      fontWeight: pw.FontWeight.bold,
-                    ),
-                    textAlign: pw.TextAlign.center,
+                  _buildSignatureColumnPdf(
+                    label: 'Podpis pacjenta lub opiekuna prawnego:',
+                    signatureImage: patientSignatureBytes,
                   ),
-                ),
-                pw.SizedBox(height: 16),
-                pw.Row(
-                  mainAxisAlignment: pw.MainAxisAlignment.spaceEvenly,
-                  crossAxisAlignment: pw.CrossAxisAlignment.start,
-                  children: [
-                    _buildSignatureColumnPdf(
-                      label: 'Podpis lekarza:',
-                      signatureImage: doctorSignatureBytes,
-                    ),
-                    _buildSignatureColumnPdf(
-                      label: 'Podpis pacjenta lub opiekuna prawnego:',
-                      signatureImage: patientSignatureBytes,
-                    ),
-                  ],
-                ),
-              ],
-            );
+                ],
+              ),
+            ];
           },
         ),
       );
