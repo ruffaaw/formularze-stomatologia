@@ -1218,11 +1218,34 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
           .toByteData(format: ui.ImageByteFormat.png);
       final Uint8List patientTreatmentAgreeSignatureBytes =
           patientTreatmentAgreeByteData!.buffer.asUint8List();
+      final now = DateTime.now();
+      final formattedDateTime =
+          '${now.day.toString().padLeft(2, '0')}.${now.month.toString().padLeft(2, '0')}.${now.year} '
+          '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}';
 
       doc.addPage(
         pw.MultiPage(
           theme: pdfTheme,
           pageFormat: PdfPageFormat.a4,
+          footer: (context) {
+            return pw.Container(
+              alignment: pw.Alignment.centerRight,
+              margin: const pw.EdgeInsets.only(top: 10),
+              child: pw.Row(
+                mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                children: [
+                  pw.Text(
+                    formattedDateTime,
+                    style: const pw.TextStyle(fontSize: 10),
+                  ),
+                  pw.Text(
+                    'Strona ${context.pageNumber} z ${context.pagesCount}',
+                    style: const pw.TextStyle(fontSize: 10),
+                  ),
+                ],
+              ),
+            );
+          },
           build: (pw.Context context) {
             return [
               pw.Center(child: pw.Header(level: 0, text: 'PLAN LECZENIA')),
@@ -1315,6 +1338,7 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
                     textAlign: pw.TextAlign.center,
                   ),
                 ),
+                pw.SizedBox(height: 12),
                 pw.Text(
                   _translations['pl']!['complications_section_title']!,
                   style: pw.TextStyle(
@@ -1330,6 +1354,24 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
                 ),
                 pw.SizedBox(height: 10),
                 for (int i = 1; i <= 4; i++) _buildComplicationSectionPdf(i),
+                pw.Spacer(),
+                pw.Container(
+                  alignment: pw.Alignment.centerRight,
+                  margin: const pw.EdgeInsets.only(top: 10),
+                  child: pw.Row(
+                    mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                    children: [
+                      pw.Text(
+                        formattedDateTime,
+                        style: const pw.TextStyle(fontSize: 10),
+                      ),
+                      pw.Text(
+                        'Strona ${context.pageNumber} z ${context.pagesCount}',
+                        style: const pw.TextStyle(fontSize: 10),
+                      ),
+                    ],
+                  ),
+                ),
               ],
             );
           },
@@ -1360,6 +1402,24 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
                       signatureImage: patientComplicationsSignatureBytes,
                     ),
                   ],
+                ),
+                pw.Spacer(),
+                pw.Container(
+                  alignment: pw.Alignment.centerRight,
+                  margin: const pw.EdgeInsets.only(top: 10),
+                  child: pw.Row(
+                    mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                    children: [
+                      pw.Text(
+                        formattedDateTime,
+                        style: const pw.TextStyle(fontSize: 10),
+                      ),
+                      pw.Text(
+                        'Strona ${context.pageNumber} z ${context.pagesCount}',
+                        style: const pw.TextStyle(fontSize: 10),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             );
@@ -1400,6 +1460,24 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
                     ),
                   ],
                 ),
+                pw.Spacer(),
+                pw.Container(
+                  alignment: pw.Alignment.centerRight,
+                  margin: const pw.EdgeInsets.only(top: 10),
+                  child: pw.Row(
+                    mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                    children: [
+                      pw.Text(
+                        formattedDateTime,
+                        style: const pw.TextStyle(fontSize: 10),
+                      ),
+                      pw.Text(
+                        'Strona ${context.pageNumber} z ${context.pagesCount}',
+                        style: const pw.TextStyle(fontSize: 10),
+                      ),
+                    ],
+                  ),
+                ),
               ],
             );
           },
@@ -1432,6 +1510,24 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
                 _buildPdfTextField2(
                   'Dodatkowe informacje:',
                   _controllers['estimate_attention']!.text,
+                ),
+                pw.Spacer(),
+                pw.Container(
+                  alignment: pw.Alignment.centerRight,
+                  margin: const pw.EdgeInsets.only(top: 10),
+                  child: pw.Row(
+                    mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                    children: [
+                      pw.Text(
+                        formattedDateTime,
+                        style: const pw.TextStyle(fontSize: 10),
+                      ),
+                      pw.Text(
+                        'Strona ${context.pageNumber} z ${context.pagesCount}',
+                        style: const pw.TextStyle(fontSize: 10),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             );

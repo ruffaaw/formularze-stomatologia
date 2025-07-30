@@ -1779,6 +1779,10 @@ class _PatientQuestionnaireScreenState
       );
 
       final signatureBytes = await _getSignatureImageBytes();
+      final now = DateTime.now();
+      final formattedDateTime =
+          '${now.day.toString().padLeft(2, '0')}.${now.month.toString().padLeft(2, '0')}.${now.year} '
+          '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}';
 
       doc.addPage(
         pw.Page(
@@ -1904,6 +1908,24 @@ class _PatientQuestionnaireScreenState
                     ),
                   ),
                 ], // Wywiad medyczny
+                pw.Spacer(),
+                pw.Container(
+                  alignment: pw.Alignment.centerRight,
+                  margin: const pw.EdgeInsets.only(top: 10),
+                  child: pw.Row(
+                    mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                    children: [
+                      pw.Text(
+                        formattedDateTime,
+                        style: const pw.TextStyle(fontSize: 10),
+                      ),
+                      pw.Text(
+                        'Strona ${context.pageNumber} z ${context.pagesCount}',
+                        style: const pw.TextStyle(fontSize: 10),
+                      ),
+                    ],
+                  ),
+                ),
               ],
             );
           },
@@ -1914,6 +1936,25 @@ class _PatientQuestionnaireScreenState
         pw.MultiPage(
           theme: pdfTheme,
           pageFormat: PdfPageFormat.a4,
+          footer: (context) {
+            return pw.Container(
+              alignment: pw.Alignment.centerRight,
+              margin: const pw.EdgeInsets.only(top: 10),
+              child: pw.Row(
+                mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                children: [
+                  pw.Text(
+                    formattedDateTime,
+                    style: const pw.TextStyle(fontSize: 10),
+                  ),
+                  pw.Text(
+                    'Strona ${context.pageNumber} z ${context.pagesCount}',
+                    style: const pw.TextStyle(fontSize: 10),
+                  ),
+                ],
+              ),
+            );
+          },
           build: (pw.Context context) {
             return [
               _buildPdfSectionTitle('HISTORIA CHOROBY'),
@@ -2242,6 +2283,25 @@ class _PatientQuestionnaireScreenState
         pw.MultiPage(
           theme: pdfTheme,
           pageFormat: PdfPageFormat.a4,
+          footer: (context) {
+            return pw.Container(
+              alignment: pw.Alignment.centerRight,
+              margin: const pw.EdgeInsets.only(top: 10),
+              child: pw.Row(
+                mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                children: [
+                  pw.Text(
+                    formattedDateTime,
+                    style: const pw.TextStyle(fontSize: 10),
+                  ),
+                  pw.Text(
+                    'Strona ${context.pageNumber} z ${context.pagesCount}',
+                    style: const pw.TextStyle(fontSize: 10),
+                  ),
+                ],
+              ),
+            );
+          },
           build: (pw.Context context) {
             return [
               pw.Padding(
@@ -2334,6 +2394,24 @@ class _PatientQuestionnaireScreenState
                       pw.SizedBox(height: 20),
                       pw.Text(
                         'Data: ${DateFormat('dd.MM.yyyy').format(DateTime.now())}',
+                      ),
+                    ],
+                  ),
+                ),
+                pw.Spacer(),
+                pw.Container(
+                  alignment: pw.Alignment.centerRight,
+                  margin: const pw.EdgeInsets.only(top: 10),
+                  child: pw.Row(
+                    mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                    children: [
+                      pw.Text(
+                        formattedDateTime,
+                        style: const pw.TextStyle(fontSize: 10),
+                      ),
+                      pw.Text(
+                        'Strona ${context.pageNumber} z ${context.pagesCount}',
+                        style: const pw.TextStyle(fontSize: 10),
                       ),
                     ],
                   ),

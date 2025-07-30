@@ -511,6 +511,11 @@ class _ZadatekScreenState extends State<ZadatekScreen> {
       format: ImageByteFormat.png,
     );
 
+    final now = DateTime.now();
+    final formattedDateTime =
+        '${now.day.toString().padLeft(2, '0')}.${now.month.toString().padLeft(2, '0')}.${now.year} '
+        '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}';
+
     doc.addPage(
       pw.Page(
         theme: pdfTheme,
@@ -576,6 +581,24 @@ class _ZadatekScreenState extends State<ZadatekScreen> {
                       pw.SizedBox(height: 20),
                       pw.Text(
                         'Data: ${DateFormat('dd.MM.yyyy').format(DateTime.now())}',
+                      ),
+                    ],
+                  ),
+                ),
+                pw.Spacer(),
+                pw.Container(
+                  alignment: pw.Alignment.centerRight,
+                  margin: const pw.EdgeInsets.only(top: 10),
+                  child: pw.Row(
+                    mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                    children: [
+                      pw.Text(
+                        formattedDateTime,
+                        style: const pw.TextStyle(fontSize: 10),
+                      ),
+                      pw.Text(
+                        'Strona ${context.pageNumber} z ${context.pagesCount}',
+                        style: const pw.TextStyle(fontSize: 10),
                       ),
                     ],
                   ),
