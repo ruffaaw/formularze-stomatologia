@@ -8,13 +8,9 @@ import 'package:flutter/services.dart';
 import 'package:syncfusion_flutter_signaturepad/signaturepad.dart';
 import 'package:uuid/uuid.dart';
 import 'package:intl/intl.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:flutter/material.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
-import 'package:printing/printing.dart';
-import 'package:email_validator/email_validator.dart';
 
 class TreatmentPlanScreen extends StatefulWidget {
   const TreatmentPlanScreen({super.key});
@@ -24,12 +20,6 @@ class TreatmentPlanScreen extends StatefulWidget {
 }
 
 class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
-  final GlobalKey<SfSignaturePadState> _signaturePadKeyDoctor = GlobalKey();
-  final GlobalKey<SfSignaturePadState> _signaturePadKeyPatient = GlobalKey();
-  final GlobalKey<SfSignaturePadState> _signaturePadKeyDoctorComplications =
-      GlobalKey();
-  final GlobalKey<SfSignaturePadState> _signaturePadKeyPatientComplications =
-      GlobalKey();
   final GlobalKey<SfSignaturePadState> _signaturePadKeyDoctorTreatmentAgree =
       GlobalKey();
   final GlobalKey<SfSignaturePadState> _signaturePadKeyPatientTreatmentAgree =
@@ -850,17 +840,17 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
                 ),
               ),
               const SizedBox(height: 16),
-              Center(
-                child: Text(
-                  _t('treatment_plan_accept'),
-                  style: const TextStyle(fontWeight: FontWeight.bold),
-                ),
-              ),
+              // Center(
+              //   child: Text(
+              //     _t('treatment_plan_accept'),
+              //     style: const TextStyle(fontWeight: FontWeight.bold),
+              //   ),
+              // ),
 
-              _buildSignatureSection(
-                _signaturePadKeyDoctor,
-                _signaturePadKeyPatient,
-              ),
+              // _buildSignatureSection(
+              //   _signaturePadKeyDoctor,
+              //   _signaturePadKeyPatient,
+              // ),
               // Sekcja 3 - Powikłania
               Center(
                 child: Text(
@@ -890,10 +880,10 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
 
               for (int i = 1; i <= 8; i++) _buildComplicationSection(i),
 
-              _buildSignatureSection(
-                _signaturePadKeyDoctorComplications,
-                _signaturePadKeyPatientComplications,
-              ),
+              // _buildSignatureSection(
+              //   _signaturePadKeyDoctorComplications,
+              //   _signaturePadKeyPatientComplications,
+              // ),
               // Sekcja 4 - Zgoda na leczenie
               Text(
                 _t('treatment_agree'),
@@ -1118,38 +1108,6 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
         ),
       );
 
-      final signatureBytes = await _getSignatureImageBytes();
-
-      final doctorImage = await _signaturePadKeyDoctor.currentState!.toImage();
-      final doctorByteData = await doctorImage.toByteData(
-        format: ui.ImageByteFormat.png,
-      );
-      final Uint8List doctorSignatureBytes = doctorByteData!.buffer
-          .asUint8List();
-
-      final patientImage = await _signaturePadKeyPatient.currentState!
-          .toImage();
-      final patientByteData = await patientImage.toByteData(
-        format: ui.ImageByteFormat.png,
-      );
-      final Uint8List patientSignatureBytes = patientByteData!.buffer
-          .asUint8List();
-
-      final doctorComplicationsImage = await _signaturePadKeyDoctorComplications
-          .currentState!
-          .toImage();
-      final doctorComplicationsByteData = await doctorComplicationsImage
-          .toByteData(format: ui.ImageByteFormat.png);
-      final Uint8List doctorComplicationsSignatureBytes =
-          doctorComplicationsByteData!.buffer.asUint8List();
-
-      final patientComplicationsImage =
-          await _signaturePadKeyPatientComplications.currentState!.toImage();
-      final patientComplicationsByteData = await patientComplicationsImage
-          .toByteData(format: ui.ImageByteFormat.png);
-      final Uint8List patientComplicationsSignatureBytes =
-          patientComplicationsByteData!.buffer.asUint8List();
-
       final doctorTreatmentAgreeImage =
           await _signaturePadKeyDoctorTreatmentAgree.currentState!.toImage();
       final doctorTreatmentAgreeByteData = await doctorTreatmentAgreeImage
@@ -1235,31 +1193,6 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
                 ),
               ),
               pw.SizedBox(height: 10),
-              pw.Center(
-                child: pw.Text(
-                  'Akceptuje proponowany plan leczenia',
-                  style: pw.TextStyle(
-                    fontSize: 14,
-                    fontWeight: pw.FontWeight.bold,
-                  ),
-                  textAlign: pw.TextAlign.center,
-                ),
-              ),
-              pw.SizedBox(height: 10),
-              pw.Row(
-                mainAxisAlignment: pw.MainAxisAlignment.spaceEvenly,
-                crossAxisAlignment: pw.CrossAxisAlignment.start,
-                children: [
-                  _buildSignatureColumnPdf(
-                    label: 'Podpis lekarza:',
-                    signatureImage: doctorSignatureBytes,
-                  ),
-                  _buildSignatureColumnPdf(
-                    label: 'Podpis pacjenta lub opiekuna prawnego:',
-                    signatureImage: patientSignatureBytes,
-                  ),
-                ],
-              ),
             ];
           },
         ),
@@ -1334,20 +1267,6 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
                 pw.SizedBox(height: 10),
                 for (int i = 5; i <= 8; i++) _buildComplicationSectionPdf(i),
                 pw.SizedBox(height: 10),
-                pw.Row(
-                  mainAxisAlignment: pw.MainAxisAlignment.spaceEvenly,
-                  crossAxisAlignment: pw.CrossAxisAlignment.start,
-                  children: [
-                    _buildSignatureColumnPdf(
-                      label: 'Podpis lekarza:',
-                      signatureImage: doctorComplicationsSignatureBytes,
-                    ),
-                    _buildSignatureColumnPdf(
-                      label: 'Podpis pacjenta lub opiekuna prawnego:',
-                      signatureImage: patientComplicationsSignatureBytes,
-                    ),
-                  ],
-                ),
                 pw.Spacer(),
                 pw.Container(
                   alignment: pw.Alignment.centerRight,
@@ -1532,18 +1451,6 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
     ).showSnackBar(SnackBar(content: Text(message)));
   }
 
-  Future<ByteData?> _getSignatureImageBytes() async {
-    try {
-      final signatureState = _signaturePadKeyDoctor.currentState;
-      if (signatureState == null) return null;
-
-      final image = await signatureState.toImage();
-      return await image.toByteData(format: ImageByteFormat.png);
-    } catch (e) {
-      return null;
-    }
-  }
-
   pw.Widget _buildSignatureColumnPdf({
     required String label,
     required Uint8List? signatureImage,
@@ -1684,7 +1591,7 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
     );
   }
 
-  pw.Widget _buildPdfTextField(String label, String value, {int maxLines = 1}) {
+  pw.Widget _buildPdfTextField(String label, String value) {
     return pw.Padding(
       padding: const pw.EdgeInsets.only(bottom: 8),
       child: pw.RichText(
@@ -1704,7 +1611,6 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
   pw.Widget _buildPdfTextField2(
     String label,
     String value, {
-    int maxLines = 1,
     bool isRequired = false,
     double labelSize = 12,
     double valueSize = 11,
@@ -1824,34 +1730,6 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
     );
   }
 
-  pw.Widget _buildConsentPdfRow(String label, bool isChecked) {
-    return pw.Padding(
-      padding: const pw.EdgeInsets.only(bottom: 8),
-      child: pw.Row(
-        children: [
-          pw.Text('${isChecked ? '[X]' : '[ ]'} '),
-          pw.SizedBox(width: 10),
-          pw.Expanded(child: pw.Text(label)),
-        ],
-      ),
-    );
-  }
-
-  pw.Widget _buildPdfCheckbox(bool isChecked, {bool isCentered = false}) {
-    final checkbox = pw.Container(
-      width: 12,
-      height: 12,
-      decoration: pw.BoxDecoration(border: pw.Border.all()),
-      child: isChecked
-          ? pw.Center(
-              child: pw.Text('X', style: const pw.TextStyle(fontSize: 10)),
-            )
-          : null,
-    );
-
-    return isCentered ? pw.Center(child: checkbox) : checkbox;
-  }
-
   // Walidacja wymaganych pól
   Future<bool> validateForm() async {
     // Dane osobowe - wymagane
@@ -1890,26 +1768,6 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
       } catch (e) {
         return false;
       }
-    }
-
-    if (!await isSignatureNotEmpty(_signaturePadKeyDoctor)) {
-      showValidationError('Proszę złożyć podpis lekarza');
-      return false;
-    }
-
-    if (!await isSignatureNotEmpty(_signaturePadKeyPatient)) {
-      showValidationError('Proszę złożyć podpis pacjenta');
-      return false;
-    }
-
-    if (!await isSignatureNotEmpty(_signaturePadKeyDoctorComplications)) {
-      showValidationError('Proszę złożyć podpis lekarza');
-      return false;
-    }
-
-    if (!await isSignatureNotEmpty(_signaturePadKeyPatientComplications)) {
-      showValidationError('Proszę złożyć podpis pacjenta');
-      return false;
     }
 
     if (!await isSignatureNotEmpty(_signaturePadKeyDoctorTreatmentAgree)) {
