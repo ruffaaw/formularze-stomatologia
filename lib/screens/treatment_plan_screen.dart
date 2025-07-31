@@ -1050,52 +1050,6 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
                   );
                 }).toList(),
               ],
-              const SizedBox(height: 16),
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.blue.shade50,
-                  borderRadius: BorderRadius.circular(12),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black12,
-                      blurRadius: 6,
-                      offset: Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        SizedBox(width: 8),
-                        Text(
-                          _t('sum'),
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                    ),
-                    AnimatedSwitcher(
-                      duration: const Duration(milliseconds: 300),
-                      transitionBuilder: (child, animation) =>
-                          ScaleTransition(scale: animation, child: child),
-                      child: Text(
-                        "${numberFormat.format(totalEstimatePrice)} ${_t('zl')}",
-                        key: ValueKey(totalEstimatePrice.toString()),
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.blueAccent,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
               const SizedBox(height: 24),
               Container(
                 width: double.infinity,
@@ -1540,7 +1494,7 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
     }
     final name = _controllers['patient_name']!.text.trim();
     final fileName =
-        '${name}_${DateFormat('ddMMyyyy_HHmmss').format(DateTime.now())}.pdf'
+        '${name}_${DateFormat('ddMMyyyy_HHmmss').format(DateTime.now())}_plan_leczenia.pdf'
             .replaceAll(' ', '_')
             .replaceAll(RegExp(r'[^a-zA-Z0-9_.]'), '');
     final directory = Directory('/storage/emulated/0/Download');
@@ -1696,37 +1650,6 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
               ),
             );
           }).toList(),
-
-          pw.SizedBox(height: 12),
-
-          // Suma
-          pw.Container(
-            padding: const pw.EdgeInsets.all(12),
-            decoration: pw.BoxDecoration(
-              color: PdfColors.blue50,
-              borderRadius: pw.BorderRadius.circular(8),
-            ),
-            child: pw.Row(
-              mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-              children: [
-                pw.Text(
-                  _t('sum'),
-                  style: pw.TextStyle(
-                    fontSize: 16,
-                    fontWeight: pw.FontWeight.bold,
-                  ),
-                ),
-                pw.Text(
-                  "${numberFormat.format(totalEstimatePrice)} ${_t('zl')}",
-                  style: pw.TextStyle(
-                    fontSize: 16,
-                    fontWeight: pw.FontWeight.bold,
-                    color: PdfColors.blue800,
-                  ),
-                ),
-              ],
-            ),
-          ),
         ],
       ],
     );
