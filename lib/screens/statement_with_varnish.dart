@@ -14,10 +14,10 @@ class StatementWithVarnishScreen extends StatefulWidget {
 
   @override
   State<StatementWithVarnishScreen> createState() =>
-      _StatementWithADentistScreenState();
+      _StatementWithVarnishScreenState();
 }
 
-class _StatementWithADentistScreenState
+class _StatementWithVarnishScreenState
     extends State<StatementWithVarnishScreen> {
   final GlobalKey<SfSignaturePadState> _signaturePadKey = GlobalKey();
 
