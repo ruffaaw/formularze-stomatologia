@@ -39,14 +39,6 @@ class FormSelectionScreen extends StatelessWidget {
           children: [
             _buildFormCard(
               context,
-              icon: Icons.medical_services,
-              title: 'Plan leczenia',
-              description: 'Formularz planu leczenia ortodontycznego',
-              screen: const TreatmentPlanScreen(),
-            ),
-            const SizedBox(height: 20),
-            _buildFormCard(
-              context,
               icon: Icons.note_add,
               title: 'Zadatek',
               description: 'Formularz przyjmowania zadatku',
@@ -59,6 +51,14 @@ class FormSelectionScreen extends StatelessWidget {
               title: 'Ankieta pacjenta',
               description: 'Formularz ankietowy dla pacjenta',
               screen: const PatientQuestionnaireScreen(),
+            ),
+            const SizedBox(height: 20),
+            _buildFormCard(
+              context,
+              icon: Icons.medical_services,
+              title: 'Plan leczenia',
+              description: 'Formularz planu leczenia ortodontycznego',
+              screen: const TreatmentPlanScreen(),
             ),
             const SizedBox(height: 20),
             _buildFormCard(
