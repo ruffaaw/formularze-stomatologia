@@ -503,6 +503,10 @@ class _PatientQuestionnaireScreenState
         diseaseId;
   }
 
+  String _diseaseNamePdf(String diseaseId) {
+    return _diseases.firstWhere((d) => d['id'] == diseaseId)['pl'] ?? diseaseId;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -1942,7 +1946,7 @@ class _PatientQuestionnaireScreenState
                       pw.Padding(
                         padding: const pw.EdgeInsets.all(8),
                         child: pw.Text(
-                          _t('diseaseQuestion'),
+                          _translations['pl']!['diseaseQuestion']!,
                           style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
                         ),
                       ),
@@ -1950,7 +1954,7 @@ class _PatientQuestionnaireScreenState
                         padding: const pw.EdgeInsets.all(8),
                         child: pw.Center(
                           child: pw.Text(
-                            _t('yes'),
+                            _translations['pl']!['yes']!,
                             style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
                           ),
                         ),
@@ -1959,7 +1963,7 @@ class _PatientQuestionnaireScreenState
                         padding: const pw.EdgeInsets.all(8),
                         child: pw.Center(
                           child: pw.Text(
-                            _t('no'),
+                            _translations['pl']!['no']!,
                             style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
                           ),
                         ),
@@ -1968,7 +1972,7 @@ class _PatientQuestionnaireScreenState
                         padding: const pw.EdgeInsets.all(8),
                         child: pw.Center(
                           child: pw.Text(
-                            _t('dontKnow'),
+                            _translations['pl']!['dontKnow']!,
                             style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
                           ),
                         ),
@@ -1982,12 +1986,12 @@ class _PatientQuestionnaireScreenState
                         pw.Padding(
                           padding: const pw.EdgeInsets.all(8),
                           child: (disease['hasDescription'] == "false")
-                              ? pw.Text(_diseaseName(disease['id']!))
+                              ? pw.Text(_diseaseNamePdf(disease['id']!))
                               : pw.Column(
                                   crossAxisAlignment:
                                       pw.CrossAxisAlignment.start,
                                   children: [
-                                    pw.Text(_diseaseName(disease['id']!)),
+                                    pw.Text(_diseaseNamePdf(disease['id']!)),
                                     if (_controllers[_getDescriptionControllerKey(
                                               disease['id']!,
                                             )]
@@ -2040,7 +2044,7 @@ class _PatientQuestionnaireScreenState
                       pw.Padding(
                         padding: const pw.EdgeInsets.all(8),
                         child: pw.Text(
-                          _t('contraindications'),
+                          _translations['pl']!['contraindications']!,
                           style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
                         ),
                       ),
@@ -2048,7 +2052,7 @@ class _PatientQuestionnaireScreenState
                         padding: const pw.EdgeInsets.all(8),
                         child: pw.Center(
                           child: pw.Text(
-                            _t('yes'),
+                            _translations['pl']!['yes']!,
                             style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
                           ),
                         ),
@@ -2057,7 +2061,7 @@ class _PatientQuestionnaireScreenState
                         padding: const pw.EdgeInsets.all(8),
                         child: pw.Center(
                           child: pw.Text(
-                            _t('no'),
+                            _translations['pl']!['no']!,
                             style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
                           ),
                         ),
@@ -2066,7 +2070,7 @@ class _PatientQuestionnaireScreenState
                         padding: const pw.EdgeInsets.all(8),
                         child: pw.Center(
                           child: pw.Text(
-                            _t('dontKnow'),
+                            _translations['pl']!['dontKnow']!,
                             style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
                           ),
                         ),
@@ -2080,12 +2084,12 @@ class _PatientQuestionnaireScreenState
                         pw.Padding(
                           padding: const pw.EdgeInsets.all(8),
                           child: (disease['hasDescription'] == "false")
-                              ? pw.Text(_diseaseName(disease['id']!))
+                              ? pw.Text(_diseaseNamePdf(disease['id']!))
                               : pw.Column(
                                   crossAxisAlignment:
                                       pw.CrossAxisAlignment.start,
                                   children: [
-                                    pw.Text(_diseaseName(disease['id']!)),
+                                    pw.Text(_diseaseNamePdf(disease['id']!)),
                                     if (_controllers[_getDescriptionControllerKey(
                                               disease['id']!,
                                             )]
@@ -2138,7 +2142,7 @@ class _PatientQuestionnaireScreenState
                       pw.Padding(
                         padding: const pw.EdgeInsets.all(8),
                         child: pw.Text(
-                          _t('other'),
+                          _translations['pl']!['other']!,
                           style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
                         ),
                       ),
@@ -2146,7 +2150,7 @@ class _PatientQuestionnaireScreenState
                         padding: const pw.EdgeInsets.all(8),
                         child: pw.Center(
                           child: pw.Text(
-                            _t('yes'),
+                            _translations['pl']!['yes']!,
                             style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
                           ),
                         ),
@@ -2155,7 +2159,7 @@ class _PatientQuestionnaireScreenState
                         padding: const pw.EdgeInsets.all(8),
                         child: pw.Center(
                           child: pw.Text(
-                            _t('no'),
+                            _translations['pl']!['no']!,
                             style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
                           ),
                         ),
@@ -2164,7 +2168,7 @@ class _PatientQuestionnaireScreenState
                         padding: const pw.EdgeInsets.all(8),
                         child: pw.Center(
                           child: pw.Text(
-                            _t('dontKnow'),
+                            _translations['pl']!['dontKnow']!,
                             style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
                           ),
                         ),
@@ -2178,12 +2182,12 @@ class _PatientQuestionnaireScreenState
                         pw.Padding(
                           padding: const pw.EdgeInsets.all(8),
                           child: (disease['hasDescription'] == "false")
-                              ? pw.Text(_diseaseName(disease['id']!))
+                              ? pw.Text(_diseaseNamePdf(disease['id']!))
                               : pw.Column(
                                   crossAxisAlignment:
                                       pw.CrossAxisAlignment.start,
                                   children: [
-                                    pw.Text(_diseaseName(disease['id']!)),
+                                    pw.Text(_diseaseNamePdf(disease['id']!)),
                                     if (_controllers[_getDescriptionControllerKey(
                                               disease['id']!,
                                             )]

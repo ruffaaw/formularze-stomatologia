@@ -319,7 +319,7 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
       'price_information':
           "Other services are priced individually. Prices are subject to change.",
       'other_information':
-          "W przypadku trudności w osiągnięciu celów leczenia, a także przyspieszenia ruchu grup zębowych oraz eliminacji niepotrzebnych przesunięć, wzięte pod uwagę zostanie wspomaganie leczenia ortodontycznego za pomocą  implantów ortodontycznych. Koszty miniimplantow według aktualnego cennika.",
+          "If treatment goals are difficult to achieve, or if you need to accelerate tooth movement and eliminate unnecessary shifts, orthodontic implants may be considered as a supplement to your orthodontic treatment. Mini-implants are priced according to the current price list.",
     },
   };
 
@@ -704,7 +704,9 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
                           color: isSelected ? Colors.grey[200] : null,
                           child: ListTile(
                             title: Text(_t(option['name'])),
-                            subtitle: Text('od ${option['price']} ${_t('zl')}'),
+                            subtitle: Text(
+                              '${_selectedLanguage == "pl" ? "od" : "from"} ${option['price']} ${_t('zl')}',
+                            ),
                             onTap: () {
                               setState(() {
                                 if (!isSelected) {
@@ -990,7 +992,7 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
                           flex: 3,
                           child: Row(
                             children: [
-                              const Text('od'),
+                              Text(_selectedLanguage == 'pl' ? 'od' : 'from'),
                               const SizedBox(
                                 width: 8,
                               ), // Odstęp między tekstem a polem
@@ -1189,7 +1191,7 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
                 padding: const pw.EdgeInsets.all(16),
                 color: PdfColors.red100,
                 child: pw.Text(
-                  _translations[_selectedLanguage]!['other_information']!,
+                  _translations['pl']!['other_information']!,
                   textAlign: pw.TextAlign.center,
                   style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
                 ),
@@ -1502,7 +1504,7 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
         if (selectedEstimates.isNotEmpty) ...[
           pw.SizedBox(height: 8),
           pw.Text(
-            _t('selected_items'),
+            _translations['pl']!['selected_items']!,
             style: pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold),
           ),
           pw.SizedBox(height: 8),
@@ -1516,14 +1518,14 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
                 pw.Expanded(
                   flex: 4,
                   child: pw.Text(
-                    _t('designation'),
+                    _translations['pl']!['designation']!,
                     style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
                   ),
                 ),
                 pw.Expanded(
                   flex: 2,
                   child: pw.Text(
-                    _t('price'),
+                    _translations['pl']!['price']!,
                     style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
                   ),
                 ),
@@ -1546,7 +1548,10 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
               margin: const pw.EdgeInsets.only(bottom: 4),
               child: pw.Row(
                 children: [
-                  pw.Expanded(flex: 4, child: pw.Text(_t(item['name']))),
+                  pw.Expanded(
+                    flex: 4,
+                    child: pw.Text(_translations['pl']![item['name']]!),
+                  ),
                   pw.Expanded(
                     flex: 2,
                     child: pw.Row(
