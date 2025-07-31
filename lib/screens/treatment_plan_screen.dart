@@ -368,6 +368,8 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
   Widget _buildTextFormField({
     required String label,
     required String controllerKey,
+    TextInputType? keyboardType,
+    List<TextInputFormatter>? inputFormatters,
     bool required = false,
     int maxLines = 1,
   }) {
@@ -401,6 +403,8 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
         ),
         style: const TextStyle(fontSize: 16),
         maxLines: maxLines,
+        keyboardType: keyboardType,
+        inputFormatters: inputFormatters,
         validator: required
             ? (value) => value?.trim().isEmpty ?? true
                   ? _selectedLanguage == 'pl'
@@ -895,6 +899,8 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
               _buildTextFormField(
                 label: 'PESEL',
                 controllerKey: 'patient_pesel',
+                keyboardType: TextInputType.number,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 required: true,
               ),
               const SizedBox(height: 24),
@@ -1741,19 +1747,31 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
   Future<bool> validateForm() async {
     // Dane osobowe - wymagane
     if (_controllers['patient_name']!.text.isEmpty) {
-      showValidationError('Proszę wprowadzić imię pacjenta');
+      showValidationError(
+        _selectedLanguage == 'pl'
+            ? 'Proszę wprowadzić imię pacjenta'
+            : 'Please enter the patient\'s name',
+      );
       return false;
     }
 
     if (_controllers['recognition']!.text.isEmpty) {
-      showValidationError('Proszę wprowadzić rozpoznanie');
+      showValidationError(
+        _selectedLanguage == 'pl'
+            ? 'Proszę wprowadzić rozpoznanie'
+            : 'Please enter the diagnosis',
+      );
       return false;
     }
 
     if (_controllers['patient_pesel']!.text.isEmpty ||
         _controllers['patient_pesel']!.text.length != 11 ||
         !_controllers['patient_pesel']!.text.isNumeric()) {
-      showValidationError('Proszę wprowadzić poprawny PESEL (11 cyfr)');
+      showValidationError(
+        _selectedLanguage == 'pl'
+            ? 'Proszę wprowadzić poprawny PESEL (11 cyfr)'
+            : 'Please enter a valid PESEL (11 digits)',
+      );
       return false;
     }
 
@@ -1778,12 +1796,20 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
     }
 
     if (!await isSignatureNotEmpty(_signaturePadKeyDoctorTreatmentAgree)) {
-      showValidationError('Proszę złożyć podpis lekarza');
+      showValidationError(
+        _selectedLanguage == 'pl'
+            ? 'Proszę złożyć podpis lekarza'
+            : 'Please sign the doctor\'s signature',
+      );
       return false;
     }
 
     if (!await isSignatureNotEmpty(_signaturePadKeyPatientTreatmentAgree)) {
-      showValidationError('Proszę złożyć podpis pacjenta');
+      showValidationError(
+        _selectedLanguage == 'pl'
+            ? 'Proszę złożyć podpis pacjenta'
+            : 'Please sign the patient\'s signature',
+      );
       return false;
     }
 

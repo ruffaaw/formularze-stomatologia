@@ -1665,7 +1665,11 @@ class _PatientQuestionnaireScreenState
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Text("miejsce na podpis"),
+                    Text(
+                      _selectedLanguage == 'pl'
+                          ? "miejsce na podpis"
+                          : "place for signature",
+                    ),
                     SizedBox(height: 4),
                     Container(
                       height: 200,
@@ -1703,12 +1707,16 @@ class _PatientQuestionnaireScreenState
                         ),
                       ),
                       child: Text(
-                        "Wyczyść",
+                        _selectedLanguage == 'pl' ? "Wyczyść" : "Clear",
                         style: TextStyle(color: Colors.white),
                       ),
                     ),
                     const SizedBox(height: 16),
-                    Text("Podpis pacjenta lub opiekuna prawnego"),
+                    Text(
+                      _selectedLanguage == 'pl'
+                          ? "Podpis pacjenta lub opiekuna prawnego"
+                          : "Patient or legal guardian signature",
+                    ),
                     const SizedBox(height: 16),
                     ElevatedButton(
                       onPressed: () async {
@@ -1725,7 +1733,7 @@ class _PatientQuestionnaireScreenState
                         ),
                       ),
                       child: Text(
-                        "Zapisz",
+                        _selectedLanguage == 'pl' ? "Zapisz" : "Save",
                         style: TextStyle(color: Colors.white),
                       ),
                     ),
@@ -2600,35 +2608,59 @@ class _PatientQuestionnaireScreenState
   Future<bool> validateForm() async {
     // Dane osobowe - wymagane
     if (_controllers['patientName']!.text.isEmpty) {
-      showValidationError('Proszę wprowadzić imię pacjenta');
+      showValidationError(
+        _selectedLanguage == 'pl'
+            ? 'Proszę wprowadzić imię pacjenta'
+            : 'Please enter the patient\'s first name',
+      );
       return false;
     }
 
     if (_controllers['patientSurname']!.text.isEmpty) {
-      showValidationError('Proszę wprowadzić nazwisko pacjenta');
+      showValidationError(
+        _selectedLanguage == 'pl'
+            ? 'Proszę wprowadzić nazwisko pacjenta'
+            : 'Please enter the patient\'s surname',
+      );
       return false;
     }
 
     if (_controllers['patientPesel']!.text.isEmpty ||
         _controllers['patientPesel']!.text.length != 11 ||
         !_controllers['patientPesel']!.text.isNumeric()) {
-      showValidationError('Proszę wprowadzić poprawny PESEL (11 cyfr)');
+      showValidationError(
+        _selectedLanguage == 'pl'
+            ? 'Proszę wprowadzić poprawny PESEL (11 cyfr)'
+            : 'Please enter a valid PESEL (11 digits)',
+      );
       return false;
     }
 
     if (_controllers['patientBirthday']!.text.isEmpty) {
-      showValidationError('Proszę wprowadzić datę urodzenia');
+      showValidationError(
+        _selectedLanguage == 'pl'
+            ? 'Proszę wprowadzić datę urodzenia'
+            : 'Please enter the date of birth',
+      );
       return false;
     }
 
     // Dane kontaktowe - wymagane
     if (_controllers['patientStreet']!.text.isEmpty) {
-      showValidationError('Proszę wprowadzić ulicę');
+      showValidationError(
+        _selectedLanguage == 'pl'
+            ? 'Proszę wprowadzić ulicę'
+            : 'Please enter the street',
+      );
       return false;
     }
 
     if (_controllers['patientCity']!.text.isEmpty) {
-      showValidationError('Proszę wprowadzić miasto');
+      showValidationError(
+        _selectedLanguage == 'pl'
+            ? 'Proszę wprowadzić miasto'
+            : 'Please enter the city',
+      );
       return false;
     }
 
@@ -2637,7 +2669,9 @@ class _PatientQuestionnaireScreenState
           r'^\d{2}-\d{3}$',
         ).hasMatch(_controllers['patientPostCode']!.text)) {
       showValidationError(
-        'Proszę wprowadzić poprawny kod pocztowy (format: 00-000)',
+        _selectedLanguage == 'pl'
+            ? 'Proszę wprowadzić poprawny kod pocztowy (format: 00-000)'
+            : 'Please enter a valid postal code (format: 00-000)',
       );
       return false;
     }
@@ -2646,26 +2680,40 @@ class _PatientQuestionnaireScreenState
         !_controllers['patientPhone']!.text.isNumeric() ||
         _controllers['patientPhone']!.text.length < 9) {
       showValidationError(
-        'Proszę wprowadzić poprawny numer telefonu (minimum 9 cyfr)',
+        _selectedLanguage == 'pl'
+            ? 'Proszę wprowadzić poprawny numer telefonu (minimum 9 cyfr)'
+            : 'Please enter a valid phone number (minimum 9 digits)',
       );
       return false;
     }
 
     if (_controllers['patientEmail']!.text.isNotEmpty &&
         !EmailValidator.validate(_controllers['patientEmail']!.text)) {
-      showValidationError('Proszę wprowadzić poprawny adres email');
+      showValidationError(
+        _selectedLanguage == 'pl'
+            ? 'Proszę wprowadzić poprawny adres email'
+            : 'Please enter a valid email address',
+      );
       return false;
     }
 
     if (_selectedAuthorization!.isEmpty) {
-      showValidationError('Proszę podać oświadczenie');
+      showValidationError(
+        _selectedLanguage == 'pl'
+            ? 'Proszę podać oświadczenie'
+            : 'Please provide a statement',
+      );
       return false;
     }
 
     // Walidacja opiekuna (jeśli jest uzupełniony)
     if (_controllers['patientGuardian']!.text.isNotEmpty) {
       if (_controllers['patientGuardianStreet']!.text.isEmpty) {
-        showValidationError('Proszę wprowadzić adres opiekuna');
+        showValidationError(
+          _selectedLanguage == 'pl'
+              ? 'Proszę wprowadzić adres opiekuna'
+              : 'Please enter the guardian\'s address',
+        );
         return false;
       }
     }
@@ -2673,17 +2721,29 @@ class _PatientQuestionnaireScreenState
     // Walidacja upoważnienia (jeśli wybrano "tak")
     if (_selectedAuthorization == 'yes') {
       if (_controllers['patientAuthorizationName']!.text.isEmpty) {
-        showValidationError('Proszę wprowadzić imię upoważnionej osoby');
+        showValidationError(
+          _selectedLanguage == 'pl'
+              ? 'Proszę wprowadzić imię upoważnionej osoby'
+              : 'Please enter the authorized person\'s name',
+        );
         return false;
       }
 
       if (_controllers['patientAuthorizationSurname']!.text.isEmpty) {
-        showValidationError('Proszę wprowadzić nazwisko upoważnionej osoby');
+        showValidationError(
+          _selectedLanguage == 'pl'
+              ? 'Proszę wprowadzić nazwisko upoważnionej osoby'
+              : 'Please enter the authorized person\'s surname',
+        );
         return false;
       }
 
       if (_controllers['patientAuthorizationAddress']!.text.isEmpty) {
-        showValidationError('Proszę wprowadzić adres upoważnionej osoby');
+        showValidationError(
+          _selectedLanguage == 'pl'
+              ? 'Proszę wprowadzić adres upoważnionej osoby'
+              : 'Please enter the authorized person\'s address',
+        );
         return false;
       }
 
@@ -2691,7 +2751,9 @@ class _PatientQuestionnaireScreenState
           !_controllers['patientAuthorizationPhone']!.text.isNumeric() ||
           _controllers['patientAuthorizationPhone']!.text.length < 9) {
         showValidationError(
-          'Proszę wprowadzić poprawny numer telefonu upoważnionej osoby',
+          _selectedLanguage == 'pl'
+              ? 'Proszę wprowadzić poprawny numer telefonu upoważnionej osoby'
+              : 'Please enter a valid phone number for the authorized person (minimum 9 digits)',
         );
         return false;
       }
@@ -2700,7 +2762,9 @@ class _PatientQuestionnaireScreenState
           _controllers['patientAuthorizationPesel']!.text.length != 11 ||
           !_controllers['patientAuthorizationPesel']!.text.isNumeric()) {
         showValidationError(
-          'Proszę wprowadzić poprawny PESEL upoważnionej osoby (11 cyfr)',
+          _selectedLanguage == 'pl'
+              ? 'Proszę wprowadzić poprawny PESEL upoważnionej osoby (11 cyfr)'
+              : 'Please enter a valid PESEL for the authorized person (11 digits)',
         );
         return false;
       }
@@ -2709,49 +2773,81 @@ class _PatientQuestionnaireScreenState
     // Walidacja opisów chorób (jeśli wybrano "tak" dla chorób z opisem)
     if (_diseaseResponses['heartDisease']?['yes'] == '1' &&
         _controllers['heartDiseaseDescription']!.text.isEmpty) {
-      showValidationError('Proszę podać opis choroby serca');
+      showValidationError(
+        _selectedLanguage == 'pl'
+            ? 'Proszę podać opis choroby serca'
+            : 'Please provide a description of heart disease',
+      );
       return false;
     }
 
     if (_diseaseResponses['allergyToAnesthetics']?['yes'] == '1' &&
         _controllers['allergyToAnestheticsDescription']!.text.isEmpty) {
-      showValidationError('Proszę podać opis alergii na anestetyki');
+      showValidationError(
+        _selectedLanguage == 'pl'
+            ? 'Proszę podać opis alergii na anestetyki'
+            : 'Please provide a description of allergy to anesthetics',
+      );
       return false;
     }
 
     if (_diseaseResponses['allergyToMetals']?['yes'] == '1' &&
         _controllers['allergyToMetalsDescription']!.text.isEmpty) {
-      showValidationError('Proszę podać opis alergii na metale');
+      showValidationError(
+        _selectedLanguage == 'pl'
+            ? 'Proszę podać opis alergii na metale'
+            : 'Please provide a description of allergy to metals',
+      );
       return false;
     }
 
     if (_diseaseResponses['actualCure']?['yes'] == '1' &&
         _controllers['actualCureDescription']!.text.isEmpty) {
-      showValidationError('Proszę podać opis aktualnego leczenia');
+      showValidationError(
+        _selectedLanguage == 'pl'
+            ? 'Proszę podać opis aktualnego leczenia'
+            : 'Please provide a description of current treatment',
+      );
       return false;
     }
 
     if (_diseaseResponses['otherDiseases']?['yes'] == '1' &&
         _controllers['otherDiseasesDescription']!.text.isEmpty) {
-      showValidationError('Proszę podać opis innych chorób');
+      showValidationError(
+        _selectedLanguage == 'pl'
+            ? 'Proszę podać opis innych chorób'
+            : 'Please provide a description of other diseases',
+      );
       return false;
     }
 
     if (_diseaseResponses['psychiatricTreatment']?['yes'] == '1' &&
         _controllers['psychiatricTreatmentDescription']!.text.isEmpty) {
-      showValidationError('Proszę podać opis leczenia psychiatrycznego');
+      showValidationError(
+        _selectedLanguage == 'pl'
+            ? 'Proszę podać opis leczenia psychiatrycznego'
+            : 'Please provide a description of psychiatric treatment',
+      );
       return false;
     }
 
     if (_diseaseResponses['mentalDisable']?['yes'] == '1' &&
         _controllers['mentalDisableDescription']!.text.isEmpty) {
-      showValidationError('Proszę podać opis niepełnosprawności umysłowej');
+      showValidationError(
+        _selectedLanguage == 'pl'
+            ? 'Proszę podać opis niepełnosprawności umysłowej'
+            : 'Please provide a description of mental disability',
+      );
       return false;
     }
 
     // Walidacja zgód - wymagane są przynajmniej zgoda1 i zgoda2
     if (!(_consents['zgoda1'] ?? false) && !(_consents['zgoda2'] ?? false)) {
-      showValidationError('Wymagana jest zgoda na wybrany kontakt');
+      showValidationError(
+        _selectedLanguage == 'pl'
+            ? 'Wymagana jest zgoda na wybrany kontakt'
+            : 'At least one consent for contact is required',
+      );
       return false;
     }
 
@@ -2772,7 +2868,9 @@ class _PatientQuestionnaireScreenState
     }
 
     if (!await _isSignatureValid()) {
-      showValidationError('Proszę złożyć podpis');
+      showValidationError(
+        _selectedLanguage == 'pl' ? 'Proszę złożyć podpis' : 'Please sign',
+      );
       return false;
     }
 
