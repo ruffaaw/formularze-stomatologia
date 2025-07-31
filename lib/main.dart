@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:formularze/screens/statement_with_a_dentist.dart';
 import 'package:formularze/screens/statement_with_varnish.dart';
+import 'package:formularze/screens/statement_with_varnish_and_dentist.dart';
 import 'package:formularze/screens/treatment_plan_screen.dart';
 import 'package:formularze/screens/zadatek_screen.dart';
 import 'package:formularze/screens/patient_questionnaire_screen.dart';
@@ -74,6 +75,14 @@ class FormSelectionScreen extends StatelessWidget {
               title: 'Oświadczenie z lakierowaniem',
               description: 'Oświadczenie z lakierowaniem',
               screen: const StatementWithVarnishScreen(),
+            ),
+            const SizedBox(height: 20),
+            _buildFormCard(
+              context,
+              icon: Icons.assignment,
+              title: 'Oświadczenie z lakierowaniem i stomatologiem',
+              description: 'Oświadczenie z lakierowaniem i stomatologiem',
+              screen: const StatementWithVarnishAndDentistScreen(),
             ),
           ],
         ),
