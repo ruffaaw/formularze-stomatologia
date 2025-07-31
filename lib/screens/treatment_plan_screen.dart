@@ -1554,16 +1554,9 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
                   ),
                   pw.Expanded(
                     flex: 2,
-                    child: pw.Row(
-                      children: [
-                        pw.Text('od', textAlign: pw.TextAlign.right),
-                        pw.Expanded(
-                          child: pw.Text(
-                            "${numberFormat.format(item['price'])} ${_t('zl')}",
-                            textAlign: pw.TextAlign.right,
-                          ),
-                        ),
-                      ],
+                    child: pw.Text(
+                      "od ${numberFormat.format(item['price'])} ${_translations['pl']!['zl']!}",
+                      textAlign: pw.TextAlign.left,
                     ),
                   ),
                 ],
