@@ -71,7 +71,7 @@ class FormSelectionScreen extends StatelessWidget {
             const SizedBox(height: 20),
             _buildFormCard(
               context,
-              icon: Icons.assignment,
+              icon: Icons.brush,
               title: 'Oświadczenie z lakierowaniem',
               description: 'Oświadczenie z lakierowaniem',
               screen: const StatementWithVarnishScreen(),
@@ -79,7 +79,7 @@ class FormSelectionScreen extends StatelessWidget {
             const SizedBox(height: 20),
             _buildFormCard(
               context,
-              icon: Icons.assignment,
+              icon: Icons.library_books,
               title: 'Oświadczenie z lakierowaniem i stomatologiem',
               description: 'Oświadczenie z lakierowaniem i stomatologiem',
               screen: const StatementWithVarnishAndDentistScreen(),
