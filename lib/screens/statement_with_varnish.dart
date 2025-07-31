@@ -295,7 +295,7 @@ class _StatementWithVarnishScreenState
                   alignment: pw.Alignment.centerRight,
                   child: pw.Column(
                     children: [
-                      pw.Text('Podpis pacjenta lub opiekuna prawnego:'),
+                      pw.Text('Data i podpis pacjenta'),
                       pw.SizedBox(height: 10),
                       pw.Image(
                         pw.MemoryImage(signatureBytes!.buffer.asUint8List()),

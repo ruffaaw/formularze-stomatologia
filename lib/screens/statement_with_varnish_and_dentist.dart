@@ -314,7 +314,7 @@ class _StatementWithVarnishAndDentistScreenState
                   alignment: pw.Alignment.centerRight,
                   child: pw.Column(
                     children: [
-                      pw.Text('Data i podpis pacjenta:'),
+                      pw.Text('Data i podpis pacjenta'),
                       pw.SizedBox(height: 10),
                       pw.Image(
                         pw.MemoryImage(signatureBytes!.buffer.asUint8List()),
