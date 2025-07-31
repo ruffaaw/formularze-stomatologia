@@ -10,6 +10,32 @@ import 'package:pdf/widgets.dart' as pw;
 import 'package:syncfusion_flutter_signaturepad/signaturepad.dart';
 import 'package:email_validator/email_validator.dart';
 
+class PostCodeInputFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    // Usuń wszystkie znaki oprócz cyfr
+    final digits = newValue.text.replaceAll(RegExp(r'\D'), '');
+
+    String newText = digits;
+    if (digits.length > 5) {
+      newText = digits.substring(0, 5);
+    }
+
+    // Dodaj myślnik automatycznie po dwóch cyfrach, jeśli jest co najmniej 3 znaki
+    if (newText.length >= 3) {
+      newText = '${newText.substring(0, 2)}-${newText.substring(2)}';
+    }
+
+    return TextEditingValue(
+      text: newText,
+      selection: TextSelection.collapsed(offset: newText.length),
+    );
+  }
+}
+
 class PatientQuestionnaireScreen extends StatefulWidget {
   const PatientQuestionnaireScreen({super.key});
 
@@ -1103,6 +1129,11 @@ class _PatientQuestionnaireScreenState
                 label: _t('postCode'),
                 controllerKey: 'patientPostCode',
                 hintText: '00-000',
+                keyboardType: TextInputType.number,
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(RegExp(r'[\d-]')),
+                  PostCodeInputFormatter(),
+                ],
                 validator: (value) {
                   if (value?.isEmpty ?? true) return _t('requiredField');
                   if (!RegExp(r'^\d{2}-\d{3}$').hasMatch(value!)) {
