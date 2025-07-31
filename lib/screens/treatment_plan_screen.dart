@@ -827,7 +827,7 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
                   style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 16),
 
               Container(
                 width: double.infinity,
@@ -839,18 +839,8 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
                   style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
               ),
-              const SizedBox(height: 16),
-              // Center(
-              //   child: Text(
-              //     _t('treatment_plan_accept'),
-              //     style: const TextStyle(fontWeight: FontWeight.bold),
-              //   ),
-              // ),
+              const SizedBox(height: 24),
 
-              // _buildSignatureSection(
-              //   _signaturePadKeyDoctor,
-              //   _signaturePadKeyPatient,
-              // ),
               // Sekcja 3 - Powikłania
               Center(
                 child: Text(
@@ -998,29 +988,41 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
                         Expanded(flex: 4, child: Text(_t(item['name']))),
                         Expanded(
                           flex: 3,
-                          child: TextField(
-                            controller: controller,
-                            keyboardType: TextInputType.number,
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              isDense: true,
-                              contentPadding: EdgeInsets.symmetric(
-                                vertical: 8,
-                                horizontal: 8,
+                          child: Row(
+                            children: [
+                              const Text('od'),
+                              const SizedBox(
+                                width: 8,
+                              ), // Odstęp między tekstem a polem
+                              Expanded(
+                                // To jest najważniejsze!
+                                child: TextField(
+                                  controller: controller,
+                                  keyboardType: TextInputType.number,
+                                  decoration: const InputDecoration(
+                                    border: OutlineInputBorder(),
+                                    isDense: true,
+                                    contentPadding: EdgeInsets.symmetric(
+                                      vertical: 8,
+                                      horizontal: 8,
+                                    ),
+                                  ),
+                                  onChanged: (value) {
+                                    final newPrice = double.tryParse(
+                                      value.replaceAll(',', '.'),
+                                    );
+                                    if (newPrice != null) {
+                                      setState(() {
+                                        item['price'] = newPrice;
+                                      });
+                                    }
+                                  },
+                                ),
                               ),
-                            ),
-                            onChanged: (value) {
-                              final newPrice = double.tryParse(
-                                value.replaceAll(',', '.'),
-                              );
-                              if (newPrice != null) {
-                                setState(() {
-                                  item['price'] = newPrice;
-                                });
-                              }
-                            },
+                            ],
                           ),
                         ),
+
                         Expanded(
                           flex: 1,
                           child: IconButton(
@@ -1547,10 +1549,16 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
                   pw.Expanded(flex: 4, child: pw.Text(_t(item['name']))),
                   pw.Expanded(
                     flex: 2,
-                    child: pw.Text(
-                      // "${numberFormat.format(totalEstimatePrice)} ${_t('zl')}",
-                      "${numberFormat.format(item['price'])} ${_t('zl')}",
-                      textAlign: pw.TextAlign.right,
+                    child: pw.Row(
+                      children: [
+                        pw.Text('od', textAlign: pw.TextAlign.right),
+                        pw.Expanded(
+                          child: pw.Text(
+                            "${numberFormat.format(item['price'])} ${_t('zl')}",
+                            textAlign: pw.TextAlign.right,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
