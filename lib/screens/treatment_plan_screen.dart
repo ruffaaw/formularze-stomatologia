@@ -342,6 +342,7 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
     super.initState();
     // Initialize controllers
     _controllers['patient_name'] = TextEditingController();
+    _controllers['patient_name2'] = TextEditingController();
     _controllers['patient_pesel'] = TextEditingController();
     _controllers['recognition'] = TextEditingController();
     _controllers['estimate_attention'] = TextEditingController();
@@ -887,7 +888,7 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
               const SizedBox(height: 24),
               _buildTextFormField(
                 label: _t('name'),
-                controllerKey: 'patient_name',
+                controllerKey: 'patient_name2',
                 required: true,
               ),
               const SizedBox(height: 16),
@@ -1307,7 +1308,7 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
                 _buildPdfSectionTitle('ZGODA NA LECZENIE ORTODONTYCZNE'),
                 _buildPdfTextField(
                   'Imię i nazwisko:',
-                  _controllers['patient_name']!.text,
+                  _controllers['patient_name2']!.text,
                 ),
                 _buildPdfTextField(
                   'PESEL:',
