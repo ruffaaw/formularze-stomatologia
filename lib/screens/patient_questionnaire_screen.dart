@@ -2620,7 +2620,7 @@ class _PatientQuestionnaireScreenState
     final name = _controllers['patientName']!.text.trim();
     final surname = _controllers['patientSurname']!.text.trim();
     final fileName =
-        '${surname}_${name}_${DateFormat('ddMMyyyy_HHmmss').format(DateTime.now())}.pdf'
+        '${surname}_${name}_${DateFormat('ddMMyyyy_HHmmss').format(DateTime.now())}_ankieta_pacjenta.pdf'
             .replaceAll(' ', '_')
             .replaceAll(RegExp(r'[^a-zA-Z0-9_.]'), '');
     final directory = Directory('/storage/emulated/0/Download');

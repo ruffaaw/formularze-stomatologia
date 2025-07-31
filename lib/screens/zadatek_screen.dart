@@ -619,7 +619,7 @@ class _ZadatekScreenState extends State<ZadatekScreen> {
       }
       final name = patientNameController.text.trim();
       final fileName =
-          '${name}_${DateFormat('ddMMyyyy_HHmmss').format(DateTime.now())}.pdf'
+          '${name}_${DateFormat('ddMMyyyy_HHmmss').format(DateTime.now())}_zadatek.pdf'
               .replaceAll(' ', '_')
               .replaceAll(RegExp(r'[^a-zA-Z0-9_.]'), '');
       final directory = Directory('/storage/emulated/0/Download');
