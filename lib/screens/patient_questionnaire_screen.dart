@@ -4,12 +4,9 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:flutter/material.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
-import 'package:printing/printing.dart';
 import 'package:syncfusion_flutter_signaturepad/signaturepad.dart';
 import 'package:email_validator/email_validator.dart';
 
@@ -30,7 +27,6 @@ class _PatientQuestionnaireScreenState
   String? _selectedGender;
   String? _selectedAuthorization;
   final Map<String, Map<String, String?>> _diseaseResponses = {};
-  final Map<String, String?> _diseaseDescriptions = {};
   final Map<String, bool> _consents = {
     'zgoda1': false,
     'zgoda2': false,
@@ -741,34 +737,6 @@ class _PatientQuestionnaireScreenState
     );
   }
 
-  void _submitForm() {
-    if (_formKey.currentState?.validate() ?? false) {
-      // Here you would typically send the data to your backend
-      // For now, we'll just show a success message
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(_t('submit'))));
-    }
-  }
-
-  void _clearForm() {
-    _formKey.currentState?.reset();
-    setState(() {
-      _selectedGender = null;
-      _selectedAuthorization = null;
-      for (var disease in _diseases) {
-        _diseaseResponses[disease['id']!] = {
-          'yes': null,
-          'no': null,
-          'dontKnow': null,
-        };
-      }
-      for (var consent in _consents.keys) {
-        _consents[consent] = false;
-      }
-    });
-  }
-
   Widget _buildBirthDateField({
     required String label,
     required String controllerKey,
@@ -1048,7 +1016,7 @@ class _PatientQuestionnaireScreenState
                   textAlign: TextAlign.center,
                 ),
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
 
               // Personal Data Section
               Text(
@@ -1186,7 +1154,7 @@ class _PatientQuestionnaireScreenState
               _buildWarrantySection(),
 
               // Authorization Section
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
               Text(
                 _t('declaration'),
                 style: const TextStyle(
@@ -1611,7 +1579,7 @@ class _PatientQuestionnaireScreenState
                 style: const TextStyle(fontSize: 16),
                 textAlign: TextAlign.justify,
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
 
               // Data Protection Information
               Center(
@@ -1653,7 +1621,7 @@ class _PatientQuestionnaireScreenState
                 ),
 
               // Patient Declaration
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
               Center(
                 child: Text(
                   _t('patientDeclarationTitle'),
@@ -1664,7 +1632,7 @@ class _PatientQuestionnaireScreenState
                   textAlign: TextAlign.center,
                 ),
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: 8),
               Center(
                 child: Text(
                   _t('patientDeclarationText'),
@@ -1686,7 +1654,7 @@ class _PatientQuestionnaireScreenState
                   fontStyle: FontStyle.italic,
                 ),
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
 
               Container(
                 alignment: Alignment.center,
@@ -2452,33 +2420,6 @@ class _PatientQuestionnaireScreenState
     }
   }
 
-  pw.Widget _buildDiseasePdfRow(
-    String diseaseId,
-    Map<String, String> response,
-    String? description,
-  ) {
-    final responseText = response['yes'] == '1'
-        ? 'Tak${description != null && description.isNotEmpty ? " ($description)" : ""}'
-        : response['no'] == '1'
-        ? 'Nie'
-        : 'Nie wiem';
-
-    return pw.Padding(
-      padding: const pw.EdgeInsets.only(bottom: 4),
-      child: pw.RichText(
-        text: pw.TextSpan(
-          children: [
-            pw.TextSpan(
-              text: '${_diseaseName(diseaseId)}: ',
-              style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
-            ),
-            pw.TextSpan(text: responseText),
-          ],
-        ),
-      ),
-    );
-  }
-
   Future<ByteData?> _getSignatureImageBytes() async {
     try {
       final signatureState = _signaturePadKey.currentState;
@@ -2501,7 +2442,7 @@ class _PatientQuestionnaireScreenState
     );
   }
 
-  pw.Widget _buildPdfTextField(String label, String value, {int maxLines = 1}) {
+  pw.Widget _buildPdfTextField(String label, String value) {
     return pw.Padding(
       padding: const pw.EdgeInsets.only(bottom: 8),
       child: pw.RichText(

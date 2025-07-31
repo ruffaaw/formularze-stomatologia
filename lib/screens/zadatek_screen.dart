@@ -6,12 +6,9 @@ import 'package:flutter/services.dart';
 import 'package:formularze/components/header.dart';
 import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_signaturepad/signaturepad.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:flutter/material.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
-import 'package:printing/printing.dart';
 
 class ZadatekScreen extends StatefulWidget {
   const ZadatekScreen({super.key});
@@ -31,13 +28,8 @@ class _ZadatekScreenState extends State<ZadatekScreen> {
   TextEditingController patientNameController = TextEditingController();
 
   static const double baseFontSize = 16;
-  static const double inputFieldWidth = 100;
   static const double sectionSpacing = 16;
   static const EdgeInsets basePadding = EdgeInsets.symmetric(horizontal: 40.0);
-  static const EdgeInsets inputPadding = EdgeInsets.symmetric(
-    horizontal: 8,
-    vertical: 5,
-  );
 
   final TextStyle baseTextStyle = const TextStyle(
     fontSize: baseFontSize,
