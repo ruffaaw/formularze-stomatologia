@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:formularze/screens/statement_with_a_dentist.dart';
 import 'package:formularze/screens/treatment_plan_screen.dart';
 import 'package:formularze/screens/zadatek_screen.dart';
 import 'package:formularze/screens/patient_questionnaire_screen.dart';
@@ -56,6 +57,14 @@ class FormSelectionScreen extends StatelessWidget {
               title: 'Ankieta pacjenta',
               description: 'Formularz ankietowy dla pacjenta',
               screen: const PatientQuestionnaireScreen(),
+            ),
+            const SizedBox(height: 20),
+            _buildFormCard(
+              context,
+              icon: Icons.assignment,
+              title: 'Oświadczenie ze stomatologiem',
+              description: 'Oświadczenie ze stomatologiem',
+              screen: const StatementWithADentistScreen(),
             ),
           ],
         ),
