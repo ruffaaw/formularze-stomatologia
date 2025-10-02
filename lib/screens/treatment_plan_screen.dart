@@ -580,7 +580,7 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
     return Container(
       alignment: Alignment.center,
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-      child: Row(
+      child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
