@@ -143,6 +143,53 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
           'Zobowiązuję się do przestrzegania zaleceń lekarskich w szczególności dotyczących higieny jamy ustnej  noszenia elementów dodatkowych zaleconych na wizycie oraz do zgłaszania się na wizyty kontrolne w wyznaczonych terminach. W przypadku zmiany terminu wizyty z mojej strony zobowiązuje się odwołać ją z minimum jednodniowym wyprzedzeniem.',
       'treatment_agree_section_5_content':
           'Oświadczam że przeczytałem (-am) i zrozumiałem (-am) powyższe zasady a ponadto uzyskałem (-am) również wszelkie wyjaśnienia od lek. stom. Agnieszki Golarz-Nosek dotyczące mojego planowanego leczenia. Miałem (-am) możliwość swobodnego zadawania pytań i uzyskałem (-am) dodatkowe wyjaśnienia.',
+      'recommendations_title':
+          'Zalecenia dla pacjenta ortodontycznego noszącego stały aparat.',
+      "recommendations_section_0_content":
+          'Należy pamiętać że efekty leczenia ortodontycznego zależą w znacznym stopniu od pacjenta który musi ściśle współpracować z lekarzem prowadzącym leczenie i bezwzględnie wypełniać jego zalecenia. Ortodonta odpowiedzialny za leczenie nie może odpowiadać za niezgodne z zaleceniami postępowanie pacjenta i wynikające z tego komplikacje.',
+      'recommendations_0_title': 'Zalecenia:',
+      'recommendations_1_title': '1. Higiena jamy ustnej.',
+      'recommendations_section_1_content':
+          'Naklejone elementy aparatu ortodontycznego są miejscem zwiększonej retencji płytki nazębnej i resztek pokarmowych. Z tego względu podczas leczenia ortodontycznego należy dokładnie myć zęby pastą po każdym posiłku i używać płynu do płukania jamy ustnej. Należy stosować środki dostępne na rynku zawierające fluor. W przypadku niestosowania się do powyższego zalecenia dla zachowania zdrowych zębów lekarz może zadecydować o konieczności zdjęcia aparatu.',
+      'recommendations_2_title': '2. Przestrzeganie harmonogramu wizyt.',
+      'recommendations_section_2_content':
+          'Wizyty ortodontyczne odbywają się w zależności od rodzaju aparatu co 4-8 tygodni. Niezgłaszanie się na wizyty powoduje przedłużenie leczenia i zwiększa ryzyko wystąpienia powikłań. W przypadku uszkodzenia aparatu konieczne są dodatkowe wizyty w celu usunięcia usterki i zabezpieczenia prawidłowego działania aparatu.',
+      'recommendations_3_title':
+          '3. Czynne uczestniczenie w procesie leczenia.',
+      'recommendations_section_3_content':
+          'Niektóre procedury leczenia aparatem stałym wymagają aktywnego uczestnictwa pacjenta w procesie leczenia. Dotyczy to konieczności codziennego noszenia wyciągów międzyszczękowych wyciągów zewnątrzustnych aparatów retencyjnych itp. Brak zaangażowania i systematyczności ze strony pacjenta spowoduje zahamowanie postępów leczenia. Konieczne jest też zgłaszanie na bieżąco swoich spostrzeżeń dyskomfortu i niepokoju dotyczącego leczenia. Dobra komunikacja między pacjentem o lekarzem zwiększa bezpieczeństwo pacjenta i przyczynia się do prawidłowego leczenia.',
+      'recommendations_4_title': '4. Wzmożona ostrożność.',
+      'recommendations_section_4_content':
+          'Aparat jest z założenia tymczasowo naklejony na zęby pacjenta gdyż istnieje konieczność jego bezpiecznego zdjęcia po zakończeniu aktywnego leczenia. Z tego powodu jest on narażony na uszkodzenia w przypadku braku ostrożności ze strony pacjenta. Najważniejsze jest uważne spożywanie twardych pokarmów. Twarde pokarmy należy kroić na małe kawałki tak aby nie odgryzać ich przednimi zębami. Nie należy też manipulować przy aparacie np.: długopisem ołówkiem lub palcem. Stan po leczeniu jest wypadkową zbiorowego wysiłku ortodonty personelu gabinetu ale i pacjentów oraz ich rodziców.',
+      'rules_title': 'Zasady użytkowania stałego aparatu retencyjnego',
+      'rules_0_content':
+          'Pacjent zobowiązuje się stosować do poniższych zasad użytkowania stałego aparatu retencyjnego:',
+      'rules_1_content':
+          '1. higienizacja jamy ustnej (usunięcie kamienia i osadów) co 6 miesięcy w Gabinecie Ortodontycznym Agnieszka Golarz-Nosek',
+      'rules_2_content':
+          '2. utrzymanie higieny jamy ustnej zgodnie z zaleceniami higienistki lub lekarza podanymi podczas instruktażu higieny jamy ustnej',
+      'rules_3_content':
+          '3. odbywanie wizyt kontrolnych w Gabinecie Ortodontycznym Agnieszka Golarz-Nosek wg zaleceń lekarza ortodonty przez okres co najmniej 2 lat licząc od dnia założenia stałego aparatu retencyjnego',
+      'rules_4_content':
+          '4. niezwłoczne wykonanie zabiegów zaleconych przez lekarza podczas wizyt kontrolnych w Gabinecie Ortodontycznym Agnieszka Golarz-Nosek.',
+      'not_subjected_title':
+          'Nie podlegają uwzględnieniu uszkodzenia stałych aparatów retencyjnych powstałe wyniku:',
+      'not_subjected_section_1_content':
+          '1. nieprzestrzegania przez pacjenta wskazanych powyżej zasad użytkowania stałego aparatu retencyjnego',
+      'not_subjected_section_2_content':
+          '2. prac lub usług przy wykonaniu których pacjent został poinformowany o możliwym uszkodzeniu lub niekorzystnego wpływu tych prac na stały aparat retencyjny a które zostały wykonane na wyraźne życzenie pacjenta',
+      'not_subjected_section_3_content':
+          '3. niedostatecznej higieny jamy ustnej',
+      'not_subjected_section_4_content':
+          '4. braku przestrzegania zaleceń lekarza ortodonty odnośnie postępowania ze stałym aparatem retencyjnym',
+      'not_subjected_section_5_content':
+          '5. nieodbywania zalecanych wizyt kontrolnych',
+      'not_subjected_section_6_content':
+          '6. urazów mechanicznych uszkodzenia lub ścierania aparatów retencyjnych lub szyn retencyjnych w wyniku zaciskania zębów lub zgrzytania zębami',
+      'not_subjected_section_7_content':
+          '7. naturalnego zaniku kości szczęki i zmian w przyzębiu',
+      'not_subjected_section_8_content':
+          '8. istniejącego schorzenia mającego niekorzystny wpływ na układ żujący (np. cukrzyca padaczka osteoporoza stan po napromieniowaniu i terapii cytostatykami).',
       'estimate': 'Cennik',
       'add_estimate': 'Dodaj do cennika',
       'estimate_1': 'Aparat metalowy górny i dolny',
@@ -562,6 +609,53 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
     );
   }
 
+  Widget _buildRecommendationsSection(int index) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          _t('recommendations_${index}_title'),
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          _t('recommendations_section_${index}_content'),
+          style: const TextStyle(fontSize: 16),
+          textAlign: TextAlign.justify,
+        ),
+        const SizedBox(height: 16),
+      ],
+    );
+  }
+
+  Widget _buildRulesSection(int index) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          _t('rules_${index}_content'),
+          style: const TextStyle(fontSize: 16),
+          textAlign: TextAlign.justify,
+        ),
+        const SizedBox(height: 16),
+      ],
+    );
+  }
+
+  Widget _buildNotSubjectedSection(int index) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          _t('not_subjected_section_${index}_content'),
+          style: const TextStyle(fontSize: 16),
+          textAlign: TextAlign.justify,
+        ),
+        const SizedBox(height: 16),
+      ],
+    );
+  }
+
   Widget _buildAgreementSection(int index) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16.0),
@@ -876,6 +970,60 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
               const SizedBox(height: 16),
 
               for (int i = 1; i <= 8; i++) _buildComplicationSection(i),
+              const SizedBox(height: 8),
+
+              Text(
+                _t('recommendations_title'),
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                _t('recommendations_section_0_content'),
+                style: const TextStyle(fontSize: 16),
+                textAlign: TextAlign.justify,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                _t('recommendations_0_title'),
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.justify,
+              ),
+              const SizedBox(height: 16),
+              for (int i = 1; i <= 4; i++) _buildRecommendationsSection(i),
+              const SizedBox(height: 8),
+
+              Text(
+                _t('rules_title'),
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                _t('rules_0_content'),
+                style: const TextStyle(fontSize: 16),
+                textAlign: TextAlign.justify,
+              ),
+              const SizedBox(height: 16),
+              for (int i = 1; i <= 4; i++) _buildRulesSection(i),
+
+              const SizedBox(height: 8),
+              Text(
+                _t('not_subjected_title'),
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 16),
+              for (int i = 1; i <= 8; i++) _buildNotSubjectedSection(i),
 
               // _buildSignatureSection(
               //   _signaturePadKeyDoctorComplications,
@@ -1278,6 +1426,90 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
                 pw.SizedBox(height: 10),
                 for (int i = 5; i <= 8; i++) _buildComplicationSectionPdf(i),
                 pw.SizedBox(height: 10),
+                pw.Text(
+                  _translations['pl']!['recommendations_title']!,
+                  style: pw.TextStyle(
+                    fontSize: 14,
+                    fontWeight: pw.FontWeight.bold,
+                  ),
+                ),
+                pw.SizedBox(height: 10),
+                pw.Text(
+                  _translations['pl']!['recommendations_section_0_content']!,
+                  style: pw.TextStyle(fontSize: 12),
+                  textAlign: pw.TextAlign.justify,
+                ),
+                pw.SizedBox(height: 10),
+                pw.Text(
+                  _translations['pl']!['recommendations_0_title']!,
+                  style: pw.TextStyle(
+                    fontSize: 12,
+                    fontWeight: pw.FontWeight.bold,
+                  ),
+                  textAlign: pw.TextAlign.justify,
+                ),
+                pw.SizedBox(height: 10),
+                for (int i = 1; i <= 2; i++) _buildRecommendationsSectionPdf(i),
+                pw.Spacer(),
+                pw.Container(
+                  alignment: pw.Alignment.centerRight,
+                  margin: const pw.EdgeInsets.only(top: 10),
+                  child: pw.Row(
+                    mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                    children: [
+                      pw.Text(
+                        formattedDateTime,
+                        style: const pw.TextStyle(fontSize: 10),
+                      ),
+                      pw.Text(
+                        'Strona ${context.pageNumber} z ${context.pagesCount}',
+                        style: const pw.TextStyle(fontSize: 10),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            );
+          },
+        ),
+      );
+
+      doc.addPage(
+        pw.Page(
+          theme: pdfTheme,
+          pageFormat: PdfPageFormat.a4,
+          build: (pw.Context context) {
+            return pw.Column(
+              crossAxisAlignment: pw.CrossAxisAlignment.start,
+              children: [
+                for (int i = 3; i <= 4; i++) _buildRecommendationsSectionPdf(i),
+
+                pw.SizedBox(height: 10),
+
+                pw.Text(
+                  _translations['pl']!['rules_title']!,
+                  style: pw.TextStyle(
+                    fontSize: 14,
+                    fontWeight: pw.FontWeight.bold,
+                  ),
+                ),
+                pw.SizedBox(height: 10),
+
+                for (int i = 0; i <= 4; i++) _buildRulesSectionPdf(i),
+
+                pw.SizedBox(height: 10),
+
+                pw.Text(
+                  _translations['pl']!['not_subjected_title']!,
+                  style: pw.TextStyle(
+                    fontSize: 14,
+                    fontWeight: pw.FontWeight.bold,
+                  ),
+                ),
+                pw.SizedBox(height: 10),
+
+                for (int i = 1; i <= 8; i++) _buildNotSubjectedSectionPdf(i),
+
                 pw.Spacer(),
                 pw.Container(
                   alignment: pw.Alignment.centerRight,
@@ -1586,6 +1818,53 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
         pw.SizedBox(height: 8),
         pw.Text(
           _translations['pl']!['complications_section_${index}_content']!,
+          style: const pw.TextStyle(fontSize: 11),
+          textAlign: pw.TextAlign.justify,
+        ),
+        pw.SizedBox(height: 8),
+      ],
+    );
+  }
+
+  pw.Widget _buildRecommendationsSectionPdf(int index) {
+    return pw.Column(
+      crossAxisAlignment: pw.CrossAxisAlignment.start,
+      children: [
+        pw.Text(
+          _translations['pl']!['recommendations_${index}_title']!,
+          style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold),
+        ),
+        pw.SizedBox(height: 8),
+        pw.Text(
+          _translations['pl']!['recommendations_section_${index}_content']!,
+          style: const pw.TextStyle(fontSize: 11),
+          textAlign: pw.TextAlign.justify,
+        ),
+        pw.SizedBox(height: 8),
+      ],
+    );
+  }
+
+  pw.Widget _buildRulesSectionPdf(int index) {
+    return pw.Column(
+      crossAxisAlignment: pw.CrossAxisAlignment.start,
+      children: [
+        pw.Text(
+          _translations['pl']!['rules_${index}_content']!,
+          style: const pw.TextStyle(fontSize: 11),
+          textAlign: pw.TextAlign.justify,
+        ),
+        pw.SizedBox(height: 8),
+      ],
+    );
+  }
+
+  pw.Widget _buildNotSubjectedSectionPdf(int index) {
+    return pw.Column(
+      crossAxisAlignment: pw.CrossAxisAlignment.start,
+      children: [
+        pw.Text(
+          _translations['pl']!['not_subjected_section_${index}_content']!,
           style: const pw.TextStyle(fontSize: 11),
           textAlign: pw.TextAlign.justify,
         ),
