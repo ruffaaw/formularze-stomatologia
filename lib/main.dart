@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:formularze/screens/settings_screen.dart';
 import 'package:formularze/screens/statement_with_a_dentist.dart';
 import 'package:formularze/screens/statement_with_varnish.dart';
 import 'package:formularze/screens/statement_with_varnish_and_dentist.dart';
@@ -32,7 +33,21 @@ class FormSelectionScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Wybierz formularz')),
+      appBar: AppBar(
+        title: const Text('Wybierz formularz'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.settings),
+            tooltip: 'Ustawienia',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const SettingsScreen()),
+              );
+            },
+          ),
+        ],
+      ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

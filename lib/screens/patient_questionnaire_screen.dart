@@ -9,6 +9,10 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:syncfusion_flutter_signaturepad/signaturepad.dart';
 import 'package:email_validator/email_validator.dart';
+import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import '../services/settings_service.dart';
 
 class PostCodeInputFormatter extends TextInputFormatter {
   @override
@@ -2578,54 +2582,50 @@ class _PatientQuestionnaireScreenState
     return isCentered ? pw.Center(child: checkbox) : checkbox;
   }
 
-  // Future<void> _saveAndSharePdf(pw.Document doc) async {
-  //   final status = await Permission.storage.request();
-  //   if (!status.isGranted) {
-  //     throw Exception('Brak uprawnień do zapisu pliku');
-  //   }
-
-  //   final directory = await getApplicationDocumentsDirectory();
-  //   final fileName =
-  //       'Ankieta_Osobowa_${_controllers['patientName']}_${_controllers['patientSurname']}_${DateFormat('yyyyMMdd').format(DateTime.now())}.pdf';
-  //   final file = File('${directory.path}/$fileName');
-
-  //   final pdfBytes = await doc.save();
-  //   await file.writeAsBytes(pdfBytes);
-
-  //   await Printing.layoutPdf(onLayout: (_) async => pdfBytes);
-  // }
-
   Future<void> _saveAndSharePdf(pw.Document doc) async {
-    // 1. Sprawdź i poproś o wymagane uprawnienia
-    final status = await Permission.storage.request();
-    if (!status.isGranted) {
-      throw Exception('Brak uprawnień do zapisu pliku');
-    }
+    await dotenv.load(fileName: ".env");
+
     final name = _controllers['patientName']!.text.trim();
     final surname = _controllers['patientSurname']!.text.trim();
     final fileName =
         '${surname}_${name}_${DateFormat('ddMMyyyy_HHmmss').format(DateTime.now())}_ankieta_pacjenta.pdf'
             .replaceAll(' ', '_')
             .replaceAll(RegExp(r'[^a-zA-Z0-9_.]'), '');
-    final directory = Directory('/storage/emulated/0/Download');
-    if (!await directory.exists()) {
-      await directory.create(recursive: true);
-    }
-
-    final file = File('${directory.path}/$fileName');
 
     try {
       final pdfBytes = await doc.save();
-      await file.writeAsBytes(pdfBytes);
+      final host = await SettingsService.getUploadHost();
+      final uri = Uri.parse(host + ":5000" + "/upload");
+      final request = http.MultipartRequest('POST', uri)
+        ..headers['X-API-KEY'] = dotenv.env['API_KEY'] ?? ''
+        ..files.add(
+          http.MultipartFile.fromBytes(
+            'file', // nazwa pola w formularzu
+            pdfBytes,
+            filename: fileName,
+            contentType: MediaType('application', 'pdf'),
+          ),
+        );
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Plik zapisano w: ${file.path}'),
-          duration: const Duration(seconds: 3),
-        ),
-      );
+      final response = await request.send();
+
+      if (response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('PDF pomyślnie został zapisany'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Błąd wysyłania (kod ${response.statusCode})'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     } catch (e) {
-      throw Exception('Błąd podczas zapisywania pliku: $e');
+      throw Exception('Błąd podczas zapisywania lub wysyłania pliku: $e');
     }
   }
 

@@ -8,6 +8,10 @@ import 'package:syncfusion_flutter_signaturepad/signaturepad.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
+import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import '../services/settings_service.dart';
 
 class StatementWithVarnishAndDentistScreen extends StatefulWidget {
   const StatementWithVarnishAndDentistScreen({super.key});
@@ -353,35 +357,47 @@ class _StatementWithVarnishAndDentistScreenState
       ),
     );
 
-    // Zapis na dysk
+    await dotenv.load(fileName: ".env");
+
     try {
-      // Sprawdź uprawnienia
-      final status = await Permission.storage.request();
-      if (!status.isGranted) {
-        throw Exception('Brak uprawnień do zapisu pliku');
-      }
       final name = patientNameController.text.trim();
       final fileName =
           '${name}_${DateFormat('ddMMyyyy_HHmmss').format(DateTime.now())}_oswiadczenie_z_lakierowaniem_i_stomatologiem.pdf'
               .replaceAll(' ', '_')
               .replaceAll(RegExp(r'[^a-zA-Z0-9_.]'), '');
-      final directory = Directory('/storage/emulated/0/Download');
-      if (!await directory.exists()) {
-        await directory.create(recursive: true);
-      }
-
-      final file = File('${directory.path}/$fileName');
 
       try {
         final pdfBytes = await doc.save();
-        await file.writeAsBytes(pdfBytes);
+        final host = await SettingsService.getUploadHost();
+        final uri = Uri.parse(host + ":5000" + "/upload");
+        final request = http.MultipartRequest('POST', uri)
+          ..headers['X-API-KEY'] = dotenv.env['API_KEY'] ?? ''
+          ..files.add(
+            http.MultipartFile.fromBytes(
+              'file', // nazwa pola w formularzu
+              pdfBytes,
+              filename: fileName,
+              contentType: MediaType('application', 'pdf'),
+            ),
+          );
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Plik zapisano w: ${file.path}'),
-            duration: const Duration(seconds: 3),
-          ),
-        );
+        final response = await request.send();
+
+        if (response.statusCode == 200) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('PDF pomyślnie został zapisany'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Błąd wysyłania (kod ${response.statusCode})'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
       } catch (e) {
         throw Exception('Błąd podczas zapisywania pliku: $e');
       }
