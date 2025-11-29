@@ -147,6 +147,12 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
           'Zobowiązuję się do przestrzegania zaleceń lekarskich w szczególności dotyczących higieny jamy ustnej  noszenia elementów dodatkowych zaleconych na wizycie oraz do zgłaszania się na wizyty kontrolne w wyznaczonych terminach. W przypadku zmiany terminu wizyty z mojej strony zobowiązuje się odwołać ją z minimum jednodniowym wyprzedzeniem.',
       'treatment_agree_section_5_content':
           'Oświadczam że przeczytałem (-am) i zrozumiałem (-am) powyższe zasady a ponadto uzyskałem (-am) również wszelkie wyjaśnienia od lek. stom. Agnieszki Golarz-Nosek dotyczące mojego planowanego leczenia. Miałem (-am) możliwość swobodnego zadawania pytań i uzyskałem (-am) dodatkowe wyjaśnienia.',
+      'treatment_agree_section_6_content':
+          'Oświadczam że odpowiedzi udzielone na wszystkie moje pytania dotyczące leczenia a także możliwych powikłań i alternatywnych sposobów leczenia były dla mnie zrozumiałe i zostały udzielone w sposób wyczerpujący. Rozumiem że cena usług może ulec zmianie. Zamieszczony cennik nie stanowi oferty w rozumieniu kodeksu prawa cywilnego.',
+      'treatment_agree_section_7_content':
+          'Rozumiem że tak jak w przypadku wszystkich procedur medycznych stomatologicznych i ortodontycznych pozytywne efekty leczenia nie mogą być zagwarantowane pomimo postępowania zgodnego ze sztuką lekarską. Ponadto rozumiem że leczenie ortodontyczne jest podejmowane w celu usunięcia konkretnego zaburzenia i może nie wyeliminować innych współistniejących problemów. Znam i akceptuję koszty związane z prowadzeniem leczenia oraz zasady ich rozliczania. Zostałem(-am) poinformowany(-a) o tym że zakres leczenia może różnić się od zaplanowanego zakresu leczenia jeżeli w trakcie leczenia wynikną nieprzewidziane okoliczności. Wyrażam zgodę na dokonanie w tej sytuacji korekty planu leczenia i związanych z tym kosztów leczenia. Zostałem (-am) poinformowany (-a) o towarzyszącym ryzyku zaproponowanego leczenia i innych metodach i konsekwencjach wynikających z zaniechania leczenia. Zostałem(-am) poinformowany(-a) o rodzaju istocie i technice zabiegów zmierzających do osiągnięcia celu poprzez leczenie ortodontyczne oraz ryzyku i możliwości wystąpienia powikłań związanych z zaakceptowanym przeze mnie sposobie leczenia Zapoznałem się i akceptuję Regulamin Organizacyjny Praktyki Zawodowej dotyczący Gabinetu Ortodontycznego Agnieszka Golarz- Nosek.',
+      'treatment_agree_section_8_content':
+          'W świetle powyższego niniejszym wyrażam świadomą zgodę na zaproponowane leczenie.',
       'recommendations_title':
           'Zalecenia dla pacjenta ortodontycznego noszącego stały aparat.',
       "recommendations_section_0_content":
@@ -1057,8 +1063,9 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
               ),
               const SizedBox(height: 24),
 
-              for (int i = 1; i <= 5; i++) _buildAgreementSection(i),
-
+              ...(_selectedLanguage == "pl"
+                  ? [for (int i = 1; i <= 8; i++) _buildAgreementSection(i)]
+                  : [for (int i = 1; i <= 5; i++) _buildAgreementSection(i)]),
               _buildSignatureSection(
                 _signaturePadKeyDoctorTreatmentAgree,
                 _signaturePadKeyPatientTreatmentAgree,
@@ -1556,7 +1563,39 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
                   'PESEL:',
                   _controllers['patient_pesel']!.text,
                 ),
-                for (int i = 1; i <= 5; i++) _buildAgreementSectionPdf(i),
+                for (int i = 1; i <= 8; i++) _buildAgreementSectionPdf(i),
+                pw.Spacer(),
+                pw.Container(
+                  alignment: pw.Alignment.centerRight,
+                  margin: const pw.EdgeInsets.only(top: 10),
+                  child: pw.Row(
+                    mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                    children: [
+                      pw.Text(
+                        formattedDateTime,
+                        style: const pw.TextStyle(fontSize: 10),
+                      ),
+                      pw.Text(
+                        'Strona ${context.pageNumber} z ${context.pagesCount}',
+                        style: const pw.TextStyle(fontSize: 10),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            );
+          },
+        ),
+      );
+
+      doc.addPage(
+        pw.Page(
+          theme: pdfTheme,
+          pageFormat: PdfPageFormat.a4,
+          build: (pw.Context context) {
+            return pw.Column(
+              crossAxisAlignment: pw.CrossAxisAlignment.start,
+              children: [
                 pw.Row(
                   mainAxisAlignment: pw.MainAxisAlignment.spaceEvenly,
                   crossAxisAlignment: pw.CrossAxisAlignment.start,
