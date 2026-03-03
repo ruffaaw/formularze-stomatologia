@@ -243,7 +243,7 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
       'estimate_40': 'Nawiercanie kości',
       'estimate_41': 'Nawiercanie szwu podniebiennego',
       'estimate_42': 'Znieczulenie',
-      'estimate_43': 'Pułapka na myszy (miejsce po Hyrax Hybrydowy)',
+      'estimate_43': 'Pułapka na myszy',
       'estimate_44': 'Usunięcie miniimplantu',
       'added': 'Dodano do cennika: ',
       'sum': 'Cena całkowita',
