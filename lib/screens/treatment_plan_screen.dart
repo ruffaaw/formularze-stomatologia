@@ -1297,9 +1297,77 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
           '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}';
 
       doc.addPage(
+        pw.Page(
+          theme: pdfTheme,
+          pageFormat: PdfPageFormat.a4,
+          margin: const pw.EdgeInsets.all(30),
+          build: (pw.Context context) {
+            return pw.Column(
+              crossAxisAlignment: pw.CrossAxisAlignment.start,
+              children: [
+                pw.Center(
+                  child: pw.Text(
+                    'Plan leczenia - gabinet ortodontyczny Agnieszka Golarz-Nosek',
+                    style: pw.TextStyle(fontSize: 8),
+                    textAlign: pw.TextAlign.center,
+                  ),
+                ),
+                pw.Expanded(
+                  child: pw.Center(
+                    child: pw.Column(
+                      mainAxisAlignment: pw.MainAxisAlignment.center,
+                      crossAxisAlignment: pw.CrossAxisAlignment.center,
+                      children: [
+                        pw.Text(
+                          'Plan leczenia',
+                          style: pw.TextStyle(
+                            fontSize: 40,
+                            fontWeight: pw.FontWeight.bold,
+                          ),
+                          textAlign: pw.TextAlign.center,
+                        ),
+
+                        pw.SizedBox(height: 20),
+
+                        pw.Text(
+                          _controllers['patient_name']!.text,
+                          style: pw.TextStyle(fontSize: 20),
+                          textAlign: pw.TextAlign.center,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                pw.SizedBox(height: 10),
+                // pw.Spacer(),
+                pw.Container(
+                  alignment: pw.Alignment.centerRight,
+                  margin: const pw.EdgeInsets.only(top: 10),
+                  child: pw.Row(
+                    mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                    children: [
+                      pw.Text(
+                        formattedDateTime,
+                        style: const pw.TextStyle(fontSize: 7),
+                      ),
+                      pw.Text(
+                        'Strona ${context.pageNumber} z ${context.pagesCount}',
+                        style: const pw.TextStyle(fontSize: 7),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            );
+          },
+        ),
+      );
+
+      doc.addPage(
         pw.MultiPage(
           theme: pdfTheme,
           pageFormat: PdfPageFormat.a4,
+          margin: const pw.EdgeInsets.all(30),
           footer: (context) {
             return pw.Container(
               alignment: pw.Alignment.centerRight,
@@ -1309,11 +1377,11 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
                 children: [
                   pw.Text(
                     formattedDateTime,
-                    style: const pw.TextStyle(fontSize: 10),
+                    style: const pw.TextStyle(fontSize: 7),
                   ),
                   pw.Text(
                     'Strona ${context.pageNumber} z ${context.pagesCount}',
-                    style: const pw.TextStyle(fontSize: 10),
+                    style: const pw.TextStyle(fontSize: 7),
                   ),
                 ],
               ),
@@ -1321,48 +1389,110 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
           },
           build: (pw.Context context) {
             return [
-              pw.Center(child: pw.Header(level: 0, text: 'PLAN LECZENIA')),
-              pw.SizedBox(height: 10),
+              pw.Center(
+                child: pw.Text(
+                  'Plan leczenia - gabinet ortodontyczny Agnieszka Golarz-Nosek',
+                  style: pw.TextStyle(fontSize: 8),
+                  textAlign: pw.TextAlign.center,
+                ),
+              ),
+
+              pw.SizedBox(height: 30),
 
               // Dane osobowe
-              _buildPdfSectionTitle('DANE KLIENTA'),
-              _buildPdfTextField(
-                'Imię i nazwisko:',
-                _controllers['patient_name']!.text,
-              ),
-              _buildPdfTextField(
-                'Rozpoznanie:',
-                _controllers['recognition']!.text,
-              ),
-              _buildPdfSectionTitle('PLAN LECZENIA'),
+              _buildPdfSectionTitle('Rozpoznanie:'),
+
+              _buildPdfTextField('', _controllers['patient_name']!.text),
+              _buildPdfTextField('', _controllers['recognition']!.text),
+              _buildPdfSectionTitle('Plan leczenia:'),
               buildTreatmentPlanSection(
                 _treatmentPlanOptions,
                 _treatmentOptions,
                 _controllers,
               ),
               pw.SizedBox(height: 10),
-              pw.Container(
-                width: double.infinity,
-                padding: const pw.EdgeInsets.all(12),
-                color: PdfColors.red100,
-                child: pw.Text(
-                  _translations['pl']!['treatment_plan_attention']!,
-                  textAlign: pw.TextAlign.center,
-                  style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
-                ),
+              pw.Text(
+                _translations['pl']!['treatment_plan_attention']!,
+                textAlign: pw.TextAlign.center,
+                style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
               ),
               pw.SizedBox(height: 10),
-              pw.Container(
-                width: double.infinity,
-                padding: const pw.EdgeInsets.all(16),
-                color: PdfColors.red100,
+            ];
+          },
+        ),
+      );
+
+      doc.addPage(
+        pw.MultiPage(
+          theme: pdfTheme,
+          pageFormat: PdfPageFormat.a4,
+          margin: const pw.EdgeInsets.all(30),
+
+          footer: (context) {
+            return pw.Container(
+              alignment: pw.Alignment.centerRight,
+              margin: const pw.EdgeInsets.only(top: 10),
+              child: pw.Row(
+                mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                children: [
+                  pw.Text(
+                    formattedDateTime,
+                    style: const pw.TextStyle(fontSize: 7),
+                  ),
+                  pw.Text(
+                    'Strona ${context.pageNumber} z ${context.pagesCount}',
+                    style: const pw.TextStyle(fontSize: 7),
+                  ),
+                ],
+              ),
+            );
+          },
+
+          build: (pw.Context context) {
+            return [
+              pw.Center(
                 child: pw.Text(
-                  _translations['pl']!['other_information']!,
+                  'Plan leczenia - gabinet ortodontyczny Agnieszka Golarz-Nosek',
+                  style: pw.TextStyle(fontSize: 8),
                   textAlign: pw.TextAlign.center,
-                  style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
                 ),
               ),
+
+              pw.SizedBox(height: 30),
+
+              pw.Center(
+                child: pw.Text(
+                  'INFORMACJE DLA PACJENTA I ŚWIADOMA ZGODA NA LECZENIE ORTODONTYCZNE wg zaleceń Polskiego Towarzystwa Ortodontycznego',
+                  style: pw.TextStyle(
+                    fontSize: 12,
+                    fontWeight: pw.FontWeight.bold,
+                  ),
+                  textAlign: pw.TextAlign.center,
+                ),
+              ),
+
+              pw.SizedBox(height: 20),
+
+              _buildPdfSectionTitle(
+                _translations['pl']!['complications_section_title']!,
+              ),
+
+              pw.RichText(
+                text: pw.TextSpan(
+                  children: [
+                    pw.WidgetSpan(child: pw.SizedBox(width: 20)),
+                    pw.TextSpan(
+                      text:
+                          _translations['pl']!['complications_section_content']!,
+                      style: pw.TextStyle(fontSize: 10),
+                    ),
+                  ],
+                ),
+              ),
+
               pw.SizedBox(height: 10),
+
+              for (int i = 1; i <= 8; i++) _buildComplicationSectionPdf(i),
             ];
           },
         ),
@@ -1372,152 +1502,104 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
         pw.Page(
           theme: pdfTheme,
           pageFormat: PdfPageFormat.a4,
+          margin: const pw.EdgeInsets.all(30),
           build: (pw.Context context) {
             return pw.Column(
               crossAxisAlignment: pw.CrossAxisAlignment.start,
               children: [
                 pw.Center(
                   child: pw.Text(
-                    'INFORMACJE DLA PACJENTA I ŚWIADOMA ZGODA NA LECZENIE ORTODONTYCZNE wg zaleceń Polskiego Towarzystwa Ortodontycznego',
-                    style: pw.TextStyle(
-                      fontSize: 16,
-                      fontWeight: pw.FontWeight.bold,
-                    ),
+                    'Plan leczenia - gabinet ortodontyczny Agnieszka Golarz-Nosek',
+                    style: pw.TextStyle(fontSize: 8),
                     textAlign: pw.TextAlign.center,
                   ),
                 ),
-                pw.SizedBox(height: 10),
-                pw.Text(
-                  _translations['pl']!['complications_section_title']!,
-                  style: pw.TextStyle(
-                    fontSize: 14,
-                    fontWeight: pw.FontWeight.bold,
-                  ),
+
+                pw.SizedBox(height: 30),
+
+                _buildPdfSectionTitle(
+                  "Zalecenia dla pacjenta ortodontycznego, noszącego stały aparat:",
                 ),
+
                 pw.SizedBox(height: 10),
-                pw.Text(
-                  _translations['pl']!['complications_section_content']!,
-                  style: pw.TextStyle(fontSize: 12),
-                  textAlign: pw.TextAlign.justify,
-                ),
-                pw.SizedBox(height: 10),
-                for (int i = 1; i <= 4; i++) _buildComplicationSectionPdf(i),
-                pw.Spacer(),
-                pw.Container(
-                  alignment: pw.Alignment.centerRight,
-                  margin: const pw.EdgeInsets.only(top: 10),
-                  child: pw.Row(
-                    mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+
+                pw.RichText(
+                  text: pw.TextSpan(
                     children: [
-                      pw.Text(
-                        formattedDateTime,
-                        style: const pw.TextStyle(fontSize: 10),
-                      ),
-                      pw.Text(
-                        'Strona ${context.pageNumber} z ${context.pagesCount}',
-                        style: const pw.TextStyle(fontSize: 10),
+                      pw.WidgetSpan(child: pw.SizedBox(width: 20)),
+                      pw.TextSpan(
+                        text:
+                            "Należy pamiętać, że efekty leczenia ortodontycznego zależą w znacznym stopniu od pacjenta, który musi ściśle współpracować z lekarzem prowadzącym leczenie i bezwzględnie wypełniać jego zalecenia. Ortodonta odpowiedzialny za leczenie, nie może odpowiadać za niezgodne z zaleceniami postępowanie pacjenta i wynikające z tego komplikacje.",
+                        style: pw.TextStyle(fontSize: 10),
                       ),
                     ],
                   ),
                 ),
-              ],
-            );
-          },
-        ),
-      );
 
-      doc.addPage(
-        pw.Page(
-          theme: pdfTheme,
-          pageFormat: PdfPageFormat.a4,
-          build: (pw.Context context) {
-            return pw.Column(
-              crossAxisAlignment: pw.CrossAxisAlignment.start,
-              children: [
-                pw.SizedBox(height: 10),
-                for (int i = 5; i <= 8; i++) _buildComplicationSectionPdf(i),
-                pw.SizedBox(height: 10),
-                pw.Text(
-                  _translations['pl']!['recommendations_title']!,
-                  style: pw.TextStyle(
-                    fontSize: 14,
-                    fontWeight: pw.FontWeight.bold,
-                  ),
-                ),
-                pw.SizedBox(height: 10),
-                pw.Text(
-                  _translations['pl']!['recommendations_section_0_content']!,
-                  style: pw.TextStyle(fontSize: 12),
-                  textAlign: pw.TextAlign.justify,
-                ),
-                pw.SizedBox(height: 10),
-                pw.Text(
-                  _translations['pl']!['recommendations_0_title']!,
-                  style: pw.TextStyle(
-                    fontSize: 12,
-                    fontWeight: pw.FontWeight.bold,
-                  ),
-                  textAlign: pw.TextAlign.justify,
-                ),
-                pw.SizedBox(height: 10),
-                for (int i = 1; i <= 2; i++) _buildRecommendationsSectionPdf(i),
-                pw.Spacer(),
-                pw.Container(
-                  alignment: pw.Alignment.centerRight,
-                  margin: const pw.EdgeInsets.only(top: 10),
-                  child: pw.Row(
-                    mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                    children: [
-                      pw.Text(
-                        formattedDateTime,
-                        style: const pw.TextStyle(fontSize: 10),
-                      ),
-                      pw.Text(
-                        'Strona ${context.pageNumber} z ${context.pagesCount}',
-                        style: const pw.TextStyle(fontSize: 10),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            );
-          },
-        ),
-      );
+                pw.SizedBox(height: 3),
 
-      doc.addPage(
-        pw.Page(
-          theme: pdfTheme,
-          pageFormat: PdfPageFormat.a4,
-          build: (pw.Context context) {
-            return pw.Column(
-              crossAxisAlignment: pw.CrossAxisAlignment.start,
-              children: [
-                for (int i = 3; i <= 4; i++) _buildRecommendationsSectionPdf(i),
+                _buildPdfSectionTitle("Zalecenia:"),
+
+                pw.SizedBox(height: 3),
+
+                for (int i = 1; i <= 4; i++) _buildRecommendationsSectionPdf(i),
 
                 pw.SizedBox(height: 10),
 
-                pw.Text(
-                  _translations['pl']!['rules_title']!,
-                  style: pw.TextStyle(
-                    fontSize: 14,
-                    fontWeight: pw.FontWeight.bold,
-                  ),
+                _buildPdfSectionTitle(
+                  "Zasady użytkowania stałego aparatu retencyjnego",
                 ),
-                pw.SizedBox(height: 10),
 
                 for (int i = 0; i <= 4; i++) _buildRulesSectionPdf(i),
 
-                pw.SizedBox(height: 10),
-
-                pw.Text(
-                  _translations['pl']!['not_subjected_title']!,
-                  style: pw.TextStyle(
-                    fontSize: 14,
-                    fontWeight: pw.FontWeight.bold,
+                pw.Spacer(),
+                pw.Container(
+                  alignment: pw.Alignment.centerRight,
+                  margin: const pw.EdgeInsets.only(top: 10),
+                  child: pw.Row(
+                    mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                    children: [
+                      pw.Text(
+                        formattedDateTime,
+                        style: const pw.TextStyle(fontSize: 7),
+                      ),
+                      pw.Text(
+                        'Strona ${context.pageNumber} z ${context.pagesCount}',
+                        style: const pw.TextStyle(fontSize: 7),
+                      ),
+                    ],
                   ),
                 ),
-                pw.SizedBox(height: 10),
+              ],
+            );
+          },
+        ),
+      );
+
+      doc.addPage(
+        pw.Page(
+          theme: pdfTheme,
+          pageFormat: PdfPageFormat.a4,
+          margin: const pw.EdgeInsets.all(30),
+          build: (pw.Context context) {
+            return pw.Column(
+              crossAxisAlignment: pw.CrossAxisAlignment.start,
+              children: [
+                pw.Center(
+                  child: pw.Text(
+                    'Plan leczenia - gabinet ortodontyczny Agnieszka Golarz-Nosek',
+                    style: pw.TextStyle(fontSize: 8),
+                    textAlign: pw.TextAlign.center,
+                  ),
+                ),
+
+                pw.SizedBox(height: 30),
+
+                _buildPdfSectionTitle(
+                  _translations['pl']!['not_subjected_title']!,
+                ),
+
+                pw.SizedBox(height: 8),
 
                 for (int i = 1; i <= 8; i++) _buildNotSubjectedSectionPdf(i),
 
@@ -1530,11 +1612,11 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
                     children: [
                       pw.Text(
                         formattedDateTime,
-                        style: const pw.TextStyle(fontSize: 10),
+                        style: const pw.TextStyle(fontSize: 7),
                       ),
                       pw.Text(
                         'Strona ${context.pageNumber} z ${context.pagesCount}',
-                        style: const pw.TextStyle(fontSize: 10),
+                        style: const pw.TextStyle(fontSize: 7),
                       ),
                     ],
                   ),
@@ -1549,12 +1631,22 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
         pw.Page(
           theme: pdfTheme,
           pageFormat: PdfPageFormat.a4,
+          margin: const pw.EdgeInsets.all(30),
           build: (pw.Context context) {
             return pw.Column(
               crossAxisAlignment: pw.CrossAxisAlignment.start,
-
               children: [
-                _buildPdfSectionTitle('ZGODA NA LECZENIE ORTODONTYCZNE'),
+                pw.Center(
+                  child: pw.Text(
+                    'Plan leczenia - gabinet ortodontyczny Agnieszka Golarz-Nosek',
+                    style: pw.TextStyle(fontSize: 8),
+                    textAlign: pw.TextAlign.center,
+                  ),
+                ),
+
+                pw.SizedBox(height: 30),
+
+                _buildPdfSectionTitle('Zgoda na leczenie ortodontyczne:'),
                 _buildPdfTextField(
                   'Imię i nazwisko:',
                   _controllers['patient_name2']!.text,
@@ -1564,38 +1656,7 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
                   _controllers['patient_pesel']!.text,
                 ),
                 for (int i = 1; i <= 8; i++) _buildAgreementSectionPdf(i),
-                pw.Spacer(),
-                pw.Container(
-                  alignment: pw.Alignment.centerRight,
-                  margin: const pw.EdgeInsets.only(top: 10),
-                  child: pw.Row(
-                    mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                    children: [
-                      pw.Text(
-                        formattedDateTime,
-                        style: const pw.TextStyle(fontSize: 10),
-                      ),
-                      pw.Text(
-                        'Strona ${context.pageNumber} z ${context.pagesCount}',
-                        style: const pw.TextStyle(fontSize: 10),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            );
-          },
-        ),
-      );
 
-      doc.addPage(
-        pw.Page(
-          theme: pdfTheme,
-          pageFormat: PdfPageFormat.a4,
-          build: (pw.Context context) {
-            return pw.Column(
-              crossAxisAlignment: pw.CrossAxisAlignment.start,
-              children: [
                 pw.Row(
                   mainAxisAlignment: pw.MainAxisAlignment.spaceEvenly,
                   crossAxisAlignment: pw.CrossAxisAlignment.start,
@@ -1610,6 +1671,7 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
                     ),
                   ],
                 ),
+
                 pw.Spacer(),
                 pw.Container(
                   alignment: pw.Alignment.centerRight,
@@ -1619,11 +1681,11 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
                     children: [
                       pw.Text(
                         formattedDateTime,
-                        style: const pw.TextStyle(fontSize: 10),
+                        style: const pw.TextStyle(fontSize: 7),
                       ),
                       pw.Text(
                         'Strona ${context.pageNumber} z ${context.pagesCount}',
-                        style: const pw.TextStyle(fontSize: 10),
+                        style: const pw.TextStyle(fontSize: 7),
                       ),
                     ],
                   ),
@@ -1638,24 +1700,24 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
         pw.Page(
           theme: pdfTheme,
           pageFormat: PdfPageFormat.a4,
+          margin: const pw.EdgeInsets.all(30),
           build: (pw.Context context) {
             return pw.Column(
               crossAxisAlignment: pw.CrossAxisAlignment.start,
 
               children: [
-                _buildPdfSectionTitle('CENNIK'),
-                buildEstimateSectionPdf(selectedEstimates, totalEstimatePrice),
-                pw.SizedBox(height: 10),
-                pw.Container(
-                  width: double.infinity,
-                  padding: const pw.EdgeInsets.all(12),
-                  color: PdfColors.red100,
+                pw.Center(
                   child: pw.Text(
-                    _translations['pl']!['price_information']!,
+                    'Plan leczenia - gabinet ortodontyczny Agnieszka Golarz-Nosek',
+                    style: pw.TextStyle(fontSize: 8),
                     textAlign: pw.TextAlign.center,
-                    style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
                   ),
                 ),
+
+                pw.SizedBox(height: 30),
+
+                _buildPdfSectionTitle('CENNIK'),
+                buildEstimateSectionPdf(selectedEstimates, totalEstimatePrice),
                 pw.SizedBox(height: 10),
                 _buildPdfTextField2(
                   'Dodatkowe informacje:',
@@ -1670,11 +1732,11 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
                     children: [
                       pw.Text(
                         formattedDateTime,
-                        style: const pw.TextStyle(fontSize: 10),
+                        style: const pw.TextStyle(fontSize: 7),
                       ),
                       pw.Text(
                         'Strona ${context.pageNumber} z ${context.pagesCount}',
-                        style: const pw.TextStyle(fontSize: 10),
+                        style: const pw.TextStyle(fontSize: 7),
                       ),
                     ],
                   ),
@@ -1756,7 +1818,7 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
   }) {
     return pw.Column(
       children: [
-        pw.Text(label),
+        pw.Text(label, style: pw.TextStyle(fontSize: 9)),
         pw.SizedBox(height: 10),
         signatureImage != null
             ? pw.Image(pw.MemoryImage(signatureImage), width: 200, height: 80)
@@ -1770,7 +1832,10 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
                 child: pw.Text('---'),
               ),
         pw.SizedBox(height: 10),
-        pw.Text('Data: ${DateFormat('dd.MM.yyyy').format(DateTime.now())}'),
+        pw.Text(
+          'Data: ${DateFormat('dd.MM.yyyy').format(DateTime.now())}',
+          style: pw.TextStyle(fontSize: 9),
+        ),
       ],
     );
   }
@@ -1778,10 +1843,21 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
   pw.Widget _buildAgreementSectionPdf(int index) {
     return pw.Padding(
       padding: const pw.EdgeInsets.only(bottom: 16.0),
-      child: pw.Text(
-        _translations['pl']!['treatment_agree_section_${index}_content']!,
-        style: const pw.TextStyle(fontSize: 11),
-        textAlign: pw.TextAlign.justify,
+
+      child: pw.RichText(
+        text: pw.TextSpan(
+          children: [
+            pw.WidgetSpan(
+              child: pw.SizedBox(width: 20), // wcięcie pierwszej linii
+            ),
+            pw.TextSpan(
+              text:
+                  _translations['pl']!['treatment_agree_section_${index}_content']!,
+
+              style: pw.TextStyle(fontSize: 10.5),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -1795,63 +1871,32 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
     return pw.Column(
       crossAxisAlignment: pw.CrossAxisAlignment.start,
       children: [
-        // Lista pozycji
         if (selectedEstimates.isNotEmpty) ...[
-          pw.SizedBox(height: 8),
-          pw.Text(
-            _translations['pl']!['selected_items']!,
-            style: pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold),
-          ),
-          pw.SizedBox(height: 8),
+          pw.SizedBox(height: 12),
 
-          // Nagłówki tabeli
-          pw.Container(
-            padding: const pw.EdgeInsets.symmetric(vertical: 8, horizontal: 4),
-            color: PdfColors.grey200,
-            child: pw.Row(
-              children: [
-                pw.Expanded(
-                  flex: 4,
-                  child: pw.Text(
-                    _translations['pl']!['designation']!,
-                    style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
-                  ),
-                ),
-                pw.Expanded(
-                  flex: 2,
-                  child: pw.Text(
-                    _translations['pl']!['price']!,
-                    style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          pw.SizedBox(height: 4),
-
-          // Lista pozycji
           ...selectedEstimates.map((item) {
-            return pw.Container(
-              padding: const pw.EdgeInsets.symmetric(
-                vertical: 6,
-                horizontal: 4,
-              ),
-              decoration: pw.BoxDecoration(
-                border: pw.Border.all(color: PdfColors.grey300, width: 0.5),
-                borderRadius: pw.BorderRadius.circular(4),
-              ),
-              margin: const pw.EdgeInsets.only(bottom: 4),
+            return pw.Padding(
+              padding: const pw.EdgeInsets.only(bottom: 6),
               child: pw.Row(
                 children: [
+                  // Lewa strona - designation
                   pw.Expanded(
                     flex: 4,
-                    child: pw.Text(_translations['pl']![item['name']]!),
+                    child: pw.Text(
+                      _translations['pl']![item['name']]!,
+                      style: const pw.TextStyle(fontSize: 11),
+                    ),
                   ),
+
+                  // Prawa strona - price
                   pw.Expanded(
                     flex: 2,
-                    child: pw.Text(
-                      "od ${numberFormat.format(item['price'])} ${_translations['pl']!['zl']!}",
-                      textAlign: pw.TextAlign.left,
+                    child: pw.Align(
+                      alignment: pw.Alignment.centerRight,
+                      child: pw.Text(
+                        "${numberFormat.format(item['price'])} ${_translations['pl']!['zl']!}",
+                        style: const pw.TextStyle(fontSize: 11),
+                      ),
                     ),
                   ),
                 ],
@@ -1869,15 +1914,28 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
       children: [
         pw.Text(
           _translations['pl']!['complications_section_${index}_title']!,
-          style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold),
+          style: pw.TextStyle(
+            fontSize: 13,
+            fontWeight: pw.FontWeight.bold,
+            decoration: pw.TextDecoration.underline,
+          ),
         ),
         pw.SizedBox(height: 8),
-        pw.Text(
-          _translations['pl']!['complications_section_${index}_content']!,
-          style: const pw.TextStyle(fontSize: 11),
-          textAlign: pw.TextAlign.justify,
+        pw.RichText(
+          text: pw.TextSpan(
+            children: [
+              pw.WidgetSpan(
+                child: pw.SizedBox(width: 20), // wcięcie pierwszej linii
+              ),
+              pw.TextSpan(
+                text:
+                    _translations['pl']!['complications_section_${index}_content']!,
+                style: pw.TextStyle(fontSize: 10.5),
+              ),
+            ],
+          ),
         ),
-        pw.SizedBox(height: 8),
+        pw.SizedBox(height: 12),
       ],
     );
   }
@@ -1888,15 +1946,28 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
       children: [
         pw.Text(
           _translations['pl']!['recommendations_${index}_title']!,
-          style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold),
+          style: pw.TextStyle(
+            fontSize: 13,
+            fontWeight: pw.FontWeight.bold,
+            decoration: pw.TextDecoration.underline,
+          ),
         ),
         pw.SizedBox(height: 8),
-        pw.Text(
-          _translations['pl']!['recommendations_section_${index}_content']!,
-          style: const pw.TextStyle(fontSize: 11),
-          textAlign: pw.TextAlign.justify,
+        pw.RichText(
+          text: pw.TextSpan(
+            children: [
+              pw.WidgetSpan(
+                child: pw.SizedBox(width: 20), // wcięcie pierwszej linii
+              ),
+              pw.TextSpan(
+                text:
+                    _translations['pl']!['recommendations_section_${index}_content']!,
+                style: pw.TextStyle(fontSize: 10.5),
+              ),
+            ],
+          ),
         ),
-        pw.SizedBox(height: 8),
+        pw.SizedBox(height: 12),
       ],
     );
   }
@@ -1905,10 +1976,18 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
     return pw.Column(
       crossAxisAlignment: pw.CrossAxisAlignment.start,
       children: [
-        pw.Text(
-          _translations['pl']!['rules_${index}_content']!,
-          style: const pw.TextStyle(fontSize: 11),
-          textAlign: pw.TextAlign.justify,
+        pw.RichText(
+          text: pw.TextSpan(
+            children: [
+              pw.WidgetSpan(
+                child: pw.SizedBox(width: 20), // wcięcie pierwszej linii
+              ),
+              pw.TextSpan(
+                text: _translations['pl']!['rules_${index}_content']!,
+                style: pw.TextStyle(fontSize: 10.5),
+              ),
+            ],
+          ),
         ),
         pw.SizedBox(height: 8),
       ],
@@ -1919,10 +1998,18 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
     return pw.Column(
       crossAxisAlignment: pw.CrossAxisAlignment.start,
       children: [
-        pw.Text(
-          _translations['pl']!['not_subjected_section_${index}_content']!,
-          style: const pw.TextStyle(fontSize: 11),
-          textAlign: pw.TextAlign.justify,
+        pw.RichText(
+          text: pw.TextSpan(
+            children: [
+              pw.WidgetSpan(child: pw.SizedBox(width: 20)),
+              pw.TextSpan(
+                text:
+                    _translations['pl']!['not_subjected_section_${index}_content']!,
+
+                style: pw.TextStyle(fontSize: 10.5),
+              ),
+            ],
+          ),
         ),
         pw.SizedBox(height: 8),
       ],
@@ -1934,7 +2021,11 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
       padding: const pw.EdgeInsets.only(bottom: 10),
       child: pw.Text(
         title,
-        style: pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold),
+        style: pw.TextStyle(
+          fontSize: 13,
+          fontWeight: pw.FontWeight.bold,
+          decoration: pw.TextDecoration.underline,
+        ),
       ),
     );
   }
@@ -1945,11 +2036,14 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
       child: pw.RichText(
         text: pw.TextSpan(
           children: [
+            pw.TextSpan(text: '$label ', style: pw.TextStyle(fontSize: 10.5)),
             pw.TextSpan(
-              text: '$label ',
-              style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+              text: value.isNotEmpty ? value : 'brak',
+              style: pw.TextStyle(
+                fontWeight: pw.FontWeight.bold,
+                fontSize: 10.5,
+              ),
             ),
-            pw.TextSpan(text: value.isNotEmpty ? value : 'brak'),
           ],
         ),
       ),
@@ -1960,8 +2054,8 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
     String label,
     String value, {
     bool isRequired = false,
-    double labelSize = 12,
-    double valueSize = 11,
+    double labelSize = 10.5,
+    double valueSize = 10.5,
   }) {
     return pw.Column(
       crossAxisAlignment: pw.CrossAxisAlignment.start,
@@ -1971,17 +2065,13 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
             children: [
               pw.TextSpan(
                 text: label,
-                style: pw.TextStyle(
-                  fontWeight: pw.FontWeight.bold,
-                  fontSize: labelSize,
-                ),
+                style: pw.TextStyle(fontSize: labelSize),
               ),
               if (isRequired)
                 pw.TextSpan(
                   text: ' *',
                   style: pw.TextStyle(
                     color: PdfColors.red,
-                    fontWeight: pw.FontWeight.bold,
                     fontSize: labelSize,
                   ),
                 ),
@@ -2011,69 +2101,35 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
     return pw.Column(
       crossAxisAlignment: pw.CrossAxisAlignment.start,
       children: [
-        pw.Table(
-          border: pw.TableBorder.all(),
-          columnWidths: {
-            0: const pw.FlexColumnWidth(2),
-            1: const pw.FlexColumnWidth(0.8),
-            2: const pw.FlexColumnWidth(2),
-          },
-          children: [
-            // Nagłówek tabeli
-            pw.TableRow(
-              decoration: const pw.BoxDecoration(color: PdfColors.grey300),
-              children: [
-                pw.Padding(
-                  padding: const pw.EdgeInsets.all(6),
-                  child: pw.Text(
-                    'Plan leczenia',
-                    style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
-                  ),
-                ),
-                pw.Padding(
-                  padding: const pw.EdgeInsets.all(6),
-                  child: pw.Text(
-                    'Odpowiedź',
-                    style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
-                  ),
-                ),
-                pw.Padding(
-                  padding: const pw.EdgeInsets.all(6),
-                  child: pw.Text(
-                    'Dodatkowe informacje',
-                    style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
-                  ),
-                ),
-              ],
-            ),
-            // Dane z opcji
-            for (final option in options)
-              pw.TableRow(
+        // Dane z opcji
+        for (final option in options)
+          pw.Column(
+            crossAxisAlignment: pw.CrossAxisAlignment.start,
+            children: [
+              pw.Row(
                 children: [
-                  pw.Padding(
-                    padding: const pw.EdgeInsets.all(6),
-                    child: pw.Text(_translations['pl']![option]!),
+                  pw.Text(
+                    "${_translations['pl']![option]!}: ",
+                    style: pw.TextStyle(fontSize: 11),
                   ),
-                  pw.Padding(
-                    padding: const pw.EdgeInsets.all(6),
-                    child: pw.Text(
-                      answers[option] == '1'
-                          ? 'tak'
-                          : answers[option] == '0'
-                          ? 'nie'
-                          : '-',
-                    ),
-                  ),
-                  pw.Padding(
-                    padding: const pw.EdgeInsets.all(6),
-                    child: pw.Text(
-                      controllers['${option}_attention']?.text ?? '',
-                    ),
+                  pw.Text(
+                    answers[option] == '1'
+                        ? 'tak'
+                        : answers[option] == '0'
+                        ? 'nie'
+                        : '-',
+                    style: pw.TextStyle(fontSize: 11),
                   ),
                 ],
               ),
-          ],
-        ),
+              pw.Text(
+                "Dodatkowe informacje: ${controllers['${option}_attention']!.text}",
+                style: pw.TextStyle(fontSize: 11),
+              ),
+
+              pw.SizedBox(height: 20),
+            ],
+          ),
       ],
     );
   }
