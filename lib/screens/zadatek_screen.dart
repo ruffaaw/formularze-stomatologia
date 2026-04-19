@@ -529,6 +529,7 @@ class _ZadatekScreenState extends State<ZadatekScreen> {
       pw.Page(
         theme: pdfTheme,
         pageFormat: PdfPageFormat.a4,
+        margin: const pw.EdgeInsets.all(30),
         build: (pw.Context context) {
           return pw.Column(
             crossAxisAlignment: pw.CrossAxisAlignment.start,
@@ -625,7 +626,7 @@ class _ZadatekScreenState extends State<ZadatekScreen> {
                       width: 200,
                       height: 80,
                     ),
-                    pw.SizedBox(height: 20),
+                    pw.SizedBox(height: 10),
                     pw.Text(
                       'Data: ${DateFormat('dd.MM.yyyy').format(DateTime.now())}',
                       style: baseStyle,
