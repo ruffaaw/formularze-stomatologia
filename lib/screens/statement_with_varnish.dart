@@ -270,6 +270,7 @@ class _StatementWithVarnishScreenState
       pw.Page(
         theme: pdfTheme,
         pageFormat: PdfPageFormat.a4,
+        margin: const pw.EdgeInsets.all(30),
         build: (pw.Context context) {
           return pw.Padding(
             padding: const pw.EdgeInsets.all(20),
@@ -278,12 +279,9 @@ class _StatementWithVarnishScreenState
               children: [
                 pw.Center(child: pw.Image(logo, width: 200, height: 80)),
                 pw.SizedBox(height: 50),
-                pw.Center(
-                  child: pw.Header(
-                    level: 0,
-                    text: 'Oświadczenie z lakierowaniem',
-                  ),
-                ),
+
+                _buildPdfSectionTitle('Oświadczenie z lakierowaniem'),
+
                 _buildPdfTextField(
                   'Imię i nazwisko:',
                   patientNameController.text,
@@ -291,15 +289,17 @@ class _StatementWithVarnishScreenState
                 pw.Text(
                   "Wyrażam zgodę na wykonanie zabiegu lakierowania. Zostałem/Zostałam poinformowany/poinformowana o jego przebiegu i działaniu. Mam świadomość, że zabieg ten jest zabiegiem dodatkowym, nie wchodzącym w skład podstawowej higienizacji, a jego koszt wykonania wynosi 250 zł.",
                   style: pw.TextStyle(fontSize: 12),
-                  textAlign: pw.TextAlign.justify,
                 ),
                 pw.SizedBox(height: 50),
 
                 pw.Align(
-                  alignment: pw.Alignment.centerRight,
+                  alignment: pw.Alignment.center,
                   child: pw.Column(
                     children: [
-                      pw.Text('Data i podpis pacjenta'),
+                      pw.Text(
+                        'Data i podpis pacjenta',
+                        style: pw.TextStyle(fontSize: 9),
+                      ),
                       pw.SizedBox(height: 10),
                       pw.Image(
                         pw.MemoryImage(signatureBytes!.buffer.asUint8List()),
@@ -309,6 +309,7 @@ class _StatementWithVarnishScreenState
                       pw.SizedBox(height: 20),
                       pw.Text(
                         'Data: ${DateFormat('dd.MM.yyyy').format(DateTime.now())}',
+                        style: pw.TextStyle(fontSize: 9),
                       ),
                     ],
                   ),
@@ -322,11 +323,11 @@ class _StatementWithVarnishScreenState
                     children: [
                       pw.Text(
                         formattedDateTime,
-                        style: const pw.TextStyle(fontSize: 10),
+                        style: const pw.TextStyle(fontSize: 7),
                       ),
                       pw.Text(
                         'Strona ${context.pageNumber} z ${context.pagesCount}',
-                        style: const pw.TextStyle(fontSize: 10),
+                        style: const pw.TextStyle(fontSize: 7),
                       ),
                     ],
                   ),
@@ -401,6 +402,20 @@ class _StatementWithVarnishScreenState
             ),
             pw.TextSpan(text: value.isNotEmpty ? value : 'brak'),
           ],
+        ),
+      ),
+    );
+  }
+
+  pw.Widget _buildPdfSectionTitle(String title) {
+    return pw.Padding(
+      padding: const pw.EdgeInsets.only(bottom: 10),
+      child: pw.Text(
+        title,
+        style: pw.TextStyle(
+          fontSize: 13,
+          fontWeight: pw.FontWeight.bold,
+          decoration: pw.TextDecoration.underline,
         ),
       ),
     );

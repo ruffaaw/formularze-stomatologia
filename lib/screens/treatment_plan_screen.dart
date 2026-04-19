@@ -2036,14 +2036,11 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
       child: pw.RichText(
         text: pw.TextSpan(
           children: [
-            pw.TextSpan(text: '$label ', style: pw.TextStyle(fontSize: 10.5)),
             pw.TextSpan(
-              text: value.isNotEmpty ? value : 'brak',
-              style: pw.TextStyle(
-                fontWeight: pw.FontWeight.bold,
-                fontSize: 10.5,
-              ),
+              text: '$label ',
+              style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
             ),
+            pw.TextSpan(text: value.isNotEmpty ? value : 'brak'),
           ],
         ),
       ),

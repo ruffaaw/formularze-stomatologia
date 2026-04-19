@@ -270,6 +270,7 @@ class _StatementWithADentistScreenState
       pw.Page(
         theme: pdfTheme,
         pageFormat: PdfPageFormat.a4,
+        margin: const pw.EdgeInsets.all(30),
         build: (pw.Context context) {
           return pw.Padding(
             padding: const pw.EdgeInsets.all(20),
@@ -278,12 +279,8 @@ class _StatementWithADentistScreenState
               children: [
                 pw.Center(child: pw.Image(logo, width: 200, height: 80)),
                 pw.SizedBox(height: 50),
-                pw.Center(
-                  child: pw.Header(
-                    level: 0,
-                    text: 'Oświadczenie ze stomatologiem',
-                  ),
-                ),
+                _buildPdfSectionTitle('Oświadczenie ze stomatologiem'),
+
                 _buildPdfTextField(
                   'Imię i nazwisko:',
                   patientNameController.text,
@@ -291,15 +288,17 @@ class _StatementWithADentistScreenState
                 pw.Text(
                   "Zostałem/Zostałam poinformowany/poinformowana o konieczności wykonania przeglądu stomatologicznego u swojego stomatologa po zabiegu higienizacji.",
                   style: pw.TextStyle(fontSize: 12),
-                  textAlign: pw.TextAlign.justify,
                 ),
                 pw.SizedBox(height: 50),
 
                 pw.Align(
-                  alignment: pw.Alignment.centerRight,
+                  alignment: pw.Alignment.center,
                   child: pw.Column(
                     children: [
-                      pw.Text('Data i podpis pacjenta'),
+                      pw.Text(
+                        'Data i podpis pacjenta',
+                        style: pw.TextStyle(fontSize: 9),
+                      ),
                       pw.SizedBox(height: 10),
                       pw.Image(
                         pw.MemoryImage(signatureBytes!.buffer.asUint8List()),
@@ -309,6 +308,7 @@ class _StatementWithADentistScreenState
                       pw.SizedBox(height: 20),
                       pw.Text(
                         'Data: ${DateFormat('dd.MM.yyyy').format(DateTime.now())}',
+                        style: pw.TextStyle(fontSize: 9),
                       ),
                     ],
                   ),
@@ -322,11 +322,11 @@ class _StatementWithADentistScreenState
                     children: [
                       pw.Text(
                         formattedDateTime,
-                        style: const pw.TextStyle(fontSize: 10),
+                        style: const pw.TextStyle(fontSize: 7),
                       ),
                       pw.Text(
                         'Strona ${context.pageNumber} z ${context.pagesCount}',
-                        style: const pw.TextStyle(fontSize: 10),
+                        style: const pw.TextStyle(fontSize: 7),
                       ),
                     ],
                   ),
@@ -401,6 +401,20 @@ class _StatementWithADentistScreenState
             ),
             pw.TextSpan(text: value.isNotEmpty ? value : 'brak'),
           ],
+        ),
+      ),
+    );
+  }
+
+  pw.Widget _buildPdfSectionTitle(String title) {
+    return pw.Padding(
+      padding: const pw.EdgeInsets.only(bottom: 10),
+      child: pw.Text(
+        title,
+        style: pw.TextStyle(
+          fontSize: 13,
+          fontWeight: pw.FontWeight.bold,
+          decoration: pw.TextDecoration.underline,
         ),
       ),
     );
