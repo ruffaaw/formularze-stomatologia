@@ -67,6 +67,10 @@ class _ZadatekScreenState extends State<ZadatekScreen> {
     required String price,
     bool required = false,
   }) {
+    if (controller != null && controller.text.isEmpty) {
+      controller.text = price;
+    }
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: SizedBox(
@@ -331,12 +335,18 @@ class _ZadatekScreenState extends State<ZadatekScreen> {
                   SizedBox(height: sectionSpacing),
 
                   Wrap(
+                    crossAxisAlignment: WrapCrossAlignment.center,
                     children: [
                       Text(
                         "W przypadku zmiany terminu wizyty ze strony pacjenta prosimy o informację "
                         "o odwołaniu wizyty telefonicznie na nr 601 949 752 lub e-mailem na "
                         "gabinet@golarz.pl, najpóźniej 24 godziny przed planową wizytą. Brak "
-                        "powiadomienia skutkuje obciążeniem pacjenta kwotą za rezerwację wizyty "
+                        "powiadomienia skutkuje obciążeniem pacjenta kwotą za rezerwację wizyty ",
+                        style: baseTextStyle,
+                        textAlign: TextAlign.justify,
+                      ),
+
+                      Text(
                         "w wysokości ",
                         style: baseTextStyle,
                         textAlign: TextAlign.justify,
@@ -348,6 +358,7 @@ class _ZadatekScreenState extends State<ZadatekScreen> {
                       Text(" zł.", style: baseTextStyle),
                     ],
                   ),
+
                   SizedBox(height: sectionSpacing),
 
                   Text(
@@ -512,95 +523,137 @@ class _ZadatekScreenState extends State<ZadatekScreen> {
         '${now.day.toString().padLeft(2, '0')}.${now.month.toString().padLeft(2, '0')}.${now.year} '
         '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}';
 
+    final baseStyle = pw.TextStyle(fontSize: 9, lineSpacing: 3);
+
     doc.addPage(
       pw.Page(
         theme: pdfTheme,
         pageFormat: PdfPageFormat.a4,
         build: (pw.Context context) {
-          return pw.Padding(
-            padding: const pw.EdgeInsets.all(20),
-            child: pw.Column(
-              crossAxisAlignment: pw.CrossAxisAlignment.start,
-              children: [
-                pw.Center(child: pw.Header(level: 0, text: 'UMOWA ZADATKOWA')),
-                pw.SizedBox(height: 20),
-                pw.Text(
-                  'Pacjent: ${patientNameController.text}',
-                  style: pw.TextStyle(
-                    fontSize: 14,
-                    fontWeight: pw.FontWeight.bold,
-                  ),
-                ),
-                pw.Divider(),
-                pw.SizedBox(height: 20),
-                pw.Paragraph(text: 'Szanowni Państwo,'),
-                pw.SizedBox(height: 10),
-                pw.Paragraph(
-                  text:
-                      'W celu rezerwacji terminu na ${serviceTypes.firstWhere((e) => e['value'] == selectedService)['label']} '
-                      'potwierdzam wpłatę zadatku w wysokości ${paymentController.text} zł '
-                      'w recepcji Gabinetu Ortodontycznego Agnieszka Golarz-Nosek.',
-                ),
-                pw.SizedBox(height: 10),
-                pw.Paragraph(
-                  text:
-                      'W przypadku rezygnacji z leczenia lub nie przybycia na wizytę zadatek na '
-                      '${applianceTypes.firstWhere((e) => e['value'] == selectedApplianceType)['label']} '
-                      'nie podlega zwrotowi.',
-                ),
-                pw.SizedBox(height: 20),
-                pw.Text(
-                  'Ważność skanu wewnątrzustego:',
-                  style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
-                ),
-                pw.Bullet(text: 'aparat stały - 6 miesięcy'),
-                pw.Bullet(text: 'aparat ruchomy - 2 miesiące'),
-                pw.SizedBox(height: 20),
-                if (penaltyPriceController.text.isNotEmpty)
-                  pw.Paragraph(
-                    text:
-                        'Brak powiadomienia o odwołaniu wizyty skutkuje obciążeniem pacjenta '
-                        'kwotą ${penaltyPriceController.text} zł.',
-                  ),
-                pw.SizedBox(height: 40),
-                pw.Align(
-                  alignment: pw.Alignment.centerRight,
-                  child: pw.Column(
-                    children: [
-                      pw.Text('Podpis pacjenta lub opiekuna prawnego:'),
-                      pw.SizedBox(height: 10),
-                      pw.Image(
-                        pw.MemoryImage(signatureBytes!.buffer.asUint8List()),
-                        width: 200,
-                        height: 80,
+          return pw.Column(
+            crossAxisAlignment: pw.CrossAxisAlignment.start,
+            children: [
+              pw.Center(
+                child: pw.Column(
+                  children: [
+                    pw.Text(
+                      'Gabinet Ortodontyczny Agnieszka Golarz-Nosek',
+                      style: pw.TextStyle(
+                        fontSize: 10,
+                        fontWeight: pw.FontWeight.bold,
                       ),
-                      pw.SizedBox(height: 20),
-                      pw.Text(
-                        'Data: ${DateFormat('dd.MM.yyyy').format(DateTime.now())}',
+                      textAlign: pw.TextAlign.center,
+                    ),
+
+                    pw.SizedBox(height: 2),
+
+                    pw.Text(
+                      '31-542 Kraków, ul. Kordylewskiego 1/3',
+                      style: pw.TextStyle(
+                        fontSize: 9,
+                        fontStyle: pw.FontStyle.italic,
                       ),
-                    ],
-                  ),
+                      textAlign: pw.TextAlign.center,
+                    ),
+
+                    pw.SizedBox(height: 2),
+
+                    pw.Text(
+                      'tel. 12 22 67 01, 601-949-752, e-mail: gabinet@golarz.pl',
+                      style: pw.TextStyle(
+                        fontSize: 9,
+                        fontStyle: pw.FontStyle.italic,
+                      ),
+                      textAlign: pw.TextAlign.center,
+                    ),
+                  ],
                 ),
-                pw.Spacer(),
-                pw.Container(
-                  alignment: pw.Alignment.centerRight,
-                  margin: const pw.EdgeInsets.only(top: 10),
-                  child: pw.Row(
-                    mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                    children: [
-                      pw.Text(
-                        formattedDateTime,
-                        style: const pw.TextStyle(fontSize: 10),
-                      ),
-                      pw.Text(
-                        'Strona ${context.pageNumber} z ${context.pagesCount}',
-                        style: const pw.TextStyle(fontSize: 10),
-                      ),
-                    ],
-                  ),
+              ),
+
+              pw.SizedBox(height: 75),
+              pw.Text(
+                patientNameController.text,
+                style: pw.TextStyle(
+                  fontSize: 10,
+                  fontWeight: pw.FontWeight.bold,
                 ),
-              ],
-            ),
+              ),
+              pw.SizedBox(height: 20),
+              pw.Text('Szanowni Państwo,', style: baseStyle),
+              pw.SizedBox(height: 10),
+              pw.Text(
+                'W celu rezerwacji terminu na ${serviceTypes.firstWhere((e) => e['value'] == selectedService)['label']} '
+                'potwierdzam wpłatę zadatku w wysokości ${paymentController.text} zł '
+                'w recepcji Gabinetu Ortodontycznego Agnieszka Golarz-Nosek.',
+                style: baseStyle,
+              ),
+              pw.SizedBox(height: 10),
+              pw.Text(
+                'W przypadku rezygnacji z leczenia lub nie przybycia na wizytę zadatek na '
+                '${applianceTypes.firstWhere((e) => e['value'] == selectedApplianceType)['label']} '
+                'nie podlega zwrotowi.',
+                style: baseStyle,
+              ),
+              pw.SizedBox(height: 3),
+              pw.Text('Ważność skanu wewnątrzustego:', style: baseStyle),
+              pw.SizedBox(height: 3),
+              pw.Text('- aparat stały - 6 miesięcy', style: baseStyle),
+              pw.SizedBox(height: 3),
+              pw.Text('- aparat ruchomy - 2 miesiące', style: baseStyle),
+              pw.SizedBox(height: 3),
+              pw.Text(
+                'W przypadku zmiany terminu wizyty ze strony pacjenta prosimy o informację o odwołaniu wizyty telefonicznie na nr 601 949 752 lub e-mailem na gabinet@golarz.pl, najpóźniej 24 godziny przed planową wizytą. Brak powiadomienia skutkuje obciążeniem pacjenta kwotą za rezerwację wizyty w wysokości ${penaltyPriceController.text} zł.',
+                style: baseStyle,
+              ),
+              pw.SizedBox(height: 3),
+              pw.Text(
+                'W razie problemów z odbiorem aparatu w wyznaczonym terminie, należy odebrać go w terminie nie dłuższym niż 7 dni od początkowo ustalonej daty. Jest to uwarunkowane migracją zębów i wystąpieniem trudności w założeniu aparatu.',
+                style: baseStyle,
+              ),
+              pw.Spacer(),
+              pw.Align(
+                alignment: pw.Alignment.center,
+                child: pw.Column(
+                  children: [
+                    pw.Text(
+                      'Podpis pacjenta lub opiekuna prawnego:',
+                      style: baseStyle,
+                    ),
+                    pw.SizedBox(height: 10),
+                    pw.Image(
+                      pw.MemoryImage(signatureBytes!.buffer.asUint8List()),
+                      width: 200,
+                      height: 80,
+                    ),
+                    pw.SizedBox(height: 20),
+                    pw.Text(
+                      'Data: ${DateFormat('dd.MM.yyyy').format(DateTime.now())}',
+                      style: baseStyle,
+                    ),
+                  ],
+                ),
+              ),
+
+              pw.SizedBox(height: 20),
+
+              pw.Container(
+                alignment: pw.Alignment.centerRight,
+                margin: const pw.EdgeInsets.only(top: 10),
+                child: pw.Row(
+                  mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                  children: [
+                    pw.Text(
+                      formattedDateTime,
+                      style: const pw.TextStyle(fontSize: 7),
+                    ),
+                    pw.Text(
+                      'Strona ${context.pageNumber} z ${context.pagesCount}',
+                      style: const pw.TextStyle(fontSize: 7),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           );
         },
       ),
