@@ -21,6 +21,7 @@ class MainApp extends StatelessWidget {
       theme: ThemeData(
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.grey.shade800),
+        fontFamily: 'TimesNewRoman',
       ),
       home: const FormSelectionScreen(), // Ekran wyboru jako główny
     );

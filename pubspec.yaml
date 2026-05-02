@@ -30,10 +30,10 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   fonts:
-    - family: Archivo
+    - family: TimesNewRoman
       fonts:
-        - asset: assets/fonts/archivo.ttf
-        - asset: assets/fonts/archivo-bold.ttf
+        - asset: assets/fonts/times.ttf
+        - asset: assets/fonts/times-bold.ttf
   assets:
     - assets/images/pl.png
     - assets/images/en.png

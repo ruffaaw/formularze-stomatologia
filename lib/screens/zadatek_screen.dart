@@ -38,6 +38,7 @@ class _ZadatekScreenState extends State<ZadatekScreen> {
   final TextStyle baseTextStyle = const TextStyle(
     fontSize: baseFontSize,
     color: Colors.black,
+    height: 1.6,
   );
 
   final List<Map<String, String>> serviceTypes = [
@@ -215,12 +216,17 @@ class _ZadatekScreenState extends State<ZadatekScreen> {
           ),
           hint: Text(
             hintText,
-            style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.grey.shade600,
+              fontFamily: 'TimesNewRoman',
+            ),
           ),
           style: const TextStyle(
             fontSize: 14,
             color: Colors.black,
             fontWeight: FontWeight.bold,
+            fontFamily: 'TimesNewRoman',
           ),
           icon: const Icon(Icons.arrow_drop_down, size: 20),
           dropdownColor: Theme.of(context).colorScheme.surfaceVariant,
@@ -228,7 +234,13 @@ class _ZadatekScreenState extends State<ZadatekScreen> {
           items: items.map((item) {
             return DropdownMenuItem<String>(
               value: item["value"],
-              child: Text(item["label"]!, style: const TextStyle(fontSize: 14)),
+              child: Text(
+                item["label"]!,
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontFamily: 'TimesNewRoman',
+                ),
+              ),
             );
           }).toList(),
           onChanged: onChanged,
@@ -256,6 +268,7 @@ class _ZadatekScreenState extends State<ZadatekScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildPatientNameField(),
+                  SizedBox(height: sectionSpacing),
                   Text("Szanowni Państwo,", style: baseTextStyle),
                   SizedBox(height: sectionSpacing),
 
@@ -510,8 +523,8 @@ class _ZadatekScreenState extends State<ZadatekScreen> {
     // Tworzenie PDF
     final doc = pw.Document();
     final pdfTheme = pw.ThemeData.withFont(
-      base: pw.Font.ttf(await rootBundle.load('assets/fonts/archivo.ttf')),
-      bold: pw.Font.ttf(await rootBundle.load('assets/fonts/archivo-bold.ttf')),
+      base: pw.Font.ttf(await rootBundle.load('assets/fonts/times.ttf')),
+      bold: pw.Font.ttf(await rootBundle.load('assets/fonts/times-bold.ttf')),
     );
     final signatureImage = await _signaturePadKey.currentState!.toImage();
     final signatureBytes = await signatureImage.toByteData(
@@ -523,7 +536,7 @@ class _ZadatekScreenState extends State<ZadatekScreen> {
         '${now.day.toString().padLeft(2, '0')}.${now.month.toString().padLeft(2, '0')}.${now.year} '
         '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}';
 
-    final baseStyle = pw.TextStyle(fontSize: 9, lineSpacing: 3);
+    final baseStyle = pw.TextStyle(fontSize: 9, lineSpacing: 6);
 
     doc.addPage(
       pw.Page(
@@ -595,18 +608,18 @@ class _ZadatekScreenState extends State<ZadatekScreen> {
                 'nie podlega zwrotowi.',
                 style: baseStyle,
               ),
-              pw.SizedBox(height: 3),
+              pw.SizedBox(height: 6),
               pw.Text('Ważność skanu wewnątrzustego:', style: baseStyle),
-              pw.SizedBox(height: 3),
+              pw.SizedBox(height: 6),
               pw.Text('- aparat stały - 6 miesięcy', style: baseStyle),
-              pw.SizedBox(height: 3),
+              pw.SizedBox(height: 6),
               pw.Text('- aparat ruchomy - 2 miesiące', style: baseStyle),
-              pw.SizedBox(height: 3),
+              pw.SizedBox(height: 6),
               pw.Text(
                 'W przypadku zmiany terminu wizyty ze strony pacjenta prosimy o informację o odwołaniu wizyty telefonicznie na nr 601 949 752 lub e-mailem na gabinet@golarz.pl, najpóźniej 24 godziny przed planową wizytą. Brak powiadomienia skutkuje obciążeniem pacjenta kwotą za rezerwację wizyty w wysokości ${penaltyPriceController.text} zł.',
                 style: baseStyle,
               ),
-              pw.SizedBox(height: 3),
+              pw.SizedBox(height: 6),
               pw.Text(
                 'W razie problemów z odbiorem aparatu w wyznaczonym terminie, należy odebrać go w terminie nie dłuższym niż 7 dni od początkowo ustalonej daty. Jest to uwarunkowane migracją zębów i wystąpieniem trudności w założeniu aparatu.',
                 style: baseStyle,
