@@ -216,17 +216,12 @@ class _ZadatekScreenState extends State<ZadatekScreen> {
           ),
           hint: Text(
             hintText,
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.grey.shade600,
-              fontFamily: 'TimesNewRoman',
-            ),
+            style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
           ),
           style: const TextStyle(
             fontSize: 14,
             color: Colors.black,
             fontWeight: FontWeight.bold,
-            fontFamily: 'TimesNewRoman',
           ),
           icon: const Icon(Icons.arrow_drop_down, size: 20),
           dropdownColor: Theme.of(context).colorScheme.surfaceVariant,
@@ -234,13 +229,7 @@ class _ZadatekScreenState extends State<ZadatekScreen> {
           items: items.map((item) {
             return DropdownMenuItem<String>(
               value: item["value"],
-              child: Text(
-                item["label"]!,
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontFamily: 'TimesNewRoman',
-                ),
-              ),
+              child: Text(item["label"]!, style: const TextStyle(fontSize: 14)),
             );
           }).toList(),
           onChanged: onChanged,
@@ -559,7 +548,7 @@ class _ZadatekScreenState extends State<ZadatekScreen> {
                       textAlign: pw.TextAlign.center,
                     ),
 
-                    pw.SizedBox(height: 2),
+                    pw.SizedBox(height: 6),
 
                     pw.Text(
                       '31-542 Kraków, ul. Kordylewskiego 1/3',
@@ -570,7 +559,7 @@ class _ZadatekScreenState extends State<ZadatekScreen> {
                       textAlign: pw.TextAlign.center,
                     ),
 
-                    pw.SizedBox(height: 2),
+                    pw.SizedBox(height: 6),
 
                     pw.Text(
                       'tel. 12 22 67 01, 601-949-752, e-mail: gabinet@golarz.pl',

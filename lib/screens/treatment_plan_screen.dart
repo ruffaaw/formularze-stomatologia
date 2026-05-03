@@ -1272,10 +1272,8 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
     try {
       final doc = pw.Document();
       final pdfTheme = pw.ThemeData.withFont(
-        base: pw.Font.ttf(await rootBundle.load('assets/fonts/archivo.ttf')),
-        bold: pw.Font.ttf(
-          await rootBundle.load('assets/fonts/archivo-bold.ttf'),
-        ),
+        base: pw.Font.ttf(await rootBundle.load('assets/fonts/times.ttf')),
+        bold: pw.Font.ttf(await rootBundle.load('assets/fonts/times-bold.ttf')),
       );
 
       final doctorTreatmentAgreeImage =
@@ -1466,6 +1464,7 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
                   style: pw.TextStyle(
                     fontSize: 12,
                     fontWeight: pw.FontWeight.bold,
+                    lineSpacing: 6,
                   ),
                   textAlign: pw.TextAlign.center,
                 ),
@@ -1484,7 +1483,7 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
                     pw.TextSpan(
                       text:
                           _translations['pl']!['complications_section_content']!,
-                      style: pw.TextStyle(fontSize: 10),
+                      style: pw.TextStyle(fontSize: 10, lineSpacing: 6),
                     ),
                   ],
                 ),
@@ -1515,13 +1514,13 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
                   ),
                 ),
 
-                pw.SizedBox(height: 30),
+                pw.SizedBox(height: 20),
 
                 _buildPdfSectionTitle(
                   "Zalecenia dla pacjenta ortodontycznego, noszącego stały aparat:",
                 ),
 
-                pw.SizedBox(height: 10),
+                pw.SizedBox(height: 6),
 
                 pw.RichText(
                   text: pw.TextSpan(
@@ -1530,21 +1529,20 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
                       pw.TextSpan(
                         text:
                             "Należy pamiętać, że efekty leczenia ortodontycznego zależą w znacznym stopniu od pacjenta, który musi ściśle współpracować z lekarzem prowadzącym leczenie i bezwzględnie wypełniać jego zalecenia. Ortodonta odpowiedzialny za leczenie, nie może odpowiadać za niezgodne z zaleceniami postępowanie pacjenta i wynikające z tego komplikacje.",
-                        style: pw.TextStyle(fontSize: 10),
+                        style: pw.TextStyle(fontSize: 10, lineSpacing: 6),
                       ),
                     ],
                   ),
                 ),
 
-                pw.SizedBox(height: 3),
+                pw.SizedBox(height: 6),
 
                 _buildPdfSectionTitle("Zalecenia:"),
 
-                pw.SizedBox(height: 3),
-
+                // pw.SizedBox(height: 6),
                 for (int i = 1; i <= 4; i++) _buildRecommendationsSectionPdf(i),
 
-                pw.SizedBox(height: 10),
+                pw.SizedBox(height: 6),
 
                 _buildPdfSectionTitle(
                   "Zasady użytkowania stałego aparatu retencyjnego",
@@ -1593,13 +1591,13 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
                   ),
                 ),
 
-                pw.SizedBox(height: 30),
+                pw.SizedBox(height: 20),
 
                 _buildPdfSectionTitle(
                   _translations['pl']!['not_subjected_title']!,
                 ),
 
-                pw.SizedBox(height: 8),
+                pw.SizedBox(height: 6),
 
                 for (int i = 1; i <= 8; i++) _buildNotSubjectedSectionPdf(i),
 
@@ -1644,7 +1642,7 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
                   ),
                 ),
 
-                pw.SizedBox(height: 30),
+                pw.SizedBox(height: 20),
 
                 _buildPdfSectionTitle('Zgoda na leczenie ortodontyczne:'),
                 _buildPdfTextField(
@@ -1714,7 +1712,7 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
                   ),
                 ),
 
-                pw.SizedBox(height: 30),
+                pw.SizedBox(height: 20),
 
                 _buildPdfSectionTitle('CENNIK'),
                 buildEstimateSectionPdf(selectedEstimates, totalEstimatePrice),
@@ -1842,7 +1840,7 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
 
   pw.Widget _buildAgreementSectionPdf(int index) {
     return pw.Padding(
-      padding: const pw.EdgeInsets.only(bottom: 16.0),
+      padding: const pw.EdgeInsets.only(bottom: 6),
 
       child: pw.RichText(
         text: pw.TextSpan(
@@ -1854,7 +1852,7 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
               text:
                   _translations['pl']!['treatment_agree_section_${index}_content']!,
 
-              style: pw.TextStyle(fontSize: 10.5),
+              style: pw.TextStyle(fontSize: 10.5, lineSpacing: 6),
             ),
           ],
         ),
@@ -1872,7 +1870,7 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
       crossAxisAlignment: pw.CrossAxisAlignment.start,
       children: [
         if (selectedEstimates.isNotEmpty) ...[
-          pw.SizedBox(height: 12),
+          pw.SizedBox(height: 6),
 
           ...selectedEstimates.map((item) {
             return pw.Padding(
@@ -1920,7 +1918,7 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
             decoration: pw.TextDecoration.underline,
           ),
         ),
-        pw.SizedBox(height: 8),
+        pw.SizedBox(height: 6),
         pw.RichText(
           text: pw.TextSpan(
             children: [
@@ -1930,7 +1928,7 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
               pw.TextSpan(
                 text:
                     _translations['pl']!['complications_section_${index}_content']!,
-                style: pw.TextStyle(fontSize: 10.5),
+                style: pw.TextStyle(fontSize: 10.5, lineSpacing: 6),
               ),
             ],
           ),
@@ -1952,7 +1950,7 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
             decoration: pw.TextDecoration.underline,
           ),
         ),
-        pw.SizedBox(height: 8),
+        pw.SizedBox(height: 6),
         pw.RichText(
           text: pw.TextSpan(
             children: [
@@ -1962,7 +1960,7 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
               pw.TextSpan(
                 text:
                     _translations['pl']!['recommendations_section_${index}_content']!,
-                style: pw.TextStyle(fontSize: 10.5),
+                style: pw.TextStyle(fontSize: 10.5, lineSpacing: 6),
               ),
             ],
           ),
@@ -1984,7 +1982,7 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
               ),
               pw.TextSpan(
                 text: _translations['pl']!['rules_${index}_content']!,
-                style: pw.TextStyle(fontSize: 10.5),
+                style: pw.TextStyle(fontSize: 10.5, lineSpacing: 6),
               ),
             ],
           ),
@@ -2006,19 +2004,19 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
                 text:
                     _translations['pl']!['not_subjected_section_${index}_content']!,
 
-                style: pw.TextStyle(fontSize: 10.5),
+                style: pw.TextStyle(fontSize: 10.5, lineSpacing: 6),
               ),
             ],
           ),
         ),
-        pw.SizedBox(height: 8),
+        pw.SizedBox(height: 6),
       ],
     );
   }
 
   pw.Widget _buildPdfSectionTitle(String title) {
     return pw.Padding(
-      padding: const pw.EdgeInsets.only(bottom: 10),
+      padding: const pw.EdgeInsets.only(bottom: 6),
       child: pw.Text(
         title,
         style: pw.TextStyle(
@@ -2032,7 +2030,7 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
 
   pw.Widget _buildPdfTextField(String label, String value) {
     return pw.Padding(
-      padding: const pw.EdgeInsets.only(bottom: 8),
+      padding: const pw.EdgeInsets.only(bottom: 6),
       child: pw.RichText(
         text: pw.TextSpan(
           children: [
@@ -2076,7 +2074,7 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
           ),
         ),
         pw.Padding(
-          padding: const pw.EdgeInsets.only(top: 2),
+          padding: const pw.EdgeInsets.only(top: 6),
           child: pw.Text(
             value.isNotEmpty ? value : '-',
             style: pw.TextStyle(
@@ -2119,6 +2117,7 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
                   ),
                 ],
               ),
+              pw.SizedBox(height: 6),
               pw.Text(
                 "Dodatkowe informacje: ${controllers['${option}_attention']!.text}",
                 style: pw.TextStyle(fontSize: 11),

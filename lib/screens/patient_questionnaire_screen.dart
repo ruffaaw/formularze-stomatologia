@@ -1787,10 +1787,8 @@ class _PatientQuestionnaireScreenState
     try {
       final doc = pw.Document();
       final pdfTheme = pw.ThemeData.withFont(
-        base: pw.Font.ttf(await rootBundle.load('assets/fonts/archivo.ttf')),
-        bold: pw.Font.ttf(
-          await rootBundle.load('assets/fonts/archivo-bold.ttf'),
-        ),
+        base: pw.Font.ttf(await rootBundle.load('assets/fonts/times.ttf')),
+        bold: pw.Font.ttf(await rootBundle.load('assets/fonts/times-bold.ttf')),
       );
 
       final signatureBytes = await _getSignatureImageBytes();
@@ -1799,7 +1797,7 @@ class _PatientQuestionnaireScreenState
           '${now.day.toString().padLeft(2, '0')}.${now.month.toString().padLeft(2, '0')}.${now.year} '
           '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}';
 
-      final baseStyle = pw.TextStyle(fontSize: 10, lineSpacing: 3);
+      final baseStyle = pw.TextStyle(fontSize: 10, lineSpacing: 6);
 
       doc.addPage(
         pw.Page(
@@ -1890,7 +1888,7 @@ class _PatientQuestionnaireScreenState
                     style: baseStyle,
                   ),
 
-                  pw.SizedBox(height: 3),
+                  pw.SizedBox(height: 6),
 
                   _buildPdfTextField(
                     'Opiekun:',
@@ -1911,7 +1909,7 @@ class _PatientQuestionnaireScreenState
                     'Upoważniam niżej wymienioną osobę',
                     style: baseStyle.copyWith(fontWeight: pw.FontWeight.bold),
                   ),
-                  pw.SizedBox(height: 3),
+                  pw.SizedBox(height: 6),
 
                   pw.Padding(
                     padding: const pw.EdgeInsets.only(left: 8),
@@ -1935,7 +1933,7 @@ class _PatientQuestionnaireScreenState
                     ),
                   ),
 
-                  pw.SizedBox(height: 3),
+                  pw.SizedBox(height: 6),
 
                   pw.Padding(
                     padding: const pw.EdgeInsets.only(left: 8),
@@ -1959,7 +1957,7 @@ class _PatientQuestionnaireScreenState
                     ),
                   ),
 
-                  pw.SizedBox(height: 3),
+                  pw.SizedBox(height: 6),
 
                   _buildPdfTextField(
                     'Imię i nazwisko:',
@@ -2051,7 +2049,7 @@ class _PatientQuestionnaireScreenState
                       textAlign: pw.TextAlign.center,
                     ),
 
-                    pw.SizedBox(height: 3),
+                    pw.SizedBox(height: 6),
 
                     pw.Text(
                       'Podane przez Państwa informacje są objęte tajemnicą lekarską',
@@ -2082,8 +2080,8 @@ class _PatientQuestionnaireScreenState
                       pw.Padding(
                         padding: const pw.EdgeInsets.only(
                           left: 3,
-                          top: 1,
-                          bottom: 1,
+                          top: 3,
+                          bottom: 3,
                         ),
                         child: pw.Text(
                           _translations['pl']!['diseaseQuestion']!,
@@ -2093,30 +2091,39 @@ class _PatientQuestionnaireScreenState
                           ),
                         ),
                       ),
-                      pw.Center(
-                        child: pw.Text(
-                          _translations['pl']!['yes']!,
-                          style: pw.TextStyle(
-                            fontWeight: pw.FontWeight.bold,
-                            fontSize: 10,
+                      pw.Padding(
+                        padding: const pw.EdgeInsets.only(top: 2, bottom: 2),
+                        child: pw.Center(
+                          child: pw.Text(
+                            _translations['pl']!['yes']!,
+                            style: pw.TextStyle(
+                              fontWeight: pw.FontWeight.bold,
+                              fontSize: 10,
+                            ),
                           ),
                         ),
                       ),
-                      pw.Center(
-                        child: pw.Text(
-                          _translations['pl']!['no']!,
-                          style: pw.TextStyle(
-                            fontWeight: pw.FontWeight.bold,
-                            fontSize: 10,
+                      pw.Padding(
+                        padding: const pw.EdgeInsets.only(top: 2, bottom: 2),
+                        child: pw.Center(
+                          child: pw.Text(
+                            _translations['pl']!['no']!,
+                            style: pw.TextStyle(
+                              fontWeight: pw.FontWeight.bold,
+                              fontSize: 10,
+                            ),
                           ),
                         ),
                       ),
-                      pw.Center(
-                        child: pw.Text(
-                          _translations['pl']!['dontKnow']!,
-                          style: pw.TextStyle(
-                            fontWeight: pw.FontWeight.bold,
-                            fontSize: 10,
+                      pw.Padding(
+                        padding: const pw.EdgeInsets.only(top: 2, bottom: 2),
+                        child: pw.Center(
+                          child: pw.Text(
+                            _translations['pl']!['dontKnow']!,
+                            style: pw.TextStyle(
+                              fontWeight: pw.FontWeight.bold,
+                              fontSize: 10,
+                            ),
                           ),
                         ),
                       ),
@@ -2129,15 +2136,15 @@ class _PatientQuestionnaireScreenState
                         pw.Padding(
                           padding: const pw.EdgeInsets.only(
                             left: 3,
-                            top: 1,
-                            bottom: 1,
+                            top: 3,
+                            bottom: 3,
                           ),
                           child: (disease['hasDescription'] == "false")
                               ? pw.Text(
                                   _diseaseNamePdf(disease['id']!),
                                   style: const pw.TextStyle(
                                     fontSize: 8,
-                                    lineSpacing: 3,
+                                    lineSpacing: 6,
                                   ),
                                 )
                               : pw.Column(
@@ -2150,7 +2157,7 @@ class _PatientQuestionnaireScreenState
                                       _diseaseNamePdf(disease['id']!),
                                       style: const pw.TextStyle(
                                         fontSize: 8,
-                                        lineSpacing: 3,
+                                        lineSpacing: 6,
                                       ),
                                     ),
                                     if (_controllers[_getDescriptionControllerKey(
@@ -2166,29 +2173,38 @@ class _PatientQuestionnaireScreenState
                                             .text,
                                         style: const pw.TextStyle(
                                           fontSize: 8,
-                                          lineSpacing: 3,
+                                          lineSpacing: 6,
                                         ),
                                       ),
                                   ],
                                 ),
                         ),
-                        pw.Center(
-                          child: _buildPdfCheckbox(
-                            _diseaseResponses[disease['id']]!['yes'] == '1',
-                            isCentered: true,
+                        pw.Padding(
+                          padding: const pw.EdgeInsets.only(top: 2, bottom: 2),
+                          child: pw.Center(
+                            child: _buildPdfCheckbox(
+                              _diseaseResponses[disease['id']]!['yes'] == '1',
+                              isCentered: true,
+                            ),
                           ),
                         ),
-                        pw.Center(
-                          child: _buildPdfCheckbox(
-                            _diseaseResponses[disease['id']]!['no'] == '1',
-                            isCentered: true,
+                        pw.Padding(
+                          padding: const pw.EdgeInsets.only(top: 2, bottom: 2),
+                          child: pw.Center(
+                            child: _buildPdfCheckbox(
+                              _diseaseResponses[disease['id']]!['no'] == '1',
+                              isCentered: true,
+                            ),
                           ),
                         ),
-                        pw.Center(
-                          child: _buildPdfCheckbox(
-                            _diseaseResponses[disease['id']]!['dontKnow'] ==
-                                '1',
-                            isCentered: true,
+                        pw.Padding(
+                          padding: const pw.EdgeInsets.only(top: 2, bottom: 2),
+                          child: pw.Center(
+                            child: _buildPdfCheckbox(
+                              _diseaseResponses[disease['id']]!['dontKnow'] ==
+                                  '1',
+                              isCentered: true,
+                            ),
                           ),
                         ),
                       ],
@@ -2199,8 +2215,8 @@ class _PatientQuestionnaireScreenState
                       pw.Padding(
                         padding: const pw.EdgeInsets.only(
                           left: 3,
-                          top: 1,
-                          bottom: 1,
+                          top: 3,
+                          bottom: 3,
                         ),
                         child: pw.Text(
                           _translations['pl']!['contraindications']!,
@@ -2210,30 +2226,39 @@ class _PatientQuestionnaireScreenState
                           ),
                         ),
                       ),
-                      pw.Center(
-                        child: pw.Text(
-                          _translations['pl']!['yes']!,
-                          style: pw.TextStyle(
-                            fontWeight: pw.FontWeight.bold,
-                            fontSize: 10,
+                      pw.Padding(
+                        padding: const pw.EdgeInsets.only(top: 2, bottom: 2),
+                        child: pw.Center(
+                          child: pw.Text(
+                            _translations['pl']!['yes']!,
+                            style: pw.TextStyle(
+                              fontWeight: pw.FontWeight.bold,
+                              fontSize: 10,
+                            ),
                           ),
                         ),
                       ),
-                      pw.Center(
-                        child: pw.Text(
-                          _translations['pl']!['no']!,
-                          style: pw.TextStyle(
-                            fontWeight: pw.FontWeight.bold,
-                            fontSize: 10,
+                      pw.Padding(
+                        padding: const pw.EdgeInsets.only(top: 2, bottom: 2),
+                        child: pw.Center(
+                          child: pw.Text(
+                            _translations['pl']!['no']!,
+                            style: pw.TextStyle(
+                              fontWeight: pw.FontWeight.bold,
+                              fontSize: 10,
+                            ),
                           ),
                         ),
                       ),
-                      pw.Center(
-                        child: pw.Text(
-                          _translations['pl']!['dontKnow']!,
-                          style: pw.TextStyle(
-                            fontWeight: pw.FontWeight.bold,
-                            fontSize: 10,
+                      pw.Padding(
+                        padding: const pw.EdgeInsets.only(top: 2, bottom: 2),
+                        child: pw.Center(
+                          child: pw.Text(
+                            _translations['pl']!['dontKnow']!,
+                            style: pw.TextStyle(
+                              fontWeight: pw.FontWeight.bold,
+                              fontSize: 10,
+                            ),
                           ),
                         ),
                       ),
@@ -2246,15 +2271,15 @@ class _PatientQuestionnaireScreenState
                         pw.Padding(
                           padding: const pw.EdgeInsets.only(
                             left: 3,
-                            top: 1,
-                            bottom: 1,
+                            top: 3,
+                            bottom: 3,
                           ),
                           child: (disease['hasDescription'] == "false")
                               ? pw.Text(
                                   _diseaseNamePdf(disease['id']!),
                                   style: const pw.TextStyle(
                                     fontSize: 8,
-                                    lineSpacing: 3,
+                                    lineSpacing: 6,
                                   ),
                                 )
                               : pw.Column(
@@ -2265,7 +2290,7 @@ class _PatientQuestionnaireScreenState
                                       _diseaseNamePdf(disease['id']!),
                                       style: const pw.TextStyle(
                                         fontSize: 8,
-                                        lineSpacing: 3,
+                                        lineSpacing: 6,
                                       ),
                                     ),
                                     if (_controllers[_getDescriptionControllerKey(
@@ -2281,29 +2306,38 @@ class _PatientQuestionnaireScreenState
                                             .text,
                                         style: const pw.TextStyle(
                                           fontSize: 8,
-                                          lineSpacing: 3,
+                                          lineSpacing: 6,
                                         ),
                                       ),
                                   ],
                                 ),
                         ),
-                        pw.Center(
-                          child: _buildPdfCheckbox(
-                            _diseaseResponses[disease['id']]!['yes'] == '1',
-                            isCentered: true,
+                        pw.Padding(
+                          padding: const pw.EdgeInsets.only(top: 2, bottom: 2),
+                          child: pw.Center(
+                            child: _buildPdfCheckbox(
+                              _diseaseResponses[disease['id']]!['yes'] == '1',
+                              isCentered: true,
+                            ),
                           ),
                         ),
-                        pw.Center(
-                          child: _buildPdfCheckbox(
-                            _diseaseResponses[disease['id']]!['no'] == '1',
-                            isCentered: true,
+                        pw.Padding(
+                          padding: const pw.EdgeInsets.only(top: 2, bottom: 2),
+                          child: pw.Center(
+                            child: _buildPdfCheckbox(
+                              _diseaseResponses[disease['id']]!['no'] == '1',
+                              isCentered: true,
+                            ),
                           ),
                         ),
-                        pw.Center(
-                          child: _buildPdfCheckbox(
-                            _diseaseResponses[disease['id']]!['dontKnow'] ==
-                                '1',
-                            isCentered: true,
+                        pw.Padding(
+                          padding: const pw.EdgeInsets.only(top: 2, bottom: 2),
+                          child: pw.Center(
+                            child: _buildPdfCheckbox(
+                              _diseaseResponses[disease['id']]!['dontKnow'] ==
+                                  '1',
+                              isCentered: true,
+                            ),
                           ),
                         ),
                       ],
@@ -2314,45 +2348,54 @@ class _PatientQuestionnaireScreenState
                       pw.Padding(
                         padding: const pw.EdgeInsets.only(
                           left: 3,
-                          top: 1,
-                          bottom: 1,
+                          top: 3,
+                          bottom: 3,
                         ),
                         child: pw.Text(
                           _translations['pl']!['other']!,
                           style: pw.TextStyle(
                             fontWeight: pw.FontWeight.bold,
                             fontSize: 10,
-                            lineSpacing: 3,
+                            lineSpacing: 6,
                           ),
                         ),
                       ),
-                      pw.Center(
-                        child: pw.Text(
-                          _translations['pl']!['yes']!,
-                          style: pw.TextStyle(
-                            fontWeight: pw.FontWeight.bold,
-                            fontSize: 10,
-                            lineSpacing: 3,
+                      pw.Padding(
+                        padding: const pw.EdgeInsets.only(top: 2, bottom: 2),
+                        child: pw.Center(
+                          child: pw.Text(
+                            _translations['pl']!['yes']!,
+                            style: pw.TextStyle(
+                              fontWeight: pw.FontWeight.bold,
+                              fontSize: 10,
+                              lineSpacing: 6,
+                            ),
                           ),
                         ),
                       ),
-                      pw.Center(
-                        child: pw.Text(
-                          _translations['pl']!['no']!,
-                          style: pw.TextStyle(
-                            fontWeight: pw.FontWeight.bold,
-                            fontSize: 10,
-                            lineSpacing: 3,
+                      pw.Padding(
+                        padding: const pw.EdgeInsets.only(top: 2, bottom: 2),
+                        child: pw.Center(
+                          child: pw.Text(
+                            _translations['pl']!['no']!,
+                            style: pw.TextStyle(
+                              fontWeight: pw.FontWeight.bold,
+                              fontSize: 10,
+                              lineSpacing: 6,
+                            ),
                           ),
                         ),
                       ),
-                      pw.Center(
-                        child: pw.Text(
-                          _translations['pl']!['dontKnow']!,
-                          style: pw.TextStyle(
-                            fontWeight: pw.FontWeight.bold,
-                            fontSize: 10,
-                            lineSpacing: 3,
+                      pw.Padding(
+                        padding: const pw.EdgeInsets.only(top: 2, bottom: 2),
+                        child: pw.Center(
+                          child: pw.Text(
+                            _translations['pl']!['dontKnow']!,
+                            style: pw.TextStyle(
+                              fontWeight: pw.FontWeight.bold,
+                              fontSize: 10,
+                              lineSpacing: 6,
+                            ),
                           ),
                         ),
                       ),
@@ -2365,15 +2408,15 @@ class _PatientQuestionnaireScreenState
                         pw.Padding(
                           padding: const pw.EdgeInsets.only(
                             left: 3,
-                            top: 1,
-                            bottom: 1,
+                            top: 3,
+                            bottom: 3,
                           ),
                           child: (disease['hasDescription'] == "false")
                               ? pw.Text(
                                   _diseaseNamePdf(disease['id']!),
                                   style: const pw.TextStyle(
                                     fontSize: 8,
-                                    lineSpacing: 3,
+                                    lineSpacing: 6,
                                   ),
                                 )
                               : pw.Column(
@@ -2384,7 +2427,7 @@ class _PatientQuestionnaireScreenState
                                       _diseaseNamePdf(disease['id']!),
                                       style: const pw.TextStyle(
                                         fontSize: 8,
-                                        lineSpacing: 3,
+                                        lineSpacing: 6,
                                       ),
                                     ),
                                     if (_controllers[_getDescriptionControllerKey(
@@ -2400,29 +2443,38 @@ class _PatientQuestionnaireScreenState
                                             .text,
                                         style: const pw.TextStyle(
                                           fontSize: 8,
-                                          lineSpacing: 3,
+                                          lineSpacing: 6,
                                         ),
                                       ),
                                   ],
                                 ),
                         ),
-                        pw.Center(
-                          child: _buildPdfCheckbox(
-                            _diseaseResponses[disease['id']]!['yes'] == '1',
-                            isCentered: true,
+                        pw.Padding(
+                          padding: const pw.EdgeInsets.only(top: 2, bottom: 2),
+                          child: pw.Center(
+                            child: _buildPdfCheckbox(
+                              _diseaseResponses[disease['id']]!['yes'] == '1',
+                              isCentered: true,
+                            ),
                           ),
                         ),
-                        pw.Center(
-                          child: _buildPdfCheckbox(
-                            _diseaseResponses[disease['id']]!['no'] == '1',
-                            isCentered: true,
+                        pw.Padding(
+                          padding: const pw.EdgeInsets.only(top: 2, bottom: 2),
+                          child: pw.Center(
+                            child: _buildPdfCheckbox(
+                              _diseaseResponses[disease['id']]!['no'] == '1',
+                              isCentered: true,
+                            ),
                           ),
                         ),
-                        pw.Center(
-                          child: _buildPdfCheckbox(
-                            _diseaseResponses[disease['id']]!['dontKnow'] ==
-                                '1',
-                            isCentered: true,
+                        pw.Padding(
+                          padding: const pw.EdgeInsets.only(top: 2, bottom: 2),
+                          child: pw.Center(
+                            child: _buildPdfCheckbox(
+                              _diseaseResponses[disease['id']]!['dontKnow'] ==
+                                  '1',
+                              isCentered: true,
+                            ),
                           ),
                         ),
                       ],
@@ -2474,7 +2526,7 @@ class _PatientQuestionnaireScreenState
                 padding: const pw.EdgeInsets.only(bottom: 10),
                 child: pw.Text(
                   'Oświadczam, że informacje podane powyżej są zgodne ze stanem faktycznym. Wszystkie zmiany mojej sytuacji zdrowotnej, szczególnie mogącej mieć wpływ na przebieg leczenia stomatologicznego w tym ortodontycznego, zobowiązuję się zgłaszać niezwłocznie lekarzowi prowadzącemu.',
-                  style: const pw.TextStyle(fontSize: 10),
+                  style: const pw.TextStyle(fontSize: 10, lineSpacing: 6),
                   // textAlign: pw.TextAlign.justify,
                 ),
               ),
@@ -2484,18 +2536,19 @@ class _PatientQuestionnaireScreenState
                 style: pw.TextStyle(
                   fontSize: 10,
                   fontWeight: pw.FontWeight.bold,
+                  lineSpacing: 6,
                 ),
               ),
               pw.SizedBox(height: 10),
               pw.Text(
                 'Przyjmuję do wiadomości, że:',
-                style: const pw.TextStyle(fontSize: 10),
+                style: const pw.TextStyle(fontSize: 10, lineSpacing: 6),
               ),
               pw.SizedBox(height: 10),
 
               for (int i = 1; i <= 11; i++)
                 pw.Padding(
-                  padding: const pw.EdgeInsets.only(left: 20, bottom: 3),
+                  padding: const pw.EdgeInsets.only(left: 20, bottom: 6),
                   child: pw.RichText(
                     text: pw.TextSpan(
                       children: [
@@ -2508,7 +2561,10 @@ class _PatientQuestionnaireScreenState
                         ),
                         pw.TextSpan(
                           text: _translations['pl']!['dataProtection$i'],
-                          style: const pw.TextStyle(fontSize: 10),
+                          style: const pw.TextStyle(
+                            fontSize: 10,
+                            lineSpacing: 6,
+                          ),
                         ),
                       ],
                     ),
@@ -2533,13 +2589,14 @@ class _PatientQuestionnaireScreenState
                   style: pw.TextStyle(
                     fontSize: 10,
                     fontWeight: pw.FontWeight.bold,
+                    lineSpacing: 6,
                   ),
                 ),
                 pw.SizedBox(height: 10),
 
                 pw.Text(
                   '   Zgodnie z art. 6 i 7 Rozporządzenia Parlamentu Europejskiego i Rady (UE) 2016/679 z dnia 27 kwietnia 2016 r. o ochronie danych osobowych (RODO) wyrażam zgodę na przetwarzanie moich danych osobowych w zakresie:*',
-                  style: const pw.TextStyle(fontSize: 10),
+                  style: const pw.TextStyle(fontSize: 10, lineSpacing: 6),
                 ),
                 pw.SizedBox(height: 10),
 
@@ -2563,7 +2620,7 @@ class _PatientQuestionnaireScreenState
 
                 pw.Text(
                   '*Prosze zaznaczyć właściwe',
-                  style: const pw.TextStyle(fontSize: 10),
+                  style: const pw.TextStyle(fontSize: 10, lineSpacing: 6),
                 ),
 
                 pw.SizedBox(height: 50),
@@ -2663,7 +2720,7 @@ class _PatientQuestionnaireScreenState
 
   pw.Widget _buildPdfTextField(String label, String value) {
     return pw.Padding(
-      padding: const pw.EdgeInsets.only(bottom: 3),
+      padding: const pw.EdgeInsets.only(bottom: 6),
       child: pw.Row(
         crossAxisAlignment: pw.CrossAxisAlignment.start,
         children: [
@@ -2712,7 +2769,7 @@ class _PatientQuestionnaireScreenState
           ),
         ),
         pw.Padding(
-          padding: const pw.EdgeInsets.only(top: 2),
+          padding: const pw.EdgeInsets.only(top: 6),
           child: pw.Text(
             value.isNotEmpty ? value : '-',
             style: pw.TextStyle(
@@ -2721,7 +2778,7 @@ class _PatientQuestionnaireScreenState
             ),
           ),
         ),
-        pw.SizedBox(height: 12),
+        pw.SizedBox(height: 10),
       ],
     );
   }
@@ -2737,7 +2794,10 @@ class _PatientQuestionnaireScreenState
           ),
           pw.SizedBox(width: 10),
           pw.Expanded(
-            child: pw.Text(label, style: const pw.TextStyle(fontSize: 10)),
+            child: pw.Text(
+              label,
+              style: const pw.TextStyle(fontSize: 10, lineSpacing: 6),
+            ),
           ),
         ],
       ),

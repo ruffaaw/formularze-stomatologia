@@ -262,8 +262,8 @@ class _StatementWithVarnishAndDentistScreenState
     // Tworzenie PDF
     final doc = pw.Document();
     final pdfTheme = pw.ThemeData.withFont(
-      base: pw.Font.ttf(await rootBundle.load('assets/fonts/archivo.ttf')),
-      bold: pw.Font.ttf(await rootBundle.load('assets/fonts/archivo-bold.ttf')),
+      base: pw.Font.ttf(await rootBundle.load('assets/fonts/times.ttf')),
+      bold: pw.Font.ttf(await rootBundle.load('assets/fonts/times-bold.ttf')),
     );
     final signatureImage = await _signaturePadKey.currentState!.toImage();
     final signatureBytes = await signatureImage.toByteData(
@@ -292,9 +292,7 @@ class _StatementWithVarnishAndDentistScreenState
                 pw.Center(child: pw.Image(logo, width: 200, height: 80)),
                 pw.SizedBox(height: 50),
 
-                _buildPdfSectionTitle(
-                  'Oświadczenie z lakierowaniem i stomatologiem',
-                ),
+                _buildPdfSectionTitle('Oświadczenie'),
 
                 _buildPdfTextField(
                   'Imię i nazwisko:',
@@ -302,13 +300,13 @@ class _StatementWithVarnishAndDentistScreenState
                 ),
                 pw.Text(
                   "Zostałem/Zostałam poinformowany/poinformowana o konieczności wykonania przeglądu stomatologicznego u swojego stomatologa po zabiegu higienizacji.",
-                  style: pw.TextStyle(fontSize: 12),
+                  style: pw.TextStyle(fontSize: 12, lineSpacing: 6),
                 ),
 
                 pw.SizedBox(height: 8),
                 pw.Text(
                   "Wyrażam zgodę na wykonanie zabiegu lakierowania. Zostałem/Zostałam poinformowany/poinformowana o jego przebiegu i działaniu. Mam świadomość, że zabieg ten jest zabiegiem dodatkowym, nie wchodzącym w skład podstawowej higienizacji, a jego koszt wykonania wynosi 250 zł.",
-                  style: pw.TextStyle(fontSize: 12),
+                  style: pw.TextStyle(fontSize: 12, lineSpacing: 6),
                 ),
                 pw.SizedBox(height: 50),
 
@@ -412,7 +410,7 @@ class _StatementWithVarnishAndDentistScreenState
 
   pw.Widget _buildPdfTextField(String label, String value) {
     return pw.Padding(
-      padding: const pw.EdgeInsets.only(bottom: 8),
+      padding: const pw.EdgeInsets.only(bottom: 10),
       child: pw.RichText(
         text: pw.TextSpan(
           children: [
