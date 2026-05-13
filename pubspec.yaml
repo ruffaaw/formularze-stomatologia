@@ -34,6 +34,7 @@ flutter:
       fonts:
         - asset: assets/fonts/times.ttf
         - asset: assets/fonts/times-bold.ttf
+        - asset: assets/fonts/times-italic.ttf
   assets:
     - assets/images/pl.png
     - assets/images/en.png

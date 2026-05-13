@@ -514,6 +514,9 @@ class _ZadatekScreenState extends State<ZadatekScreen> {
     final pdfTheme = pw.ThemeData.withFont(
       base: pw.Font.ttf(await rootBundle.load('assets/fonts/times.ttf')),
       bold: pw.Font.ttf(await rootBundle.load('assets/fonts/times-bold.ttf')),
+      italic: pw.Font.ttf(
+        await rootBundle.load('assets/fonts/times-italic.ttf'),
+      ),
     );
     final signatureImage = await _signaturePadKey.currentState!.toImage();
     final signatureBytes = await signatureImage.toByteData(
