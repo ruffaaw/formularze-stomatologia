@@ -982,59 +982,60 @@ class _TreatmentPlanScreenState extends State<TreatmentPlanScreen> {
               for (int i = 1; i <= 8; i++) _buildComplicationSection(i),
               const SizedBox(height: 8),
 
-              Text(
-                _t('recommendations_title'),
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
+              if (_selectedLanguage == 'pl') ...[
+                Text(
+                  _t('recommendations_title'),
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                _t('recommendations_section_0_content'),
-                style: const TextStyle(fontSize: 16),
-                textAlign: TextAlign.justify,
-              ),
-              const SizedBox(height: 8),
-              Text(
-                _t('recommendations_0_title'),
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
+                const SizedBox(height: 8),
+                Text(
+                  _t('recommendations_section_0_content'),
+                  style: const TextStyle(fontSize: 16),
+                  textAlign: TextAlign.justify,
                 ),
-                textAlign: TextAlign.justify,
-              ),
-              const SizedBox(height: 16),
-              for (int i = 1; i <= 4; i++) _buildRecommendationsSection(i),
-              const SizedBox(height: 8),
+                const SizedBox(height: 8),
+                Text(
+                  _t('recommendations_0_title'),
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  textAlign: TextAlign.justify,
+                ),
+                const SizedBox(height: 16),
+                for (int i = 1; i <= 4; i++) _buildRecommendationsSection(i),
+                const SizedBox(height: 8),
 
-              Text(
-                _t('rules_title'),
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
+                Text(
+                  _t('rules_title'),
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                _t('rules_0_content'),
-                style: const TextStyle(fontSize: 16),
-                textAlign: TextAlign.justify,
-              ),
-              const SizedBox(height: 16),
-              for (int i = 1; i <= 4; i++) _buildRulesSection(i),
-
-              const SizedBox(height: 8),
-              Text(
-                _t('not_subjected_title'),
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
+                const SizedBox(height: 8),
+                Text(
+                  _t('rules_0_content'),
+                  style: const TextStyle(fontSize: 16),
+                  textAlign: TextAlign.justify,
                 ),
-              ),
-              const SizedBox(height: 16),
-              for (int i = 1; i <= 8; i++) _buildNotSubjectedSection(i),
+                const SizedBox(height: 16),
+                for (int i = 1; i <= 4; i++) _buildRulesSection(i),
 
+                const SizedBox(height: 8),
+                Text(
+                  _t('not_subjected_title'),
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                for (int i = 1; i <= 8; i++) _buildNotSubjectedSection(i),
+              ],
               // _buildSignatureSection(
               //   _signaturePadKeyDoctorComplications,
               //   _signaturePadKeyPatientComplications,
