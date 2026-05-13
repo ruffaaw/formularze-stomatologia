@@ -171,24 +171,20 @@ class _StatementWithVarnishAndDentistScreenState
                   const SizedBox(height: 10),
                   _buildTextFormField(label: 'Imię i nazwisko', required: true),
                   const SizedBox(height: 10),
-                  Wrap(
-                    children: [
-                      Text(
-                        "Zostałem/Zostałam poinformowany/poinformowana o konieczności wykonania przeglądu stomatologicznego u swojego stomatologa po zabiegu higienizacji.",
-                        style: baseTextStyle,
-                        textAlign: TextAlign.justify,
-                      ),
-                    ],
+                  Center(
+                    child: Text(
+                      "Zostałem/Zostałam poinformowany/poinformowana o konieczności wykonania przeglądu stomatologicznego u swojego stomatologa po zabiegu higienizacji.",
+                      style: baseTextStyle,
+                      textAlign: TextAlign.center,
+                    ),
                   ),
                   const SizedBox(height: 10),
-                  Wrap(
-                    children: [
-                      Text(
-                        "Wyrażam zgodę na wykonanie zabiegu lakierowania. Zostałem/Zostałam poinformowany/poinformowana o jego przebiegu i działaniu. Mam świadomość, że zabieg ten jest zabiegiem dodatkowym, nie wchodzącym w skład podstawowej higienizacji, a jego koszt wykonania wynosi 250 zł.",
-                        style: baseTextStyle,
-                        textAlign: TextAlign.justify,
-                      ),
-                    ],
+                  Center(
+                    child: Text(
+                      "Wyrażam zgodę na wykonanie zabiegu lakierowania. Zostałem/Zostałam poinformowany/poinformowana o jego przebiegu i działaniu. Mam świadomość, że zabieg ten jest zabiegiem dodatkowym, nie wchodzącym w skład podstawowej higienizacji, a jego koszt wykonania wynosi 250 zł.",
+                      style: baseTextStyle,
+                      textAlign: TextAlign.center,
+                    ),
                   ),
                 ],
               ),
@@ -298,15 +294,24 @@ class _StatementWithVarnishAndDentistScreenState
                   'Imię i nazwisko:',
                   patientNameController.text,
                 ),
-                pw.Text(
-                  "Zostałem/Zostałam poinformowany/poinformowana o konieczności wykonania przeglądu stomatologicznego u swojego stomatologa po zabiegu higienizacji.",
-                  style: pw.TextStyle(fontSize: 12, lineSpacing: 6),
+
+                pw.SizedBox(height: 30),
+
+                pw.Center(
+                  child: pw.Text(
+                    "Zostałem/Zostałam poinformowany/poinformowana o konieczności wykonania przeglądu stomatologicznego u swojego stomatologa po zabiegu higienizacji.",
+                    style: pw.TextStyle(fontSize: 12, lineSpacing: 6),
+                    textAlign: pw.TextAlign.center,
+                  ),
                 ),
 
                 pw.SizedBox(height: 8),
-                pw.Text(
-                  "Wyrażam zgodę na wykonanie zabiegu lakierowania. Zostałem/Zostałam poinformowany/poinformowana o jego przebiegu i działaniu. Mam świadomość, że zabieg ten jest zabiegiem dodatkowym, nie wchodzącym w skład podstawowej higienizacji, a jego koszt wykonania wynosi 250 zł.",
-                  style: pw.TextStyle(fontSize: 12, lineSpacing: 6),
+                pw.Center(
+                  child: pw.Text(
+                    "Wyrażam zgodę na wykonanie zabiegu lakierowania. Zostałem/Zostałam poinformowany/poinformowana o jego przebiegu i działaniu. Mam świadomość, że zabieg ten jest zabiegiem dodatkowym, nie wchodzącym w skład podstawowej higienizacji, a jego koszt wykonania wynosi 250 zł.",
+                    style: pw.TextStyle(fontSize: 12, lineSpacing: 6),
+                    textAlign: pw.TextAlign.center,
+                  ),
                 ),
                 pw.SizedBox(height: 50),
 

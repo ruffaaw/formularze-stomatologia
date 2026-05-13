@@ -169,14 +169,12 @@ class _StatementWithADentistScreenState
                   const SizedBox(height: 10),
                   _buildTextFormField(label: 'Imię i nazwisko', required: true),
                   const SizedBox(height: 10),
-                  Wrap(
-                    children: [
-                      Text(
-                        "Zostałem/Zostałam poinformowany/poinformowana o konieczności wykonania przeglądu stomatologicznego u swojego stomatologa po zabiegu higienizacji.",
-                        style: baseTextStyle,
-                        textAlign: TextAlign.justify,
-                      ),
-                    ],
+                  Center(
+                    child: Text(
+                      "Zostałem/Zostałam poinformowany/poinformowana o konieczności wykonania przeglądu stomatologicznego u swojego stomatologa po zabiegu higienizacji.",
+                      style: baseTextStyle,
+                      textAlign: TextAlign.center,
+                    ),
                   ),
                 ],
               ),
@@ -285,9 +283,15 @@ class _StatementWithADentistScreenState
                   'Imię i nazwisko:',
                   patientNameController.text,
                 ),
-                pw.Text(
-                  "Zostałem/Zostałam poinformowany/poinformowana o konieczności wykonania przeglądu stomatologicznego u swojego stomatologa po zabiegu higienizacji.",
-                  style: pw.TextStyle(fontSize: 12, lineSpacing: 6),
+
+                pw.SizedBox(height: 30),
+
+                pw.Center(
+                  child: pw.Text(
+                    "Zostałem/Zostałam poinformowany/poinformowana o konieczności wykonania przeglądu stomatologicznego u swojego stomatologa po zabiegu higienizacji.",
+                    style: pw.TextStyle(fontSize: 12, lineSpacing: 6),
+                    textAlign: pw.TextAlign.center,
+                  ),
                 ),
                 pw.SizedBox(height: 50),
 
